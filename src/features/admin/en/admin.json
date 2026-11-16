@@ -1,0 +1,76 @@
+{
+  "shell": {
+    "loading": "Loading…",
+    "loadError": "We couldn't check your access. Refresh the page to try again.",
+    "notAdminTitle": "Admins only",
+    "notAdminBody": "You need the Admin role to see this area.",
+    "sampleData": "Showing sample data until the API is connected. Changes aren't saved."
+  },
+  "nav": {
+    "label": "Admin sections",
+    "principles": "Principles",
+    "posts": "Posts",
+    "users": "Users",
+    "audit": "Audit log",
+    "reports": "Reports",
+    "emails": "Emails",
+    "alerts": "Alerts",
+    "alertsWithCount_one": "Alerts, {{count}} open alert",
+    "alertsWithCount_other": "Alerts, {{count}} open alerts"
+  },
+  "comingSoon": {
+    "body": "This page is still being built."
+  },
+  "principles": {
+    "title": "Principles",
+    "intro": "These are the Sandoz Way principles people choose from when they give a shout-out. Retired principles disappear from the form, but past shout-outs keep them.",
+    "add": "Add principle",
+    "tableLabel": "Sandoz Way principles",
+    "col": {
+      "order": "Order",
+      "name": "Name",
+      "description": "Description",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "RETIRED": "Retired"
+    },
+    "actions": {
+      "moveUp": "Move {{name}} up",
+      "moveDown": "Move {{name}} down",
+      "edit": "Edit",
+      "editLabel": "Edit {{name}}",
+      "retire": "Retire",
+      "retireLabel": "Retire {{name}}",
+      "restore": "Restore",
+      "restoreLabel": "Restore {{name}}"
+    },
+    "empty": "No principles yet. Add the first one.",
+    "loading": "Loading principles…",
+    "loadError": "We couldn't load the principles. Refresh the page to try again.",
+    "actionError": "That change didn't save. Try again.",
+    "announce": {
+      "created": "Added {{name}}.",
+      "updated": "Saved {{name}}.",
+      "movedUp": "Moved {{name}} up.",
+      "movedDown": "Moved {{name}} down.",
+      "retired": "Retired {{name}}. It no longer appears on the form.",
+      "restored": "Restored {{name}}. It appears on the form again."
+    },
+    "dialog": {
+      "createTitle": "Add a principle",
+      "editTitle": "Edit principle",
+      "name": "Name",
+      "description": "Description",
+      "save": "Save",
+      "cancel": "Cancel",
+      "errors": {
+        "nameRequired": "Enter a name.",
+        "nameTaken": "A principle with this name already exists.",
+        "descriptionRequired": "Enter a description."
+      }
+    }
+  }
+}
