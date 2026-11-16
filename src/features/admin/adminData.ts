@@ -7,10 +7,17 @@
 //   useOpenAlertCount()   -> useQuery GET /api/admin/alerts/reciprocal?month=<current UTC month>
 //   usePrinciplesAdmin()  -> useQuery GET /api/admin/principles
 //                            + useMutation POST /api/admin/principles, PATCH /api/admin/principles/:id
+//   useAdminShoutouts()   -> useInfiniteQuery GET /api/admin/shoutouts?visibility=&q=&cursor=
+//                            + useMutation PATCH /api/admin/shoutouts/:id { visibility }
 //   (The server checks the role and writes the audit rows; the client does neither.)
 import { useCallback, useMemo, useRef, useState } from 'react';
-import type { Me, PrincipleDto } from '../../shared/types';
-import { SAMPLE_ME, SAMPLE_PRINCIPLES, SAMPLE_RECIPROCAL_ALERTS } from './sampleData';
+import type { Me, Page, PrincipleDto, ShoutoutDto, Visibility } from '../../shared/types';
+import {
+  SAMPLE_ADMIN_SHOUTOUTS,
+  SAMPLE_ME,
+  SAMPLE_PRINCIPLES,
+  SAMPLE_RECIPROCAL_ALERTS,
+} from './sampleData';
 
 export interface QueryResult<T> {
   data: T | undefined;
@@ -75,4 +82,75 @@ export function usePrinciplesAdmin(): PrinciplesAdmin {
   }, []);
 
   return { data, isLoading: false, error: null, createPrinciple, updatePrinciple };
+}
+
+// ───── Posts ─────
+
+export type VisibilityFilter = Visibility | 'ALL';
+
+/** Query string of GET /api/admin/shoutouts?visibility=&q=&cursor= ('ALL' = no visibility param). */
+export interface AdminShoutoutsFilter {
+  visibility: VisibilityFilter;
+  q: string;
+}
+
+export interface AdminShoutouts extends QueryResult<Page<ShoutoutDto>> {
+  /** PATCH /api/admin/shoutouts/:id { visibility }. HIDDEN ↔ VISIBLE; DELETED is final. */
+  setVisibility: (id: number, visibility: Visibility) => Promise<ShoutoutDto>;
+  /** Cursor paging: true when nextCursor isn't null. */
+  hasNextPage: boolean;
+  fetchNextPage: () => Promise<void>;
+  isFetchingNextPage: boolean;
+}
+
+/** Allowed moves for PATCH { visibility } (A4). The server enforces this too. */
+export function canChangeVisibility(from: Visibility, to: Visibility): boolean {
+  if (from === 'DELETED' || from === to) return false;
+  return to === 'DELETED' || (from === 'VISIBLE' && to === 'HIDDEN') || (from === 'HIDDEN' && to === 'VISIBLE');
+}
+
+function matchesSearch(s: ShoutoutDto, q: string): boolean {
+  const needle = q.trim().toLowerCase();
+  if (!needle) return true;
+  return [s.reason, s.impact, s.principle.name, s.sender.name, ...s.recipients.map((r) => r.name)]
+    .some((text) => text.toLowerCase().includes(needle));
+}
+
+/** All shout-outs for the admin Posts page, newest first (GET /api/admin/shoutouts). */
+export function useAdminShoutouts(filter: AdminShoutoutsFilter): AdminShoutouts {
+  const store = useRef<ShoutoutDto[]>(SAMPLE_ADMIN_SHOUTOUTS.map((s) => ({ ...s })));
+  const [items, setItems] = useState(store.current);
+
+  const data = useMemo<Page<ShoutoutDto>>(() => {
+    const filtered = items
+      .filter((s) => filter.visibility === 'ALL' || s.visibility === filter.visibility)
+      .filter((s) => matchesSearch(s, filter.q))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id);
+    return { items: filtered, nextCursor: null };
+  }, [items, filter.visibility, filter.q]);
+
+  const setVisibility = useCallback(async (id: number, visibility: Visibility) => {
+    const existing = store.current.find((s) => s.id === id);
+    if (!existing) throw new Error(`Shout-out ${id} not found`);
+    if (!canChangeVisibility(existing.visibility, visibility)) {
+      throw new Error(`Can't change ${existing.visibility} to ${visibility}`);
+    }
+    const updated: ShoutoutDto = { ...existing, visibility };
+    store.current = store.current.map((s) => (s.id === id ? updated : s));
+    setItems(store.current);
+    return updated;
+  }, []);
+
+  // Sample data fits on one page, so there is never a next page.
+  const fetchNextPage = useCallback(async () => {}, []);
+
+  return {
+    data,
+    isLoading: false,
+    error: null,
+    setVisibility,
+    hasNextPage: data.nextCursor !== null,
+    fetchNextPage,
+    isFetchingNextPage: false,
+  };
 }

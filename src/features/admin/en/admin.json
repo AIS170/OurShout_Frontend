@@ -72,5 +72,68 @@
         "descriptionRequired": "Enter a description."
       }
     }
+  },
+  "posts": {
+    "title": "Posts",
+    "intro": "Every shout-out in every state. Hidden posts disappear from the feed, profiles, leaderboards and points until you unhide them. Deleting is permanent.",
+    "filters": {
+      "label": "Filter posts",
+      "visibility": "Visibility",
+      "search": "Search",
+      "searchPlaceholder": "Name, principle or text"
+    },
+    "visibility": {
+      "ALL": "All",
+      "VISIBLE": "Visible",
+      "HIDDEN": "Hidden",
+      "DELETED": "Deleted"
+    },
+    "resultCount_one": "{{count}} post",
+    "resultCount_other": "{{count}} posts",
+    "tableLabel": "Shout-outs",
+    "col": {
+      "posted": "Posted",
+      "from": "From",
+      "to": "To",
+      "principle": "Principle",
+      "message": "Message",
+      "visibility": "Visibility",
+      "actions": "Actions"
+    },
+    "recipients": {
+      "team": "{{team}} team ({{count}})",
+      "more": "+{{count}} more"
+    },
+    "why": "Why",
+    "impact": "Impact",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "edited": "edited",
+    "actOfKindness": "Act of kindness",
+    "actions": {
+      "hide": "Hide",
+      "hideLabel": "Hide post {{id}}",
+      "unhide": "Unhide",
+      "unhideLabel": "Unhide post {{id}}",
+      "delete": "Delete",
+      "deleteLabel": "Delete post {{id}}",
+      "none": "No actions: deleted posts are final."
+    },
+    "deleteDialog": {
+      "title": "Delete this post permanently?",
+      "body": "Post {{id}} from {{sender}} will be removed from the feed, profiles, leaderboards and points for good. This can't be undone. The audit log keeps a record.",
+      "confirm": "Delete permanently",
+      "cancel": "Cancel"
+    },
+    "announce": {
+      "hidden": "Post {{id}} hidden.",
+      "unhidden": "Post {{id}} is visible again.",
+      "deleted": "Post {{id}} deleted."
+    },
+    "loadMore": "Load more",
+    "empty": "No posts match these filters.",
+    "loading": "Loading posts…",
+    "loadError": "We couldn't load the posts. Refresh the page to try again.",
+    "actionError": "That change didn't save. Try again."
   }
 }
