@@ -1,0 +1,185 @@
+{
+  "shell": {
+    "loading": "Loading…",
+    "loadError": "We couldn't check your access. Refresh the page to try again.",
+    "notAdminTitle": "Admins only",
+    "notAdminBody": "You need the Admin role to see this area.",
+    "sampleData": "Showing sample data until the API is connected. Changes aren't saved."
+  },
+  "nav": {
+    "label": "Admin sections",
+    "principles": "Principles",
+    "posts": "Posts",
+    "users": "Users",
+    "audit": "Audit log",
+    "reports": "Reports",
+    "emails": "Emails",
+    "alerts": "Alerts",
+    "alertsWithCount_one": "Alerts, {{count}} open alert",
+    "alertsWithCount_other": "Alerts, {{count}} open alerts"
+  },
+  "comingSoon": {
+    "body": "This page is still being built."
+  },
+  "principles": {
+    "title": "Principles",
+    "intro": "These are the Sandoz Way principles people choose from when they give a shout-out. Retired principles disappear from the form, but past shout-outs keep them.",
+    "add": "Add principle",
+    "tableLabel": "Sandoz Way principles",
+    "col": {
+      "order": "Order",
+      "name": "Name",
+      "description": "Description",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "RETIRED": "Retired"
+    },
+    "actions": {
+      "moveUp": "Move {{name}} up",
+      "moveDown": "Move {{name}} down",
+      "edit": "Edit",
+      "editLabel": "Edit {{name}}",
+      "retire": "Retire",
+      "retireLabel": "Retire {{name}}",
+      "restore": "Restore",
+      "restoreLabel": "Restore {{name}}"
+    },
+    "empty": "No principles yet. Add the first one.",
+    "loading": "Loading principles…",
+    "loadError": "We couldn't load the principles. Refresh the page to try again.",
+    "actionError": "That change didn't save. Try again.",
+    "announce": {
+      "created": "Added {{name}}.",
+      "updated": "Saved {{name}}.",
+      "movedUp": "Moved {{name}} up.",
+      "movedDown": "Moved {{name}} down.",
+      "retired": "Retired {{name}}. It no longer appears on the form.",
+      "restored": "Restored {{name}}. It appears on the form again."
+    },
+    "dialog": {
+      "createTitle": "Add a principle",
+      "editTitle": "Edit principle",
+      "name": "Name",
+      "description": "Description",
+      "save": "Save",
+      "cancel": "Cancel",
+      "errors": {
+        "nameRequired": "Enter a name.",
+        "nameTaken": "A principle with this name already exists.",
+        "descriptionRequired": "Enter a description."
+      }
+    }
+  },
+  "posts": {
+    "title": "Posts",
+    "intro": "Every shout-out in every state. Hidden posts disappear from the feed, profiles, leaderboards and points until you unhide them. Deleting is permanent.",
+    "filters": {
+      "label": "Filter posts",
+      "visibility": "Visibility",
+      "search": "Search",
+      "searchPlaceholder": "Name, principle or text"
+    },
+    "visibility": {
+      "ALL": "All",
+      "VISIBLE": "Visible",
+      "HIDDEN": "Hidden",
+      "DELETED": "Deleted"
+    },
+    "resultCount_one": "{{count}} post",
+    "resultCount_other": "{{count}} posts",
+    "tableLabel": "Shout-outs",
+    "col": {
+      "posted": "Posted",
+      "from": "From",
+      "to": "To",
+      "principle": "Principle",
+      "message": "Message",
+      "visibility": "Visibility",
+      "actions": "Actions"
+    },
+    "recipients": {
+      "team": "{{team}} team ({{count}})",
+      "more": "+{{count}} more"
+    },
+    "why": "Why",
+    "impact": "Impact",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "edited": "edited",
+    "actOfKindness": "Act of kindness",
+    "actions": {
+      "hide": "Hide",
+      "hideLabel": "Hide post {{id}}",
+      "unhide": "Unhide",
+      "unhideLabel": "Unhide post {{id}}",
+      "delete": "Delete",
+      "deleteLabel": "Delete post {{id}}",
+      "none": "No actions: deleted posts are final."
+    },
+    "deleteDialog": {
+      "title": "Delete this post permanently?",
+      "body": "Post {{id}} from {{sender}} will be removed from the feed, profiles, leaderboards and points for good. This can't be undone. The audit log keeps a record.",
+      "confirm": "Delete permanently",
+      "cancel": "Cancel"
+    },
+    "announce": {
+      "hidden": "Post {{id}} hidden.",
+      "unhidden": "Post {{id}} is visible again.",
+      "deleted": "Post {{id}} deleted."
+    },
+    "loadMore": "Load more",
+    "empty": "No posts match these filters.",
+    "loading": "Loading posts…",
+    "loadError": "We couldn't load the posts. Refresh the page to try again.",
+    "actionError": "That change didn't save. Try again."
+  },
+  "users": {
+    "title": "Users",
+    "intro": "Suspended people can't sign in or post until you reinstate them. Their past shout-outs stay as they are.",
+    "search": "Search",
+    "searchPlaceholder": "Name, email, job title or team",
+    "resultCount_one": "{{count}} person",
+    "resultCount_other": "{{count}} people",
+    "tableLabel": "Users",
+    "col": {
+      "name": "Name",
+      "email": "Email",
+      "jobAndTeam": "Job title · Team",
+      "role": "Role",
+      "directory": "Directory",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "you": "You",
+    "role": {
+      "EMPLOYEE": "Employee",
+      "ADMIN": "Admin"
+    },
+    "directory": {
+      "active": "Active",
+      "left": "Left Sandoz"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "SUSPENDED": "Suspended"
+    },
+    "actions": {
+      "suspend": "Suspend",
+      "suspendLabel": "Suspend {{name}}",
+      "reinstate": "Reinstate",
+      "reinstateLabel": "Reinstate {{name}}",
+      "cantSuspendSelf": "You can't suspend yourself."
+    },
+    "announce": {
+      "suspended": "{{name}} is suspended.",
+      "reinstated": "{{name}} is reinstated."
+    },
+    "empty": "No one matches that search.",
+    "loading": "Loading users…",
+    "loadError": "We couldn't load the users. Refresh the page to try again.",
+    "actionError": "That change didn't save. Try again."
+  }
+}
