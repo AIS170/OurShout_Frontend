@@ -31,6 +31,7 @@ import { useTranslation } from 'react-i18next';
 import type { ShoutoutDto, Visibility } from '../../../shared/types';
 import { canChangeVisibility, useAdminShoutouts, type VisibilityFilter } from '../adminData';
 import { ADMIN_NS } from '../i18n';
+import { useDebouncedValue } from '../useDebouncedValue';
 import { ClampedText } from './ClampedText';
 import { DeletePostDialog } from './DeletePostDialog';
 
@@ -40,7 +41,6 @@ const VISIBILITY_COLOR: Record<Visibility, BadgeProps['color']> = {
   HIDDEN: 'warning',
   DELETED: 'danger',
 };
-const SEARCH_DEBOUNCE_MS = 250;
 const MAX_NAMES = 3;
 
 const useStyles = makeStyles({
@@ -99,11 +99,7 @@ export function PostsPage() {
 
   const [visibility, setVisibilityFilter] = useState<VisibilityFilter>('ALL');
   const [search, setSearch] = useState('');
-  const [q, setQ] = useState('');
-  useEffect(() => {
-    const timer = setTimeout(() => setQ(search), SEARCH_DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [search]);
+  const q = useDebouncedValue(search);
 
   const { data, isLoading, error, setVisibility, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useAdminShoutouts({ visibility, q });

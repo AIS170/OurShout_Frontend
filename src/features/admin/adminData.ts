@@ -2,18 +2,28 @@
 // Data hooks for the admin feature. They return the same shape as TanStack Query
 // ({ data, isLoading, error }) so the pages won't change when these switch to the real API.
 //
-// TODO when Rakshil's scaffold lands:
+// TODO when the Flask backend serves these routes (via Rakshil's api/client.ts):
 //   useAdminMe()          -> Rakshil's useMe()
 //   useOpenAlertCount()   -> useQuery GET /api/admin/alerts/reciprocal?month=<current UTC month>
 //   usePrinciplesAdmin()  -> useQuery GET /api/admin/principles
 //                            + useMutation POST /api/admin/principles, PATCH /api/admin/principles/:id
 //   useAdminShoutouts()   -> useInfiniteQuery GET /api/admin/shoutouts?visibility=&q=&cursor=
 //                            + useMutation PATCH /api/admin/shoutouts/:id { visibility }
+//   useAdminUsers()       -> useQuery GET /api/admin/users?q= + useMutation PATCH /api/admin/users/:employeeId
 //   (The server checks the role and writes the audit rows; the client does neither.)
 import { useCallback, useMemo, useRef, useState } from 'react';
-import type { Me, Page, PrincipleDto, ShoutoutDto, Visibility } from '../../shared/types';
+import type {
+  AdminUserDto,
+  Me,
+  Page,
+  PrincipleDto,
+  ShoutoutDto,
+  UserStatus,
+  Visibility,
+} from '../../shared/types';
 import {
   SAMPLE_ADMIN_SHOUTOUTS,
+  SAMPLE_ADMIN_USERS,
   SAMPLE_ME,
   SAMPLE_PRINCIPLES,
   SAMPLE_RECIPROCAL_ALERTS,
@@ -141,7 +151,7 @@ export function useAdminShoutouts(filter: AdminShoutoutsFilter): AdminShoutouts 
     return updated;
   }, []);
 
-  // Sample data fits on one page, so there is never a next page.
+  // Sample data fits on one page, so there's never a next page.
   const fetchNextPage = useCallback(async () => {}, []);
 
   return {
@@ -153,4 +163,43 @@ export function useAdminShoutouts(filter: AdminShoutoutsFilter): AdminShoutouts 
     fetchNextPage,
     isFetchingNextPage: false,
   };
+}
+
+// ───── Users ─────
+
+export interface AdminUsers extends QueryResult<AdminUserDto[]> {
+  /** PATCH /api/admin/users/:employeeId { status }. You can't suspend yourself. */
+  setStatus: (employeeId: string, status: UserStatus) => Promise<AdminUserDto>;
+}
+
+function matchesUser(u: AdminUserDto, q: string): boolean {
+  const needle = q.trim().toLowerCase();
+  if (!needle) return true;
+  return [u.name, u.email, u.jobTitle ?? '', u.teamName].some((text) => text.toLowerCase().includes(needle));
+}
+
+/** Users for the admin Users page, by name (GET /api/admin/users?q=). */
+export function useAdminUsers(q: string): AdminUsers {
+  const store = useRef<AdminUserDto[]>(SAMPLE_ADMIN_USERS.map((u) => ({ ...u })));
+  const [items, setItems] = useState(store.current);
+
+  const data = useMemo(
+    () => items.filter((u) => matchesUser(u, q)).sort((a, b) => a.name.localeCompare(b.name)),
+    [items, q],
+  );
+
+  const setStatus = useCallback(async (employeeId: string, status: UserStatus) => {
+    // The server takes the caller from the token; the sample uses the signed-in admin.
+    if (employeeId === SAMPLE_ME.employeeId && status === 'SUSPENDED') {
+      throw new Error("You can't suspend yourself");
+    }
+    const existing = store.current.find((u) => u.employeeId === employeeId);
+    if (!existing) throw new Error(`User ${employeeId} not found`);
+    const updated: AdminUserDto = { ...existing, status };
+    store.current = store.current.map((u) => (u.employeeId === employeeId ? updated : u));
+    setItems(store.current);
+    return updated;
+  }, []);
+
+  return { data, isLoading: false, error: null, setStatus };
 }

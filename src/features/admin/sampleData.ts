@@ -1,8 +1,9 @@
 // src/features/admin/sampleData.ts
-// TEMPORARY sample data, typed with shared/types.ts, used until Rakshil's scaffold lands.
+// TEMPORARY sample data, typed with shared/types.ts, used until the backend serves these routes.
 // Delete this file once every hook in adminData.ts calls the real API.
 // Team IDs marked 'SAMPLE' are unknown until the seed CSVs are on main.
 import type {
+  AdminUserDto,
   EmployeeSummary,
   Me,
   PrincipleDto,
@@ -226,4 +227,44 @@ export const SAMPLE_ADMIN_SHOUTOUTS: ShoutoutDto[] = [
     likeCount: 3,
     createdAt: '2026-09-18T02:00:00.000Z',
   }),
+];
+
+// Admin Users page (GET /api/admin/users). Directory fields + isActive, plus role and status
+// from app_users. A5: E0039 and E0044 are ADMIN, E0029 is SUSPENDED, E0032 has left (inactive).
+function adminUser(e: EmployeeSummary, extra: Partial<AdminUserDto> = {}): AdminUserDto {
+  return { ...e, isActive: true, role: 'EMPLOYEE', status: 'ACTIVE', ...extra };
+}
+
+export const SAMPLE_ADMIN_USERS: AdminUserDto[] = [
+  adminUser(AISHA),
+  adminUser({
+    employeeId: 'E0032',
+    name: 'Benjamin Clarke',
+    email: 'benjamin.clarke@sandoz.test',
+    jobTitle: null,
+    teamId: 'SAMPLE',
+    teamName: 'Sample team',
+    country: 'AU',
+  }, { isActive: false }),
+  adminUser({
+    employeeId: 'E0044',
+    name: 'David Novak',
+    email: 'david.novak@sandoz.test',
+    jobTitle: null,
+    teamId: 'SAMPLE',
+    teamName: 'Sample team',
+    country: 'AU',
+  }, { role: 'ADMIN' }),
+  adminUser(NATALIE, { role: 'ADMIN' }),
+  adminUser(OLIVIA),
+  adminUser({
+    employeeId: 'E0029',
+    name: 'Oliver Grant',
+    email: 'oliver.grant@sandoz.test',
+    jobTitle: null,
+    teamId: 'T06',
+    teamName: 'Supply Chain & Quality',
+    country: 'AU',
+  }, { status: 'SUSPENDED' }),
+  adminUser(PRIYA),
 ];

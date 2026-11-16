@@ -8,11 +8,13 @@ import { ComingSoon } from './ComingSoon';
 import { PostsPage } from './posts/PostsPage';
 import { PrinciplesPage } from './principles/PrinciplesPage';
 import { ADMIN_SECTIONS, type AdminSection } from './sections';
+import { UsersPage } from './users/UsersPage';
 
 // Sections that are built; the rest show a placeholder.
 const PAGES: Partial<Record<AdminSection, ReactElement>> = {
   principles: <PrinciplesPage />,
   posts: <PostsPage />,
+  users: <UsersPage />,
 };
 
 export const adminRoute: RouteObject = {

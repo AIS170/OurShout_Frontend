@@ -135,5 +135,51 @@
     "loading": "Loading posts…",
     "loadError": "We couldn't load the posts. Refresh the page to try again.",
     "actionError": "That change didn't save. Try again."
+  },
+  "users": {
+    "title": "Users",
+    "intro": "Suspended people can't sign in or post until you reinstate them. Their past shout-outs stay as they are.",
+    "search": "Search",
+    "searchPlaceholder": "Name, email, job title or team",
+    "resultCount_one": "{{count}} person",
+    "resultCount_other": "{{count}} people",
+    "tableLabel": "Users",
+    "col": {
+      "name": "Name",
+      "email": "Email",
+      "jobAndTeam": "Job title · Team",
+      "role": "Role",
+      "directory": "Directory",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "you": "You",
+    "role": {
+      "EMPLOYEE": "Employee",
+      "ADMIN": "Admin"
+    },
+    "directory": {
+      "active": "Active",
+      "left": "Left Sandoz"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "SUSPENDED": "Suspended"
+    },
+    "actions": {
+      "suspend": "Suspend",
+      "suspendLabel": "Suspend {{name}}",
+      "reinstate": "Reinstate",
+      "reinstateLabel": "Reinstate {{name}}",
+      "cantSuspendSelf": "You can't suspend yourself."
+    },
+    "announce": {
+      "suspended": "{{name}} is suspended.",
+      "reinstated": "{{name}} is reinstated."
+    },
+    "empty": "No one matches that search.",
+    "loading": "Loading users…",
+    "loadError": "We couldn't load the users. Refresh the page to try again.",
+    "actionError": "That change didn't save. Try again."
   }
 }
