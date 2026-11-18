@@ -1,0 +1,480 @@
+/* "Give a shout-out" styles. Buttons, fields and cards come from feed.css. */
+
+.os-compose {
+  max-width: 760px;
+}
+
+.os-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  align-self: flex-start;
+}
+
+.os-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  padding: 2rem;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 28, 74, 0.06);
+}
+
+.os-panel-title {
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.os-panel-title:focus,
+.os-feed-title:focus {
+  outline: none;
+}
+
+.os-panel-intro {
+  margin-top: 0.4rem;
+  color: var(--sandoz-text-muted);
+  line-height: 1.45;
+}
+
+/* ---------- start and confirmation screens ---------- */
+
+.os-start {
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.os-start-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--sandoz-soft-blue-bg);
+  border: 1px solid var(--sandoz-pill-blue);
+  color: var(--sandoz-blue);
+}
+
+.os-start-icon-done {
+  background-color: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #067647;
+}
+
+.os-start-text {
+  max-width: 520px;
+  color: var(--sandoz-text-body);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.os-btn-large {
+  padding: 0.8rem 1.8rem;
+  font-size: 1rem;
+}
+
+.os-done-card {
+  width: 100%;
+  text-align: left;
+}
+
+/* ---------- step indicator ---------- */
+
+.os-steps {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.os-step-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--sandoz-border-input);
+}
+
+.os-step-bar-on {
+  background-color: var(--sandoz-blue);
+}
+
+.os-step-label {
+  margin-bottom: 0.3rem;
+  color: var(--sandoz-blue);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- questions ---------- */
+
+.os-question {
+  border: none;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.os-question-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  color: var(--sandoz-navy);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* A fieldset's legend sits outside the flex gap, so it needs its own space below. */
+legend.os-question-title {
+  margin-bottom: 0.6rem;
+}
+
+.os-muted {
+  color: var(--sandoz-text-muted);
+  font-weight: 400;
+}
+
+.os-hint {
+  min-height: 1.1rem;
+  color: var(--sandoz-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.os-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Big tappable options: Individual / Team, and the principles. */
+.os-choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.os-choice-row .os-choice {
+  flex: 1 1 200px;
+}
+
+.os-choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.os-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--sandoz-border-input);
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: var(--sandoz-text-dark);
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.os-choice:hover {
+  border-color: var(--sandoz-blue);
+}
+
+.os-choice-on {
+  border-color: var(--sandoz-blue);
+  background-color: var(--sandoz-soft-blue-bg);
+}
+
+.os-choice input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--sandoz-blue);
+}
+
+.os-choice svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--sandoz-blue);
+}
+
+.os-choice > span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.os-choice strong {
+  color: var(--sandoz-navy);
+}
+
+.os-choice .os-muted {
+  font-size: 0.9rem;
+}
+
+/* ---------- directory search ---------- */
+
+.os-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1.5px solid var(--sandoz-border-input);
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: var(--sandoz-text-dark);
+  font-size: 0.95rem;
+}
+
+.os-input:hover {
+  border-color: var(--sandoz-blue);
+}
+
+.os-input[aria-invalid='true'] {
+  border-color: #b42318;
+}
+
+.os-combo .os-label {
+  font-size: 1rem;
+}
+
+.os-combo-box {
+  position: relative;
+}
+
+.os-combo-icon {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sandoz-text-muted);
+  pointer-events: none;
+}
+
+.os-combo-input {
+  padding-left: 2.3rem;
+}
+
+.os-combo-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0.3rem;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-input);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 28, 74, 0.16);
+}
+
+.os-combo-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.os-combo-option-active {
+  background-color: var(--sandoz-soft-blue-bg);
+  outline: 2px solid var(--sandoz-blue);
+  outline-offset: -2px;
+}
+
+.os-combo-name {
+  color: var(--sandoz-navy);
+  font-weight: 600;
+}
+
+.os-combo-detail {
+  color: var(--sandoz-text-muted);
+  font-size: 0.85rem;
+}
+
+/* ---------- team picker ---------- */
+
+.os-team-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.os-team-picker .os-label {
+  font-size: 1rem;
+}
+
+.os-members {
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 10px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.os-member-list {
+  list-style: none;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.os-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.6rem 0.9rem;
+  color: var(--sandoz-text-dark);
+  cursor: pointer;
+  line-height: 1.35;
+}
+
+.os-check:hover {
+  background-color: var(--sandoz-soft-blue-bg);
+}
+
+.os-check input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  accent-color: var(--sandoz-blue);
+}
+
+.os-check-all {
+  background-color: var(--sandoz-soft-blue-bg);
+  border-bottom: 1px solid var(--sandoz-border-grey);
+  color: var(--sandoz-navy);
+  font-weight: 600;
+}
+
+.os-member-list li + li {
+  border-top: 1px solid var(--sandoz-border-grey);
+}
+
+/* ---------- chosen people ---------- */
+
+.os-people-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.os-person {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--sandoz-pill-blue);
+  border-radius: 10px;
+  background-color: var(--sandoz-soft-blue-bg);
+}
+
+.os-person-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+}
+
+.os-person-text strong {
+  color: var(--sandoz-navy);
+  font-size: 1rem;
+}
+
+.os-person-number {
+  color: var(--sandoz-blue);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.os-icon-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--sandoz-border-input);
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: var(--sandoz-text-dark);
+}
+
+.os-icon-btn:hover {
+  border-color: #b42318;
+  color: #b42318;
+}
+
+.os-whole-team {
+  font-weight: 600;
+}
+
+/* ---------- preview and actions ---------- */
+
+.os-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.1rem;
+  border: 1px dashed var(--sandoz-border-input);
+  border-radius: 12px;
+  background-color: var(--sandoz-sand-bg);
+}
+
+.os-preview .os-card {
+  margin-top: 0.4rem;
+}
+
+.os-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--sandoz-border-grey);
+}
+
+.os-panel-actions-split {
+  justify-content: space-between;
+}
+
+.os-panel-actions-center {
+  justify-content: center;
+  border-top: none;
+  padding-top: 0;
+}
+
+@media (max-width: 480px) {
+  .os-panel {
+    padding: 1.25rem;
+    gap: 1.3rem;
+  }
+
+  .os-start {
+    padding: 2rem 1.25rem;
+  }
+
+  .os-panel-title {
+    font-size: 1.35rem;
+  }
+}

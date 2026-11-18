@@ -79,8 +79,10 @@ const Recipients: React.FC<{ shoutout: ShoutoutDto }> = ({ shoutout }) => {
 
 interface ShoutoutCardProps {
   shoutout: ShoutoutDto;
-  onLikeChange: (shoutout: ShoutoutDto, liked: boolean) => void;
-  onEdit: (shoutout: ShoutoutDto) => void;
+  onLikeChange?: (shoutout: ShoutoutDto, liked: boolean) => void;
+  onEdit?: (shoutout: ShoutoutDto) => void;
+  /** Leaves out the like and edit buttons. Used for the preview while writing a shout-out. */
+  hideActions?: boolean;
 }
 
 /**
@@ -88,7 +90,7 @@ interface ShoutoutCardProps {
  * the act-of-kindness badge, a like toggle, and Edit on your own posts.
  * React renders all text, so quotes, ampersands and apostrophes are safe exactly as typed.
  */
-export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({ shoutout, onLikeChange, onEdit }) => {
+export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({ shoutout, onLikeChange, onEdit, hideActions = false }) => {
   const banner = `os-banner os-banner-${(shoutout.principle.id - 1) % BANNER_COLOURS}`;
   const likes = `${shoutout.likeCount} ${shoutout.likeCount === 1 ? 'like' : 'likes'}`;
 
@@ -129,29 +131,31 @@ export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({ shoutout, onLikeChan
         <ClampedText key={`why-${shoutout.reason}`} label="Why" text={shoutout.reason} />
         <ClampedText key={`impact-${shoutout.impact}`} label="Impact" text={shoutout.impact} />
 
-        <div className="os-card-foot">
-          <button
-            type="button"
-            className="os-btn os-btn-quiet os-like"
-            aria-pressed={shoutout.likedByMe}
-            aria-label={`Like this shout-out. ${likes} so far`}
-            onClick={() => onLikeChange(shoutout, !shoutout.likedByMe)}
-          >
-            <ThumbsUp size={16} fill={shoutout.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
-            {shoutout.likeCount}
-          </button>
-          {shoutout.canEdit && (
+        {!hideActions && (
+          <div className="os-card-foot">
             <button
               type="button"
-              className="os-btn os-btn-quiet"
-              aria-label={`Edit your shout-out to ${recipientsSummary(shoutout)}`}
-              onClick={() => onEdit(shoutout)}
+              className="os-btn os-btn-quiet os-like"
+              aria-pressed={shoutout.likedByMe}
+              aria-label={`Like this shout-out. ${likes} so far`}
+              onClick={() => onLikeChange?.(shoutout, !shoutout.likedByMe)}
             >
-              <Pencil size={15} aria-hidden="true" />
-              Edit
+              <ThumbsUp size={16} fill={shoutout.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
+              {shoutout.likeCount}
             </button>
-          )}
-        </div>
+            {shoutout.canEdit && (
+              <button
+                type="button"
+                className="os-btn os-btn-quiet"
+                aria-label={`Edit your shout-out to ${recipientsSummary(shoutout)}`}
+                onClick={() => onEdit?.(shoutout)}
+              >
+                <Pencil size={15} aria-hidden="true" />
+                Edit
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );
