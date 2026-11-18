@@ -31,7 +31,8 @@ export class ApiRequestError extends Error {
   }
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+/** One request to the backend, with the session token attached. Used by the feed and compose calls. */
+export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = sessionStorage.getItem('token');
   const res = await fetch(path, {
     ...init,
@@ -64,22 +65,22 @@ export function fetchFeed(filter: FeedFilter, cursor: string | null, signal?: Ab
   if (filter.principleId !== null) params.set('principleId', String(filter.principleId));
   if (filter.teamId !== null) params.set('teamId', filter.teamId);
   if (cursor) params.set('cursor', cursor);
-  return request<Page<ShoutoutDto>>(`/api/shoutouts?${params.toString()}`, { signal });
+  return apiRequest<Page<ShoutoutDto>>(`/api/shoutouts?${params.toString()}`, { signal });
 }
 
 export function fetchPrinciples(signal?: AbortSignal) {
-  return request<PrincipleDto[]>('/api/principles', { signal });
+  return apiRequest<PrincipleDto[]>('/api/principles', { signal });
 }
 
 export function fetchTeams(signal?: AbortSignal) {
-  return request<TeamDto[]>('/api/teams', { signal });
+  return apiRequest<TeamDto[]>('/api/teams', { signal });
 }
 
 /** Liking twice or unliking twice is safe: the server counts each person once. */
 export function setLike(shoutoutId: number, liked: boolean) {
-  return request<LikeResult>(`/api/shoutouts/${shoutoutId}/like`, { method: liked ? 'POST' : 'DELETE' });
+  return apiRequest<LikeResult>(`/api/shoutouts/${shoutoutId}/like`, { method: liked ? 'POST' : 'DELETE' });
 }
 
 export function editShoutout(shoutoutId: number, body: EditShoutoutRequest) {
-  return request<ShoutoutDto>(`/api/shoutouts/${shoutoutId}`, { method: 'PATCH', body: JSON.stringify(body) });
+  return apiRequest<ShoutoutDto>(`/api/shoutouts/${shoutoutId}`, { method: 'PATCH', body: JSON.stringify(body) });
 }

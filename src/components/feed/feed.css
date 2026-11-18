@@ -25,6 +25,12 @@
   gap: 1rem;
 }
 
+.os-feed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
 .os-feed-title {
   font-size: 2rem;
   line-height: 1.15;

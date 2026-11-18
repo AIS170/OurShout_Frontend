@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AlertCircle, CheckCircle2, RefreshCw, User } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Megaphone, RefreshCw, User } from 'lucide-react';
 import { Me } from '../types';
 import { EditShoutoutDialog } from '../components/feed/EditShoutoutDialog';
 import { FeedFilterBar } from '../components/feed/FeedFilterBar';
@@ -26,6 +26,8 @@ interface FeedPageProps {
   currentUser: Me;
   /** Opens the profile screen. */
   onViewProfile: () => void;
+  /** Opens the "give a shout-out" screen. */
+  onCompose: () => void;
   /** Called when the API says the session is no longer valid (expired, suspended, left). */
   onSessionEnded: () => void;
 }
@@ -36,10 +38,9 @@ type LoadState = 'loading' | 'ready' | 'error';
  * The newsfeed: where a user lands after signing in. Shows shout-outs from their country with
  * filters, likes, editing of their own posts and "Load more".
  *
- * Still to come from the plan: the "Give a shout-out" button (needs the compose screen) and the
- * leaderboard and kindness counter beside the feed.
+ * Still to come from the plan: the leaderboard and kindness counter beside the feed.
  */
-export const FeedPage: React.FC<FeedPageProps> = ({ currentUser, onViewProfile, onSessionEnded }) => {
+export const FeedPage: React.FC<FeedPageProps> = ({ currentUser, onViewProfile, onCompose, onSessionEnded }) => {
   const [filter, setFilter] = useState<FeedFilter>(DEFAULT_FEED_FILTER);
   const [items, setItems] = useState<ShoutoutDto[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -237,10 +238,16 @@ export const FeedPage: React.FC<FeedPageProps> = ({ currentUser, onViewProfile, 
               Australia.
             </p>
           </div>
-          <button type="button" className="os-btn" onClick={onViewProfile}>
-            <User size={16} aria-hidden="true" />
-            My profile
-          </button>
+          <div className="os-feed-actions">
+            <button type="button" className="os-btn" onClick={onViewProfile}>
+              <User size={16} aria-hidden="true" />
+              My profile
+            </button>
+            <button type="button" className="os-btn os-btn-primary" onClick={onCompose}>
+              <Megaphone size={16} aria-hidden="true" />
+              Give a shout-out
+            </button>
+          </div>
         </div>
 
         <FeedFilterBar filter={filter} principles={principles} teams={teams} onChange={setFilter} />

@@ -3,6 +3,7 @@ import { Me } from './types';
 import { SandozHeader } from './components/SandozHeader';
 import { LoginPage } from './pages/LoginPage';
 import { FeedPage } from './pages/FeedPage';
+import { ComposePage } from './pages/ComposePage';
 import { Award, Building, Mail, MapPin, User, LogOut, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -10,7 +11,7 @@ export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<Me | null>(null);
   const [loadingInitial, setLoadingInitial] = useState<boolean>(true);
   // Signed-in users land on the newsfeed. The profile card is one click away.
-  const [view, setView] = useState<'feed' | 'profile'>('feed');
+  const [view, setView] = useState<'feed' | 'profile' | 'compose'>('feed');
 
   useEffect(() => {
     if (token) {
@@ -40,6 +41,11 @@ export const App: React.FC = () => {
     } finally {
       setLoadingInitial(false);
     }
+  };
+
+  // Points change when you give a shout-out, so the header is refreshed after one is posted.
+  const refreshCurrentUser = () => {
+    if (token) verifyCurrentSession(token);
   };
 
   const handleLoginSuccess = (newToken: string, me: Me) => {
@@ -79,10 +85,18 @@ export const App: React.FC = () => {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF' }}>
       <SandozHeader currentUser={currentUser} onSignOut={handleSignOut} />
 
-      {currentUser && view === 'feed' ? (
+      {currentUser && view === 'compose' ? (
+        <ComposePage
+          currentUser={currentUser}
+          onDone={() => setView('feed')}
+          onCreated={refreshCurrentUser}
+          onSessionEnded={handleSignOut}
+        />
+      ) : currentUser && view === 'feed' ? (
         <FeedPage
           currentUser={currentUser}
           onViewProfile={() => setView('profile')}
+          onCompose={() => setView('compose')}
           onSessionEnded={handleSignOut}
         />
       ) : currentUser ? (

@@ -62,6 +62,19 @@ export interface LikeResult {
   likedByMe: boolean;
 }
 
+/** Body of POST /api/shoutouts. */
+export interface CreateShoutoutRequest {
+  /** INDIVIDUAL = exactly 1 recipient. TEAM = 2 to 50. */
+  recognitionType: RecognitionType;
+  recipientIds: string[];
+  /** Send only when the recipients are exactly every member of this team. */
+  targetTeamId?: string;
+  principleId: number;
+  reason: string;
+  impact: string;
+  actOfKindness: boolean;
+}
+
 /** Body of PATCH /api/shoutouts/:id. Send only the fields that changed. */
 export interface EditShoutoutRequest {
   principleId?: number;
