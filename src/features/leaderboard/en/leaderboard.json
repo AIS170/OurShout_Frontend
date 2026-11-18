@@ -1,0 +1,21 @@
+{
+  "title": "Leaderboard",
+  "pageTitle": "Leaderboards",
+  "pageIntro": "Who's been recognised most, and who's been recognising others. Only live shout-outs count.",
+  "period": {
+    "label": "Time period",
+    "month": "This month",
+    "all": "All time"
+  },
+  "mostShoutedOut": "Most shouted out",
+  "mostShoutOutsGiven": "Most shout-outs given",
+  "count_one": "{{count}} shout-out",
+  "count_other": "{{count}} shout-outs",
+  "rank": "{{rank}}.",
+  "openProfile": "Open {{name}}'s profile",
+  "emptyMonth": "No shout-outs yet this month.",
+  "emptyAll": "No shout-outs yet.",
+  "loading": "Loading the leaderboard…",
+  "loadError": "We couldn't load the leaderboard.",
+  "retry": "Try again"
+}

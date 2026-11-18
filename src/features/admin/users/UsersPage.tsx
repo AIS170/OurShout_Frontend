@@ -1,6 +1,7 @@
 // src/features/admin/users/UsersPage.tsx
-// /admin/users: search people and Suspend / Reinstate them. You can't suspend yourself.
-// The server enforces both rules (admin only, not yourself) and writes
+// /admin/users: search people and Suspend / Reinstate them. You can't suspend yourself,
+// and people who have left Sandoz can't be changed.
+// The server enforces these rules (admin only, not yourself, not leavers) and writes
 // USER_SUSPENDED / USER_REINSTATED audit rows.
 import {
   Badge,
@@ -123,7 +124,9 @@ export function UsersPage() {
           </Badge>
         </TableCell>
         <TableCell>
-          {isMe && !suspended ? (
+          {!user.isActive ? (
+            <Caption1 className={styles.muted}>{t('users.actions.leftNoChange')}</Caption1>
+          ) : isMe && !suspended ? (
             <Caption1 className={styles.muted}>{t('users.actions.cantSuspendSelf')}</Caption1>
           ) : (
             <Button
