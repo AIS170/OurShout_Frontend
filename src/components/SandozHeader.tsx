@@ -1,13 +1,43 @@
 import React from 'react';
 import { Me } from '../types';
-import { Award, LogOut } from 'lucide-react';
+import { Award, LogOut, Newspaper, ShieldCheck, Trophy } from 'lucide-react';
+
+/** The pages the header can switch to. */
+export type HeaderView = 'feed' | 'leaderboard' | 'admin';
 
 interface SandozHeaderProps {
   currentUser: Me | null;
   onSignOut: () => void;
+  /** The view currently on screen, to mark the matching nav button. */
+  currentView?: string;
+  /** Switches page. When it's missing, the header shows no nav. */
+  onNavigate?: (view: HeaderView) => void;
 }
 
-export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignOut }) => {
+const navButtonStyle = (active: boolean): React.CSSProperties => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.4rem',
+  padding: '0.5rem 0.95rem',
+  fontSize: '0.82rem',
+  fontWeight: 600,
+  borderRadius: '3.125rem',
+  cursor: 'pointer',
+  border: active ? '1.5px solid var(--sandoz-blue)' : '1.5px solid transparent',
+  backgroundColor: active ? 'var(--sandoz-soft-blue-bg)' : 'transparent',
+  color: active ? 'var(--sandoz-blue)' : 'var(--sandoz-text-body)',
+});
+
+export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignOut, currentView, onNavigate }) => {
+  // Admin appears only for people whose /api/me role is ADMIN (Natalie in the mock data).
+  const navItems: { view: HeaderView; label: string; icon: React.ReactNode }[] = [
+    { view: 'feed', label: 'Newsfeed', icon: <Newspaper size={15} aria-hidden="true" /> },
+    { view: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={15} aria-hidden="true" /> },
+    ...(currentUser?.role === 'ADMIN'
+      ? [{ view: 'admin' as const, label: 'Admin', icon: <ShieldCheck size={15} aria-hidden="true" /> }]
+      : []),
+  ];
+
   return (
     <header style={{
       width: '100%',
@@ -51,6 +81,26 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignO
               OurShout
             </span>
           </div>
+
+          {currentUser && onNavigate && (
+            <nav aria-label="Main" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
+              {navItems.map((item) => {
+                const active = currentView === item.view;
+                return (
+                  <button
+                    key={item.view}
+                    type="button"
+                    aria-current={active ? 'page' : undefined}
+                    onClick={() => onNavigate(item.view)}
+                    style={navButtonStyle(active)}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
+          )}
         </div>
 
         {/* Right side: Session / User info when logged in, empty when logged out */}
