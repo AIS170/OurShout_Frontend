@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Me } from './types';
 import { SandozHeader } from './components/SandozHeader';
 import { LoginPage } from './pages/LoginPage';
+import { FeedPage } from './pages/FeedPage';
 import { Award, Building, Mail, MapPin, User, LogOut, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(() => sessionStorage.getItem('token'));
   const [currentUser, setCurrentUser] = useState<Me | null>(null);
   const [loadingInitial, setLoadingInitial] = useState<boolean>(true);
+  // Signed-in users land on the newsfeed. The profile card is one click away.
+  const [view, setView] = useState<'feed' | 'profile'>('feed');
 
   useEffect(() => {
     if (token) {
@@ -43,12 +46,14 @@ export const App: React.FC = () => {
     sessionStorage.setItem('token', newToken);
     setToken(newToken);
     setCurrentUser(me);
+    setView('feed');
   };
 
   const handleSignOut = () => {
     sessionStorage.removeItem('token');
     setToken(null);
     setCurrentUser(null);
+    setView('feed');
   };
 
   if (loadingInitial) {
@@ -74,7 +79,13 @@ export const App: React.FC = () => {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF' }}>
       <SandozHeader currentUser={currentUser} onSignOut={handleSignOut} />
 
-      {currentUser ? (
+      {currentUser && view === 'feed' ? (
+        <FeedPage
+          currentUser={currentUser}
+          onViewProfile={() => setView('profile')}
+          onSessionEnded={handleSignOut}
+        />
+      ) : currentUser ? (
         /* Authenticated Welcome Screen */
         <main style={{ maxWidth: '1100px', margin: '3rem auto', padding: '0 2rem', width: '100%', flex: 1 }}>
           <div style={{
@@ -212,7 +223,27 @@ export const App: React.FC = () => {
                 Single-tenant Entra ID session token valid for 8 hours.
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => setView('feed')}
+                  style={{
+                    padding: '0.7rem 1.6rem',
+                    borderRadius: '3.125rem',
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                    border: '1.5px solid var(--sandoz-blue)',
+                    backgroundColor: 'var(--sandoz-blue)',
+                    color: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--sandoz-blue-hover)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--sandoz-blue)')}
+                >
+                  Back to newsfeed
+                  <ArrowRight size={16} />
+                </button>
                 <button
                   onClick={handleSignOut}
                   style={{
