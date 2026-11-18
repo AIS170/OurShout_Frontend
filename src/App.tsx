@@ -4,6 +4,7 @@ import { SandozHeader } from './components/SandozHeader';
 import { LoginPage } from './pages/LoginPage';
 import { FeedPage } from './pages/FeedPage';
 import { ComposePage } from './pages/ComposePage';
+import { ProfilePage } from './pages/ProfilePage';
 import { Award, Building, Mail, MapPin, User, LogOut, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -11,7 +12,9 @@ export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<Me | null>(null);
   const [loadingInitial, setLoadingInitial] = useState<boolean>(true);
   // Signed-in users land on the newsfeed. The profile card is one click away.
-  const [view, setView] = useState<'feed' | 'profile' | 'compose'>('feed');
+  // 'profile' is the account and session card; 'person' is someone's recognition profile.
+  const [view, setView] = useState<'feed' | 'profile' | 'compose' | 'person'>('feed');
+  const [profileId, setProfileId] = useState<string>('');
 
   useEffect(() => {
     if (token) {
@@ -41,6 +44,11 @@ export const App: React.FC = () => {
     } finally {
       setLoadingInitial(false);
     }
+  };
+
+  const openProfile = (employeeId: string) => {
+    setProfileId(employeeId);
+    setView('person');
   };
 
   // Points change when you give a shout-out, so the header is refreshed after one is posted.
@@ -92,11 +100,22 @@ export const App: React.FC = () => {
           onCreated={refreshCurrentUser}
           onSessionEnded={handleSignOut}
         />
+      ) : currentUser && view === 'person' ? (
+        <ProfilePage
+          employeeId={profileId}
+          currentUser={currentUser}
+          onBack={() => setView('feed')}
+          onOpenProfile={openProfile}
+          onCompose={() => setView('compose')}
+          onViewAccount={() => setView('profile')}
+          onSessionEnded={handleSignOut}
+        />
       ) : currentUser && view === 'feed' ? (
         <FeedPage
           currentUser={currentUser}
-          onViewProfile={() => setView('profile')}
+          onViewProfile={() => openProfile(currentUser.employeeId)}
           onCompose={() => setView('compose')}
+          onOpenProfile={openProfile}
           onSessionEnded={handleSignOut}
         />
       ) : currentUser ? (

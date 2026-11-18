@@ -83,6 +83,22 @@ export interface EditShoutoutRequest {
   actOfKindness?: boolean;
 }
 
+/** What GET /api/profile/:employeeId returns. Only visible shout-outs are counted. */
+export interface ProfileDto {
+  employee: EmployeeSummary;
+  points: number;
+  receivedCount: number;
+  givenCount: number;
+  kindnessReceivedCount: number;
+  topPrincipleReceived: string | null;
+  topRecommender: { employee: EmployeeSummary; count: number } | null;
+  /** 'YYYY-MM': the month with the most shout-outs received. */
+  busiestMonth: string | null;
+  topPrincipleGiven: string | null;
+  /** The latest 20. */
+  recentReceived: ShoutoutDto[];
+}
+
 /** Query of GET /api/shoutouts (null = no filter). */
 export interface FeedFilter {
   sort: FeedSort;

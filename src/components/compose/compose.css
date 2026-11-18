@@ -4,13 +4,6 @@
   max-width: 760px;
 }
 
-.os-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  align-self: flex-start;
-}
-
 .os-panel {
   display: flex;
   flex-direction: column;
