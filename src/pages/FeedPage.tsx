@@ -28,6 +28,8 @@ interface FeedPageProps {
   onViewProfile: () => void;
   /** Opens the "give a shout-out" screen. */
   onCompose: () => void;
+  /** Opens a colleague's profile, from a name on a card. */
+  onOpenProfile: (employeeId: string) => void;
   /** Called when the API says the session is no longer valid (expired, suspended, left). */
   onSessionEnded: () => void;
 }
@@ -40,7 +42,13 @@ type LoadState = 'loading' | 'ready' | 'error';
  *
  * Still to come from the plan: the leaderboard and kindness counter beside the feed.
  */
-export const FeedPage: React.FC<FeedPageProps> = ({ currentUser, onViewProfile, onCompose, onSessionEnded }) => {
+export const FeedPage: React.FC<FeedPageProps> = ({
+  currentUser,
+  onViewProfile,
+  onCompose,
+  onOpenProfile,
+  onSessionEnded,
+}) => {
   const [filter, setFilter] = useState<FeedFilter>(DEFAULT_FEED_FILTER);
   const [items, setItems] = useState<ShoutoutDto[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -213,6 +221,7 @@ export const FeedPage: React.FC<FeedPageProps> = ({ currentUser, onViewProfile, 
               <ShoutoutCard
                 shoutout={shoutout}
                 onLikeChange={handleLikeChange}
+                onOpenProfile={onOpenProfile}
                 onEdit={(post) => setEditing((current) => ({ key: (current?.key ?? 0) + 1, shoutout: post }))}
               />
             </li>

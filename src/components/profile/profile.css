@@ -1,0 +1,174 @@
+/* Profile page styles. Buttons, notes and cards come from feed.css. */
+
+.os-profile-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 2rem;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 28, 74, 0.06);
+}
+
+.os-profile-who {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.os-profile-avatar {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--sandoz-blue);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 12px rgba(28, 89, 181, 0.25);
+}
+
+.os-profile-name {
+  font-size: 1.8rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.os-profile-name:focus {
+  outline: none;
+}
+
+.os-profile-role {
+  margin-top: 0.3rem;
+  color: var(--sandoz-text-muted);
+  line-height: 1.4;
+}
+
+.os-profile-you {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+/* The large points number, in the same gold as the points pill in the header. */
+.os-points {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.5rem;
+  border-radius: 16px;
+  border: 1px solid #fde68a;
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.os-points-number {
+  font-family: var(--font-headline);
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.os-points-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.os-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* ---------- metric tiles ---------- */
+
+.os-tiles {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.9rem;
+}
+
+.os-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  height: 100%;
+  padding: 1.1rem 1.15rem;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 12px;
+}
+
+.os-tile-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--sandoz-blue);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+}
+
+.os-tile-label svg {
+  flex-shrink: 0;
+}
+
+.os-tile-number {
+  font-family: var(--font-headline);
+  color: var(--sandoz-navy);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.os-tile-text {
+  color: var(--sandoz-navy);
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.os-tile-none {
+  color: var(--sandoz-text-muted);
+  font-weight: 400;
+}
+
+.os-tile-sub {
+  color: var(--sandoz-text-muted);
+  font-size: 0.82rem;
+}
+
+.os-section-title {
+  font-size: 1.3rem;
+}
+
+@media (max-width: 480px) {
+  .os-profile-head {
+    padding: 1.25rem;
+  }
+
+  .os-profile-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 1.25rem;
+  }
+
+  .os-profile-name {
+    font-size: 1.4rem;
+  }
+
+  .os-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

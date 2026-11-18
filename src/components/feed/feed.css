@@ -103,6 +103,14 @@
   text-decoration: underline;
 }
 
+/* "Back to newsfeed", at the top of the compose and profile pages. */
+.os-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  align-self: flex-start;
+}
+
 .os-feed :focus-visible,
 .os-dialog :focus-visible {
   outline: 3px solid var(--sandoz-blue);
@@ -323,6 +331,22 @@
 .os-people strong {
   color: var(--sandoz-navy);
   font-weight: 700;
+}
+
+/* A name that links to a profile: looks like the bold name, behaves like a link. */
+.os-name-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--sandoz-navy);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+}
+
+.os-name-btn:hover {
+  color: var(--sandoz-blue);
+  text-decoration: underline;
 }
 
 .os-meta {

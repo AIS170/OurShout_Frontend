@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Heart, Pencil, ThumbsUp } from 'lucide-react';
-import { ShoutoutDto } from './feedTypes';
+import { EmployeeSummary, ShoutoutDto } from './feedTypes';
 import { ClampedText } from './ClampedText';
 import { formatFullDate, formatRelativeTime } from './relativeTime';
 
@@ -29,8 +29,33 @@ export const recipientsSummary = (shoutout: ShoutoutDto): string => {
   return hidden > 0 ? `${names} +${hidden} more` : names;
 };
 
+/** A person's name. It links to their profile when the card is given somewhere to send people. */
+const PersonName = React.forwardRef<
+  HTMLElement,
+  { person: EmployeeSummary; onOpenProfile?: (employeeId: string) => void; focusTarget?: boolean }
+>(({ person, onOpenProfile, focusTarget }, ref) =>
+  onOpenProfile ? (
+    <button
+      ref={ref as React.Ref<HTMLButtonElement>}
+      type="button"
+      className="os-name-btn"
+      onClick={() => onOpenProfile(person.employeeId)}
+    >
+      {person.name}
+    </button>
+  ) : (
+    <strong ref={ref} tabIndex={focusTarget ? -1 : undefined}>
+      {person.name}
+    </strong>
+  ),
+);
+PersonName.displayName = 'PersonName';
+
 /** The team name with its size, or the people by name, collapsing after MAX_NAMES. */
-const Recipients: React.FC<{ shoutout: ShoutoutDto }> = ({ shoutout }) => {
+const Recipients: React.FC<{ shoutout: ShoutoutDto; onOpenProfile?: (employeeId: string) => void }> = ({
+  shoutout,
+  onOpenProfile,
+}) => {
   const { recipients, targetTeam } = shoutout;
   const [showAll, setShowAll] = useState<boolean>(false);
 
@@ -55,9 +80,12 @@ const Recipients: React.FC<{ shoutout: ShoutoutDto }> = ({ shoutout }) => {
       {shown.map((person, index) => (
         <React.Fragment key={person.employeeId}>
           {index > 0 && ', '}
-          <strong ref={index === MAX_NAMES ? firstRevealed : undefined} tabIndex={index === MAX_NAMES ? -1 : undefined}>
-            {person.name}
-          </strong>
+          <PersonName
+            ref={index === MAX_NAMES ? firstRevealed : undefined}
+            person={person}
+            onOpenProfile={onOpenProfile}
+            focusTarget={index === MAX_NAMES}
+          />
         </React.Fragment>
       ))}
       {hidden > 0 && (
@@ -83,6 +111,8 @@ interface ShoutoutCardProps {
   onEdit?: (shoutout: ShoutoutDto) => void;
   /** Leaves out the like and edit buttons. Used for the preview while writing a shout-out. */
   hideActions?: boolean;
+  /** When given, every name on the card links to that person's profile. */
+  onOpenProfile?: (employeeId: string) => void;
 }
 
 /**
@@ -90,7 +120,13 @@ interface ShoutoutCardProps {
  * the act-of-kindness badge, a like toggle, and Edit on your own posts.
  * React renders all text, so quotes, ampersands and apostrophes are safe exactly as typed.
  */
-export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({ shoutout, onLikeChange, onEdit, hideActions = false }) => {
+export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({
+  shoutout,
+  onLikeChange,
+  onEdit,
+  hideActions = false,
+  onOpenProfile,
+}) => {
   const banner = `os-banner os-banner-${(shoutout.principle.id - 1) % BANNER_COLOURS}`;
   const likes = `${shoutout.likeCount} ${shoutout.likeCount === 1 ? 'like' : 'likes'}`;
 
@@ -110,7 +146,8 @@ export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({ shoutout, onLikeChan
           </div>
           <div className="os-who">
             <p className="os-people">
-              <strong>{shoutout.sender.name}</strong> to <Recipients shoutout={shoutout} />
+              <PersonName person={shoutout.sender} onOpenProfile={onOpenProfile} /> to{' '}
+              <Recipients shoutout={shoutout} onOpenProfile={onOpenProfile} />
             </p>
             <p className="os-meta">
               <time dateTime={shoutout.createdAt} title={formatFullDate(shoutout.createdAt)}>
@@ -143,12 +180,12 @@ export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({ shoutout, onLikeChan
               <ThumbsUp size={16} fill={shoutout.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
               {shoutout.likeCount}
             </button>
-            {shoutout.canEdit && (
+            {shoutout.canEdit && onEdit && (
               <button
                 type="button"
                 className="os-btn os-btn-quiet"
                 aria-label={`Edit your shout-out to ${recipientsSummary(shoutout)}`}
-                onClick={() => onEdit?.(shoutout)}
+                onClick={() => onEdit(shoutout)}
               >
                 <Pencil size={15} aria-hidden="true" />
                 Edit
