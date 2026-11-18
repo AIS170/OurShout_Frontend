@@ -1,0 +1,73 @@
+/* Official Sandoz Corporate Brand Fonts */
+@font-face {
+  font-family: 'Futura Now Text';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/FuturaNowTextRegular_normal_normal.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Futura Now Text';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/FuturaNowTextMedium_normal_normal.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Futura Now Headline';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/FuturaNowHeadlineBold_normal_normal.woff2') format('woff2');
+  font-display: swap;
+}
+
+:root {
+  /* Exact Sandoz Brand Colors from sandoz.com theme */
+  --sandoz-navy: #001c4a;                /* brand-primary-color-one */
+  --sandoz-blue: #1c59b5;                /* brand-primary-color-two - Iconic Sandoz Blue */
+  --sandoz-blue-hover: #0c3f8c;          /* brand-primary-color-nine */
+  --sandoz-text-dark: #221f1f;           /* brand-primary-color-three */
+  --sandoz-text-body: #4d4d57;           /* brand-primary-color-three */
+  --sandoz-text-muted: #666770;          /* brand-primary-color-eight */
+  --sandoz-sand-bg: #f1ece9;             /* brand-primary-color-hero-gradient */
+  --sandoz-soft-blue-bg: #f4f9ff;        /* brand-primary-color-nineteen */
+  --sandoz-pill-blue: #a8d5ff;           /* brand-primary-color-eleven */
+  --sandoz-border-grey: #e2e5e9;
+  --sandoz-border-input: #cfd4dc;
+  
+  --font-text: 'Futura Now Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-headline: 'Futura Now Headline', 'Futura Now Text', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100vh;
+  font-family: var(--font-text);
+  color: var(--sandoz-text-body);
+  background-color: #FFFFFF;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-headline);
+  color: var(--sandoz-navy);
+  letter-spacing: -0.0125rem;
+}
+
+button {
+  font-family: var(--font-text);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+input, select, textarea {
+  font-family: var(--font-text);
+}
