@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AlertCircle, CheckCircle2, Megaphone, RefreshCw, User } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Megaphone, RefreshCw } from 'lucide-react';
 import { Me } from '../types';
 import { EditShoutoutDialog } from '../components/feed/EditShoutoutDialog';
 import { FeedFilterBar } from '../components/feed/FeedFilterBar';
@@ -24,8 +24,6 @@ import '../components/feed/feed.css';
 
 interface FeedPageProps {
   currentUser: Me;
-  /** Opens the profile screen. */
-  onViewProfile: () => void;
   /** Opens the "give a shout-out" screen. */
   onCompose: () => void;
   /** Opens a colleague's profile, from a name on a card. */
@@ -44,7 +42,6 @@ type LoadState = 'loading' | 'ready' | 'error';
  */
 export const FeedPage: React.FC<FeedPageProps> = ({
   currentUser,
-  onViewProfile,
   onCompose,
   onOpenProfile,
   onSessionEnded,
@@ -248,10 +245,6 @@ export const FeedPage: React.FC<FeedPageProps> = ({
             </p>
           </div>
           <div className="os-feed-actions">
-            <button type="button" className="os-btn" onClick={onViewProfile}>
-              <User size={16} aria-hidden="true" />
-              My profile
-            </button>
             <button type="button" className="os-btn os-btn-primary" onClick={onCompose}>
               <Megaphone size={16} aria-hidden="true" />
               Give a shout-out

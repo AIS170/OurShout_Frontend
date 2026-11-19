@@ -8,7 +8,6 @@ import {
   RefreshCw,
   AlertCircle,
   CheckCircle2,
-  ShieldCheck,
   ArrowRight,
   HelpCircle,
   KeyRound
@@ -92,11 +91,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     setLoginSuccessNotice(null);
   };
 
-  // Re-roll password hash manually
-  const handleRegeneratePassword = () => {
-    setPasswordHash(generateRandomBcryptHash());
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPersonaId) return;
@@ -141,8 +135,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       setSubmitting(false);
     }
   };
-
-  const selectedPersona = personas.find(p => p.personaId === selectedPersonaId);
 
   // Group personas for structured dropdown
   const activeEmployees = personas.filter(p => p.expected === 'OK');
@@ -221,23 +213,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             }}>
               Sandoz Australia Internal Peer Recognition Platform
             </p>
-
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--sandoz-blue)',
-              backgroundColor: 'var(--sandoz-soft-blue-bg)',
-              padding: '4px 12px',
-              borderRadius: '3.125rem',
-              border: '1px solid var(--sandoz-pill-blue)',
-              marginTop: '1rem'
-            }}>
-              <ShieldCheck size={14} />
-              Sandoz Single-Tenant Directory
-            </div>
           </div>
 
           {/* Success Banner */}
@@ -303,7 +278,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
           <form onSubmit={handleSubmit}>
             {/* Username Dropdown Field */}
             <div style={{ marginBottom: '1.35rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <div style={{ marginBottom: '0.45rem' }}>
                 <label style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -315,9 +290,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   <User size={15} color="var(--sandoz-blue)" />
                   Username / Sandoz Account
                 </label>
-                <span style={{ fontSize: '0.74rem', color: 'var(--sandoz-text-muted)' }}>
-                  Dropdown Selector
-                </span>
               </div>
 
               <select
@@ -360,34 +332,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   </>
                 )}
               </select>
-
-              {/* Selected Account Detail Chip */}
-              {selectedPersona && (
-                <div style={{
-                  marginTop: '0.45rem',
-                  fontSize: '0.78rem',
-                  color: 'var(--sandoz-text-muted)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '4px 8px',
-                  backgroundColor: 'var(--sandoz-soft-blue-bg)',
-                  borderRadius: '4px'
-                }}>
-                  <span>
-                    <strong>Role:</strong> {selectedPersona.roles?.includes('Admin') ? 'System Admin' : 'Standard Employee'} ·{' '}
-                    <strong>Expected:</strong> {selectedPersona.expected}
-                  </span>
-                  <span style={{ color: 'var(--sandoz-blue)', fontWeight: 600 }}>
-                    {selectedPersona.employeeId}
-                  </span>
-                </div>
-              )}
             </div>
 
-            {/* Password Field (Randomized & Auto-filled Hash) */}
+            {/* Password Field */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <div style={{ marginBottom: '0.45rem' }}>
                 <label style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -397,33 +346,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   color: 'var(--sandoz-navy)'
                 }}>
                   <Lock size={15} color="var(--sandoz-blue)" />
-                  Password (Auto-hashed Credential)
+                  Password
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <button
-                    type="button"
-                    onClick={handleRegeneratePassword}
-                    title="Generate another randomized hash"
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--sandoz-blue)',
-                      fontSize: '0.76rem',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '3px',
-                      padding: 0
-                    }}
-                  >
-                    <RefreshCw size={12} />
-                    Re-roll hash
-                  </button>
-                </div>
               </div>
 
-              {/* Password Input with reveal eye & randomizer */}
+              {/* Password Input with reveal eye */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -438,7 +365,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                   type={showPassword ? 'text' : 'password'}
                   value={passwordHash}
                   readOnly
-                  title="Randomized simulated hashed password"
+                  title="Password"
                   style={{
                     width: '100%',
                     padding: '0.75rem 0',
@@ -455,7 +382,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  title={showPassword ? 'Mask hashed password' : 'Show randomized hash string'}
+                  title={showPassword ? 'Hide password' : 'Show password'}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -468,23 +395,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
-              </div>
-
-              {/* Hash Preview Footnote */}
-              <div style={{
-                marginTop: '0.45rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                fontSize: '0.75rem',
-                color: 'var(--sandoz-text-muted)'
-              }}>
-                <span style={{ fontFamily: 'monospace', color: '#6B7280' }}>
-                  {showPassword ? 'Revealed: Bcrypt $2b$12$' : '🔒 Simulated Bcrypt Hash (auto-filled & randomized)'}
-                </span>
-                <span style={{ color: 'var(--sandoz-blue)', fontWeight: 600 }}>
-                  60-char hash
-                </span>
               </div>
             </div>
 
@@ -551,111 +461,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               )}
             </button>
           </form>
-
-          {/* Quick Persona Scenario Switcher Chips */}
-          <div style={{
-            marginTop: '2rem',
-            paddingTop: '1.5rem',
-            borderTop: '1px solid #ECEEF1'
-          }}>
-            <div style={{
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              color: 'var(--sandoz-navy)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04rem',
-              marginBottom: '0.75rem'
-            }}>
-              Quick-Select Demo Personas:
-            </div>
-
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <button
-                type="button"
-                onClick={() => handleUserSelectChange('employee')}
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: '3.125rem',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  border: selectedPersonaId === 'employee' ? '1.5px solid var(--sandoz-blue)' : '1px solid #D1D5DB',
-                  backgroundColor: selectedPersonaId === 'employee' ? 'var(--sandoz-soft-blue-bg)' : '#FFFFFF',
-                  color: selectedPersonaId === 'employee' ? 'var(--sandoz-blue)' : 'var(--sandoz-text-dark)',
-                  cursor: 'pointer'
-                }}
-              >
-                ⭐ Priya (Sales)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleUserSelectChange('admin')}
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: '3.125rem',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  border: selectedPersonaId === 'admin' ? '1.5px solid var(--sandoz-blue)' : '1px solid #D1D5DB',
-                  backgroundColor: selectedPersonaId === 'admin' ? 'var(--sandoz-soft-blue-bg)' : '#FFFFFF',
-                  color: selectedPersonaId === 'admin' ? 'var(--sandoz-blue)' : 'var(--sandoz-text-dark)',
-                  cursor: 'pointer'
-                }}
-              >
-                👑 Natalie (Admin)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleUserSelectChange('manager')}
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: '3.125rem',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  border: selectedPersonaId === 'manager' ? '1.5px solid var(--sandoz-blue)' : '1px solid #D1D5DB',
-                  backgroundColor: selectedPersonaId === 'manager' ? 'var(--sandoz-soft-blue-bg)' : '#FFFFFF',
-                  color: selectedPersonaId === 'manager' ? 'var(--sandoz-blue)' : 'var(--sandoz-text-dark)',
-                  cursor: 'pointer'
-                }}
-              >
-                💼 Olivia (Commercial)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleUserSelectChange('suspended')}
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: '3.125rem',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  border: selectedPersonaId === 'suspended' ? '1.5px solid #DC2626' : '1px solid #FCA5A5',
-                  backgroundColor: selectedPersonaId === 'suspended' ? '#FEF2F2' : '#FFFFFF',
-                  color: '#DC2626',
-                  cursor: 'pointer'
-                }}
-              >
-                ⚠️ Oliver (Suspended)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleUserSelectChange('left')}
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: '3.125rem',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  border: selectedPersonaId === 'left' ? '1.5px solid #DC2626' : '1px solid #FCA5A5',
-                  backgroundColor: selectedPersonaId === 'left' ? '#FEF2F2' : '#FFFFFF',
-                  color: '#DC2626',
-                  cursor: 'pointer'
-                }}
-              >
-                🚫 Benjamin (Inactive)
-              </button>
-            </div>
-          </div>
 
           {/* Help & Support Footnote */}
           <div style={{

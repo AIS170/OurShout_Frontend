@@ -141,8 +141,16 @@ export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({
 
       <div className="os-card-body">
         <div className="os-card-head">
-          <div className="os-avatar" aria-hidden="true">
-            {initials(shoutout.sender.name)}
+          <div className="os-avatar" aria-hidden="true" style={{ overflow: 'hidden' }}>
+            {shoutout.sender.avatarUrl ? (
+              <img
+                src={shoutout.sender.avatarUrl}
+                alt=""
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              initials(shoutout.sender.name)
+            )}
           </div>
           <div className="os-who">
             <p className="os-people">

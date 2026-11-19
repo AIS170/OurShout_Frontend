@@ -1,13 +1,25 @@
 import React from 'react';
 import { Me } from '../types';
-import { Award, LogOut } from 'lucide-react';
+import { Award, LogOut, Shield } from 'lucide-react';
 
 interface SandozHeaderProps {
   currentUser: Me | null;
   onSignOut: () => void;
+  /** Opens the current user's profile when clicking the profile badge. */
+  onViewProfile?: () => void;
+  /** Opens the admin dashboard (for ADMIN role users). */
+  onAdminDashboard?: () => void;
+  /** Navigates back to the main newsfeed when clicking the brand / logo. */
+  onGoHome?: () => void;
 }
 
-export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignOut }) => {
+export const SandozHeader: React.FC<SandozHeaderProps> = ({
+  currentUser,
+  onSignOut,
+  onViewProfile,
+  onAdminDashboard,
+  onGoHome,
+}) => {
   return (
     <header style={{
       width: '100%',
@@ -30,7 +42,22 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignO
       }}>
         {/* Brand Logo & Service Name */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <a href="/" style={{ display: 'flex', alignItems: 'center' }}>
+          <a
+            href="/"
+            onClick={(e) => {
+              if (onGoHome) {
+                e.preventDefault();
+                onGoHome();
+              }
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              cursor: onGoHome ? 'pointer' : 'default'
+            }}
+            title={onGoHome ? 'Back to newsfeed' : 'Sandoz OurShout'}
+          >
             <img
               src="/sandoz-logo.svg"
               alt="Sandoz Logo"
@@ -41,13 +68,18 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignO
           <div style={{ height: '22px', width: '1px', backgroundColor: 'var(--sandoz-border-grey)' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{
-              fontFamily: 'var(--font-headline)',
-              fontSize: '1.25rem',
-              fontWeight: 700,
-              color: 'var(--sandoz-navy)',
-              letterSpacing: '-0.01rem'
-            }}>
+            <span
+              onClick={onGoHome}
+              style={{
+                fontFamily: 'var(--font-headline)',
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                color: 'var(--sandoz-navy)',
+                letterSpacing: '-0.01rem',
+                cursor: onGoHome ? 'pointer' : 'default'
+              }}
+              title={onGoHome ? 'Back to newsfeed' : undefined}
+            >
               OurShout
             </span>
           </div>
@@ -56,16 +88,77 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignO
         {/* Right side: Session / User info when logged in, empty when logged out */}
         <div>
           {currentUser && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.4rem 0.9rem',
-                backgroundColor: 'var(--sandoz-soft-blue-bg)',
-                borderRadius: '3.125rem',
-                border: '1px solid var(--sandoz-pill-blue)'
-              }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              {/* Admin Dashboard Button (on the left of the profile button, for ADMIN role only) */}
+              {currentUser.role === 'ADMIN' && (
+                <button
+                  type="button"
+                  onClick={onAdminDashboard}
+                  title="Admin Dashboard (Administrators Only)"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    padding: '0.5rem 1.15rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    color: 'var(--sandoz-navy)',
+                    backgroundColor: '#FFFFFF',
+                    border: '1.5px solid var(--sandoz-navy)',
+                    borderRadius: '3.125rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    fontFamily: 'inherit',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--sandoz-navy)';
+                    e.currentTarget.style.color = '#FFFFFF';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#FFFFFF';
+                    e.currentTarget.style.color = 'var(--sandoz-navy)';
+                  }}
+                >
+                  <Shield size={14} aria-hidden="true" />
+                  Admin Dashboard
+                </button>
+              )}
+
+              {/* Profile Pill Button: clicks to open profile */}
+              <button
+                type="button"
+                onClick={onViewProfile}
+                title="View my recognition profile"
+                aria-label={`View recognition profile for ${currentUser.name}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.4rem 0.9rem',
+                  backgroundColor: 'var(--sandoz-soft-blue-bg)',
+                  borderRadius: '3.125rem',
+                  border: '1px solid var(--sandoz-pill-blue)',
+                  cursor: onViewProfile ? 'pointer' : 'default',
+                  transition: 'all 0.15s ease',
+                  textAlign: 'left',
+                  fontFamily: 'inherit',
+                  outline: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  if (onViewProfile) {
+                    e.currentTarget.style.backgroundColor = '#e1efff';
+                    e.currentTarget.style.borderColor = 'var(--sandoz-blue)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(28, 89, 181, 0.15)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (onViewProfile) {
+                    e.currentTarget.style.backgroundColor = 'var(--sandoz-soft-blue-bg)';
+                    e.currentTarget.style.borderColor = 'var(--sandoz-pill-blue)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }
+                }}
+              >
                 <div style={{
                   width: '32px',
                   height: '32px',
@@ -76,9 +169,19 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignO
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontWeight: 700,
-                  fontSize: '0.85rem'
+                  fontSize: '0.85rem',
+                  flexShrink: 0,
+                  overflow: 'hidden',
                 }}>
-                  {currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                  {currentUser.avatarUrl ? (
+                    <img
+                      src={currentUser.avatarUrl}
+                      alt={currentUser.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2)
+                  )}
                 </div>
                 <div style={{ textAlign: 'left', lineHeight: 1.25 }}>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--sandoz-navy)' }}>
@@ -98,14 +201,16 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignO
                   color: '#92400E',
                   borderRadius: '3.125rem',
                   fontSize: '0.75rem',
-                  fontWeight: 700
+                  fontWeight: 700,
+                  flexShrink: 0
                 }}>
                   <Award size={13} />
                   {currentUser.points} pts
                 </div>
-              </div>
+              </button>
 
               <button
+                type="button"
                 onClick={onSignOut}
                 title="Sign out of Sandoz SSO"
                 style={{
@@ -120,7 +225,8 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({ currentUser, onSignO
                   border: '1.5px solid var(--sandoz-blue)',
                   borderRadius: '3.125rem',
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease'
+                  transition: 'all 0.15s ease',
+                  fontFamily: 'inherit'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = 'var(--sandoz-blue)';

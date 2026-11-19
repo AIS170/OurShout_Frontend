@@ -23,6 +23,7 @@ export interface Me {
   role: Role;
   status: UserStatus;
   points: number;
+  avatarUrl?: string | null;
 }
 
 export interface ApiError {

@@ -13,6 +13,9 @@ export interface EmployeeSummary {
   teamId: string;
   teamName: string;
   country: string;
+  role?: string;
+  status?: string;
+  avatarUrl?: string | null;
 }
 
 export interface ShoutoutDto {
