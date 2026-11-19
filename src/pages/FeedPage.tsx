@@ -21,6 +21,7 @@ import {
   TeamDto,
 } from '../components/feed/feedTypes';
 import '../components/feed/feed.css';
+import { Leaderboard } from '../features/leaderboard';
 
 interface FeedPageProps {
   currentUser: Me;
@@ -38,7 +39,7 @@ type LoadState = 'loading' | 'ready' | 'error';
  * The newsfeed: where a user lands after signing in. Shows shout-outs from their country with
  * filters, likes, editing of their own posts and "Load more".
  *
- * Still to come from the plan: the leaderboard and kindness counter beside the feed.
+ * The leaderboard sits in the right column. Still to come from the plan: the kindness counter.
  */
 export const FeedPage: React.FC<FeedPageProps> = ({
   currentUser,
@@ -235,6 +236,7 @@ export const FeedPage: React.FC<FeedPageProps> = ({
 
   return (
     <div className="os-feed-wrap">
+      <div className="os-feed-layout">
       <main className="os-feed">
         <div className="os-feed-header">
           <div>
@@ -278,6 +280,12 @@ export const FeedPage: React.FC<FeedPageProps> = ({
 
         {renderBody()}
       </main>
+
+      {/* Right column (stacks under the feed on narrow screens): Nathan's leaderboard. */}
+      <aside className="os-feed-side" aria-label="Leaderboard">
+        <Leaderboard onOpenProfile={onOpenProfile} />
+      </aside>
+      </div>
 
       {editing && (
         <EditShoutoutDialog

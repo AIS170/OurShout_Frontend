@@ -79,7 +79,8 @@ export function AdminLayout() {
   const styles = useStyles();
   const { t } = useTranslation(ADMIN_NS);
   const { data: me, isLoading, error } = useAdminMe();
-  const { data: alertCount = 0 } = useOpenAlertCount();
+  // Only ask for admin data once /api/me says this is an admin.
+  const { data: alertCount = 0 } = useOpenAlertCount(me?.role === 'ADMIN');
 
   if (isLoading) return <Spinner label={t('shell.loading')} />;
 
@@ -127,7 +128,7 @@ export function AdminLayout() {
       </nav>
 
       <div className={styles.content}>
-        {/* TODO: remove with sampleData.ts once the hooks call the real API. */}
+        {/* TODO: remove with sampleData.ts once the Audit log calls the real API. */}
         <MessageBar intent="info">
           <MessageBarBody>{t('shell.sampleData')}</MessageBarBody>
         </MessageBar>

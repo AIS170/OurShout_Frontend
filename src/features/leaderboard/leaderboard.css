@@ -1,0 +1,224 @@
+/* Leaderboard card. Colours come from the Sandoz variables in src/index.css. */
+
+.os-lb {
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 28, 74, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.os-lb-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.os-lb-title {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.2;
+  color: var(--sandoz-navy);
+}
+
+/* This month / All time */
+.os-lb-switch {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 3.125rem;
+  background-color: var(--sandoz-soft-blue-bg);
+  border: 1px solid var(--sandoz-border-grey);
+}
+
+.os-lb-switch-btn {
+  border: 0;
+  border-radius: 3.125rem;
+  padding: 0.35rem 0.85rem;
+  background: transparent;
+  color: var(--sandoz-text-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.os-lb-switch-btn[aria-pressed='true'] {
+  background-color: var(--sandoz-blue);
+  color: #ffffff;
+}
+
+.os-lb-switch-btn:hover:not([aria-pressed='true']) {
+  color: var(--sandoz-blue);
+}
+
+.os-lb-boards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: opacity 150ms ease;
+}
+
+/* Switching to a period that hasn't loaded yet: the old boards stay, dimmed. */
+.os-lb[aria-busy='true'] .os-lb-boards {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-lb-boards {
+    transition: none;
+  }
+}
+
+.os-lb-board-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--sandoz-text-muted);
+}
+
+.os-lb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.os-lb-item {
+  display: grid;
+  grid-template-columns: 1.5rem 2.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.os-lb-rank {
+  font-weight: 700;
+  color: var(--sandoz-text-muted);
+  text-align: right;
+}
+
+.os-lb-rank-1 {
+  color: var(--sandoz-blue);
+}
+
+.os-lb-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--sandoz-pill-blue);
+  color: var(--sandoz-navy);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.os-lb-person {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.os-lb-name {
+  font-weight: 600;
+  color: var(--sandoz-text-dark);
+  overflow-wrap: anywhere;
+}
+
+.os-lb-name-link {
+  border: 0;
+  padding: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  font-weight: 600;
+  color: var(--sandoz-blue);
+  cursor: pointer;
+}
+
+.os-lb-name-link:hover {
+  text-decoration: underline;
+  color: var(--sandoz-blue-hover);
+}
+
+.os-lb-team {
+  font-size: 0.78rem;
+  color: var(--sandoz-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.os-lb-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sandoz-text-body);
+  white-space: nowrap;
+}
+
+.os-lb-empty,
+.os-lb-status {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--sandoz-text-muted);
+}
+
+.os-lb-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.os-lb-retry {
+  border: 1.5px solid var(--sandoz-blue);
+  border-radius: 3.125rem;
+  padding: 0.3rem 0.85rem;
+  background: #ffffff;
+  color: var(--sandoz-blue);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Visible keyboard focus on every control. */
+.os-lb-switch-btn:focus-visible,
+.os-lb-name-link:focus-visible,
+.os-lb-retry:focus-visible {
+  outline: 2px solid var(--sandoz-blue);
+  outline-offset: 2px;
+}
+
+/* On its own page there's room for the two boards side by side. */
+.os-lb-page .os-lb-boards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+}
+
+.os-lb-page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.os-lb-page-title {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.os-lb-page-intro {
+  margin: 0;
+  color: var(--sandoz-text-muted);
+}

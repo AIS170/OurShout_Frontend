@@ -4,16 +4,14 @@
     "loadError": "We couldn't check your access. Refresh the page to try again.",
     "notAdminTitle": "Admins only",
     "notAdminBody": "You need the Admin role to see this area.",
-    "sampleData": "Showing sample data until the API is connected. Changes aren't saved."
+    "sampleData": "Everything here is live except the Audit log, which shows sample entries until the backend has an audit_events table."
   },
   "nav": {
     "label": "Admin sections",
-    "principles": "Principles",
     "posts": "Posts",
     "users": "Users",
     "audit": "Audit log",
     "reports": "Reports",
-    "emails": "Emails",
     "alerts": "Alerts",
     "alertsWithCount_one": "Alerts, {{count}} open alert",
     "alertsWithCount_other": "Alerts, {{count}} open alerts"
@@ -21,61 +19,9 @@
   "comingSoon": {
     "body": "This page is still being built."
   },
-  "principles": {
-    "title": "Principles",
-    "intro": "These are the Sandoz Way principles people choose from when they give a shout-out. Retired principles disappear from the form, but past shout-outs keep them.",
-    "add": "Add principle",
-    "tableLabel": "Sandoz Way principles",
-    "col": {
-      "order": "Order",
-      "name": "Name",
-      "description": "Description",
-      "status": "Status",
-      "actions": "Actions"
-    },
-    "status": {
-      "ACTIVE": "Active",
-      "RETIRED": "Retired"
-    },
-    "actions": {
-      "moveUp": "Move {{name}} up",
-      "moveDown": "Move {{name}} down",
-      "edit": "Edit",
-      "editLabel": "Edit {{name}}",
-      "retire": "Retire",
-      "retireLabel": "Retire {{name}}",
-      "restore": "Restore",
-      "restoreLabel": "Restore {{name}}"
-    },
-    "empty": "No principles yet. Add the first one.",
-    "loading": "Loading principles…",
-    "loadError": "We couldn't load the principles. Refresh the page to try again.",
-    "actionError": "That change didn't save. Try again.",
-    "announce": {
-      "created": "Added {{name}}.",
-      "updated": "Saved {{name}}.",
-      "movedUp": "Moved {{name}} up.",
-      "movedDown": "Moved {{name}} down.",
-      "retired": "Retired {{name}}. It no longer appears on the form.",
-      "restored": "Restored {{name}}. It appears on the form again."
-    },
-    "dialog": {
-      "createTitle": "Add a principle",
-      "editTitle": "Edit principle",
-      "name": "Name",
-      "description": "Description",
-      "save": "Save",
-      "cancel": "Cancel",
-      "errors": {
-        "nameRequired": "Enter a name.",
-        "nameTaken": "A principle with this name already exists.",
-        "descriptionRequired": "Enter a description."
-      }
-    }
-  },
   "posts": {
     "title": "Posts",
-    "intro": "Every shout-out in every state. Hidden posts disappear from the feed, profiles, leaderboards and points until you unhide them. Deleting is permanent.",
+    "intro": "Every shout-out in every state. Open a post to read it in full. Hidden posts disappear from the feed, profiles, leaderboards and points until you unhide them. Deleting is permanent.",
     "filters": {
       "label": "Filter posts",
       "visibility": "Visibility",
@@ -96,7 +42,6 @@
       "from": "From",
       "to": "To",
       "principle": "Principle",
-      "message": "Message",
       "visibility": "Visibility",
       "actions": "Actions"
     },
@@ -104,10 +49,6 @@
       "team": "{{team}} team ({{count}})",
       "more": "+{{count}} more"
     },
-    "why": "Why",
-    "impact": "Impact",
-    "showMore": "Show more",
-    "showLess": "Show less",
     "edited": "edited",
     "actOfKindness": "Act of kindness",
     "actions": {
@@ -117,7 +58,9 @@
       "unhideLabel": "Unhide post {{id}}",
       "delete": "Delete",
       "deleteLabel": "Delete post {{id}}",
-      "none": "No actions: deleted posts are final."
+      "none": "No actions: deleted posts are final.",
+      "view": "View shout-out",
+      "viewLabel": "View shout-out {{id}}"
     },
     "deleteDialog": {
       "title": "Delete this post permanently?",
@@ -134,7 +77,30 @@
     "empty": "No posts match these filters.",
     "loading": "Loading posts…",
     "loadError": "We couldn't load the posts. Refresh the page to try again.",
-    "actionError": "That change didn't save. Try again."
+    "actionError": "That change didn't save. Try again.",
+    "pairFilter": {
+      "withMonth": "Showing posts between {{a}} and {{b}} in {{month}}.",
+      "anyTime": "Showing posts between {{a}} and {{b}}.",
+      "clear": "Show all posts"
+    },
+    "detail": {
+      "back": "Back to posts",
+      "title": "Shout-out {{id}}",
+      "recognising": "Recognising {{label}}",
+      "why": "Why are you recognising them?",
+      "impact": "What was the impact of their actions or contributions?",
+      "posted": "Posted",
+      "edited": "Edited",
+      "likes_one": "{{count}} like",
+      "likes_other": "{{count}} likes",
+      "type": {
+        "INDIVIDUAL": "Individual",
+        "TEAM": "Team"
+      },
+      "loading": "Loading the shout-out…",
+      "notFound": "There's no shout-out with that number.",
+      "loadError": "We couldn't load this shout-out. Refresh the page to try again."
+    }
   },
   "users": {
     "title": "Users",
@@ -171,7 +137,8 @@
       "suspendLabel": "Suspend {{name}}",
       "reinstate": "Reinstate",
       "reinstateLabel": "Reinstate {{name}}",
-      "cantSuspendSelf": "You can't suspend yourself."
+      "cantSuspendSelf": "You can't suspend yourself.",
+      "leftNoChange": "Has left Sandoz, so can't be changed."
     },
     "announce": {
       "suspended": "{{name}} is suspended.",
@@ -181,5 +148,163 @@
     "loading": "Loading users…",
     "loadError": "We couldn't load the users. Refresh the page to try again.",
     "actionError": "That change didn't save. Try again."
+  },
+  "audit": {
+    "title": "Audit log",
+    "intro": "Every change made in OurShout, newest first. The log is read-only: entries can't be edited or deleted.",
+    "filters": {
+      "label": "Filter the audit log",
+      "action": "Action",
+      "anyAction": "Any action",
+      "actor": "Who",
+      "anyone": "Anyone",
+      "from": "From",
+      "to": "To",
+      "toBeforeFrom": "Pick a date on or after the From date.",
+      "clear": "Clear filters"
+    },
+    "shownCount_one": "{{count}} entry shown",
+    "shownCount_other": "{{count}} entries shown",
+    "tableLabel": "Audit log entries",
+    "col": {
+      "when": "When",
+      "who": "Who",
+      "action": "Action",
+      "details": "Details"
+    },
+    "notInDirectory": "Not in the directory",
+    "action": {
+      "SHOUTOUT_CREATED": "Shout-out created",
+      "SHOUTOUT_EDITED": "Shout-out edited",
+      "SHOUTOUT_HIDDEN": "Shout-out hidden",
+      "SHOUTOUT_UNHIDDEN": "Shout-out unhidden",
+      "SHOUTOUT_DELETED": "Shout-out deleted",
+      "PRINCIPLE_CREATED": "Principle added",
+      "PRINCIPLE_UPDATED": "Principle changed",
+      "USER_SUSPENDED": "User suspended",
+      "USER_REINSTATED": "User reinstated",
+      "EMAIL_RETRIED": "Email retried",
+      "LOGIN_REJECTED": "Sign-in rejected"
+    },
+    "showDetails": "Show details",
+    "hideDetails": "Hide details",
+    "showDetailsLabel": "Show details for entry {{id}}",
+    "hideDetailsLabel": "Hide details for entry {{id}}",
+    "before": "Before",
+    "after": "After",
+    "nothingRecorded": "Nothing recorded",
+    "loadMore": "Load more",
+    "empty": "No audit entries match these filters.",
+    "loading": "Loading the audit log…",
+    "loadError": "We couldn't load the audit log. Refresh the page to try again."
+  },
+  "alerts": {
+    "title": "Alerts",
+    "explainTitle": "Reciprocal shout-outs",
+    "explain": "A pair shows up here when they shouted each other out at least 3 times in the same calendar month. One time means A recognised B and B recognised A, so the count is the smaller of the two directions. Only live posts count. It's a prompt to take a look, not proof of anything.",
+    "month": "Month",
+    "count_one": "{{count}} pair in {{month}}",
+    "count_other": "{{count}} pairs in {{month}}",
+    "tableLabel": "Reciprocal pairs in {{month}}",
+    "col": {
+      "pair": "Pair",
+      "aToB": "A → B",
+      "bToA": "B → A",
+      "times": "Times",
+      "actions": "Actions"
+    },
+    "and": "and",
+    "aToBLabel_one": "{{a}} recognised {{b}} {{count}} time",
+    "aToBLabel_other": "{{a}} recognised {{b}} {{count}} times",
+    "viewPosts": "View their posts",
+    "viewPostsLabel": "View posts between {{a}} and {{b}}",
+    "empty": "No reciprocal pairs in {{month}}.",
+    "loading": "Loading alerts…",
+    "loadError": "We couldn't load the alerts. Refresh the page to try again."
+  },
+  "reports": {
+    "title": "Reports",
+    "intro": "How recognition is going across Sandoz AU. Only live shout-outs count: hidden and deleted posts are left out.",
+    "rangeLabel": "Report period",
+    "presetsLabel": "Quick periods",
+    "presets": {
+      "month": "This month",
+      "quarter": "Last 3 months",
+      "year": "This year",
+      "all": "All time",
+      "custom": "Custom"
+    },
+    "from": "From",
+    "to": "To",
+    "toBeforeFrom": "Pick a date on or after the From date.",
+    "covering": "Covering {{from}} to {{to}}",
+    "export": "Export CSV",
+    "exportKindness": "Export kindness CSV",
+    "exportError": "The export didn't download. Try again.",
+    "loading": "Loading the report…",
+    "loadError": "We couldn't load the report. Refresh the page to try again.",
+    "noneInRange": "Nothing in this period.",
+    "viewAsTable": "View as table",
+    "table": {
+      "item": "Item",
+      "shoutouts": "Shout-outs",
+      "recipients": "Recognitions"
+    },
+    "shoutoutCount_one": "{{count}} shout-out",
+    "shoutoutCount_other": "{{count}} shout-outs",
+    "tiles": {
+      "total": "Shout-outs",
+      "changeUp": "Up {{pct}} on the previous period",
+      "changeDown": "Down {{pct}} on the previous period",
+      "noPrevious": "None in the previous period",
+      "allTime": "Since the first shout-out",
+      "recognised": "People recognised",
+      "neverRecognised_one": "{{count}} person not recognised yet",
+      "neverRecognised_other": "{{count}} people not recognised yet",
+      "participation": "Participation",
+      "participationDetail": "{{involved}} of {{total}} people gave or received",
+      "kindness": "Acts of kindness",
+      "shareOfPosts": "{{pct}} of shout-outs",
+      "crossTeam": "Cross-team",
+      "crossTeamDetail": "of recognitions went to another team",
+      "likes": "Likes per post",
+      "likesDetail_one": "{{count}} like in total",
+      "likesDetail_other": "{{count}} likes in total",
+      "teamShare": "{{pct}} of shout-outs recognised a group rather than one person."
+    },
+    "mostLiked": {
+      "title": "Most-liked shout-out",
+      "text_one": "{{sender}}'s shout-out for {{principle}}, with {{count}} like",
+      "text_other": "{{sender}}'s shout-out for {{principle}}, with {{count}} likes",
+      "view": "View it"
+    },
+    "charts": {
+      "byMonth": "Shout-outs by month",
+      "byPrinciple": "By Sandoz Way principle",
+      "byWeekday": "By day of the week",
+      "byTeam": "Recognitions by team"
+    },
+    "summary": {
+      "busiestMonth": "Busiest month: {{label}}, with {{count}} shout-outs.",
+      "topPrinciple": "Most recognised principle: {{label}} ({{count}}).",
+      "busiestDay": "Busiest day: {{label}} ({{count}}).",
+      "topTeam": "Most recognised team: {{label}} ({{count}} recognitions).",
+      "none": "No shout-outs in this period."
+    },
+    "topReceivers": "Most recognised people",
+    "topGivers": "Most generous recognisers",
+    "flows": {
+      "title": "Recognition across teams",
+      "intro": "The busiest routes where someone recognised a person in another team.",
+      "from": "From team",
+      "to": "To team"
+    },
+    "country": {
+      "title": "By country",
+      "country": "Country",
+      "names": {
+        "AU": "Australia"
+      }
+    }
   }
 }

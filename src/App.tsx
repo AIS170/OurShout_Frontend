@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Me } from './types';
-import { SandozHeader } from './components/SandozHeader';
+import { SandozHeader, type HeaderView } from './components/SandozHeader';
 import { LoginPage } from './pages/LoginPage';
 import { FeedPage } from './pages/FeedPage';
 import { ComposePage } from './pages/ComposePage';
 import { ProfilePage } from './pages/ProfilePage';
+import { LeaderboardPage } from './features/leaderboard';
+
+// Admin pages are only downloaded when an admin opens them.
+const AdminApp = lazy(() => import('./features/admin/AdminApp'));
+const isAdminPath = () => window.location.pathname.startsWith('/admin');
 import { Shield } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -14,8 +19,34 @@ export const App: React.FC = () => {
   const [adminToast, setAdminToast] = useState<string | null>(null);
   // Signed-in users land on the newsfeed. The profile card is one click away.
   // 'profile' is the account and session card; 'person' is someone's recognition profile.
-  const [view, setView] = useState<'feed' | 'profile' | 'compose' | 'person'>('feed');
+  // 'admin' and 'leaderboard' were added for Nathan's features. Opening /admin/... directly
+  // (bookmark or reload) starts in the admin view; non-admins are sent back to the feed below.
+  const [view, setView] = useState<'feed' | 'profile' | 'compose' | 'person' | 'leaderboard' | 'admin'>(
+    () => (isAdminPath() ? 'admin' : 'feed')
+  );
   const [profileId, setProfileId] = useState<string>('');
+
+  // The admin area owns the /admin URLs. Leaving it puts the address back to "/", and using the
+  // browser's Back button out of /admin returns to the feed.
+  useEffect(() => {
+    if (view !== 'admin' && isAdminPath()) window.history.replaceState(null, '', '/');
+  }, [view]);
+  useEffect(() => {
+    const onPopState = () => {
+      if (!isAdminPath()) setView((v) => (v === 'admin' ? 'feed' : v));
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+  // Only admins (Natalie in the mock data) can be in the admin view.
+  useEffect(() => {
+    if (view === 'admin' && currentUser && currentUser.role !== 'ADMIN') setView('feed');
+  }, [view, currentUser]);
+
+  const navigate = (target: HeaderView) => {
+    if (target === 'admin' && !isAdminPath()) window.history.pushState(null, '', '/admin');
+    setView(target);
+  };
 
   useEffect(() => {
     if (token) {
@@ -104,53 +135,26 @@ export const App: React.FC = () => {
       <SandozHeader
         currentUser={currentUser}
         onSignOut={handleSignOut}
+        currentView={view}
+        onNavigate={navigate}
         onViewProfile={currentUser ? () => openProfile(currentUser.employeeId) : undefined}
-        onAdminDashboard={currentUser?.role === 'ADMIN' ? handleAdminDashboardClick : undefined}
+        onAdminDashboard={currentUser?.role === 'ADMIN' ? () => navigate('admin') : undefined}
         onGoHome={currentUser ? () => setView('feed') : undefined}
       />
 
-      {adminToast && (
-        <div
-          role="status"
-          style={{
-            position: 'fixed',
-            top: '84px',
-            right: '24px',
-            zIndex: 1000,
-            backgroundColor: 'var(--sandoz-navy)',
-            color: '#FFFFFF',
-            padding: '0.75rem 1.25rem',
-            borderRadius: '8px',
-            boxShadow: '0 4px 16px rgba(0, 28, 74, 0.25)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.6rem',
-            fontSize: '0.88rem',
-            fontWeight: 500,
-          }}
+      {currentUser && view === 'admin' && currentUser.role === 'ADMIN' ? (
+        <Suspense
+          fallback={
+            <p style={{ textAlign: 'center', padding: '3rem', color: 'var(--sandoz-text-muted)' }}>Loading admin…</p>
+          }
         >
-          <Shield size={16} color="#60A5FA" />
-          <span>{adminToast}</span>
-          <button
-            type="button"
-            onClick={() => setAdminToast(null)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'rgba(255,255,255,0.7)',
-              fontSize: '1.1rem',
-              lineHeight: 1,
-              cursor: 'pointer',
-              marginLeft: '8px',
-              padding: 0,
-            }}
-          >
-            ×
-          </button>
+          <AdminApp />
+        </Suspense>
+      ) : currentUser && view === 'leaderboard' ? (
+        <div className="os-feed-wrap">
+          <LeaderboardPage onOpenProfile={openProfile} />
         </div>
-      )}
-
-      {currentUser && view === 'compose' ? (
+      ) : currentUser && view === 'compose' ? (
         <ComposePage
           currentUser={currentUser}
           onDone={() => setView('feed')}
@@ -164,7 +168,7 @@ export const App: React.FC = () => {
           onBack={() => setView('feed')}
           onOpenProfile={openProfile}
           onCompose={() => setView('compose')}
-          onAdminDashboard={currentUser?.role === 'ADMIN' ? handleAdminDashboardClick : undefined}
+          onAdminDashboard={currentUser?.role === 'ADMIN' ? () => navigate('admin') : undefined}
           onAvatarUpdated={handleAvatarUpdated}
           onSessionEnded={handleSignOut}
         />
