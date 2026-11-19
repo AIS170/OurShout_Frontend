@@ -1,6 +1,6 @@
 import React from 'react';
 import { Me } from '../types';
-import { Award, LogOut, Newspaper, Shield, ShieldCheck, Trophy } from 'lucide-react';
+import { Award, LogOut, Newspaper, ShieldCheck, Trophy } from 'lucide-react';
 
 /** The pages the header can switch to. */
 export type HeaderView = 'feed' | 'leaderboard' | 'admin' | 'person' | 'profile' | 'compose';
@@ -10,8 +10,6 @@ interface SandozHeaderProps {
   onSignOut: () => void;
   /** Opens the current user's profile when clicking the profile badge. */
   onViewProfile?: () => void;
-  /** Opens the admin dashboard (for ADMIN role users). */
-  onAdminDashboard?: () => void;
   /** Navigates back to the main newsfeed when clicking the brand / logo. */
   onGoHome?: () => void;
   /** The view currently on screen, to mark the matching nav button. */
@@ -38,7 +36,6 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({
   currentUser,
   onSignOut,
   onViewProfile,
-  onAdminDashboard,
   onGoHome,
   currentView,
   onNavigate,
@@ -140,41 +137,6 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({
         <div>
           {currentUser && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              {/* Admin Dashboard Button (on the left of the profile button, for ADMIN role only) */}
-              {currentUser.role === 'ADMIN' && (
-                <button
-                  type="button"
-                  onClick={onAdminDashboard}
-                  title="Admin Dashboard (Administrators Only)"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.45rem',
-                    padding: '0.5rem 1.15rem',
-                    fontSize: '0.82rem',
-                    fontWeight: 600,
-                    color: 'var(--sandoz-navy)',
-                    backgroundColor: '#FFFFFF',
-                    border: '1.5px solid var(--sandoz-navy)',
-                    borderRadius: '3.125rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                    fontFamily: 'inherit',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'var(--sandoz-navy)';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#FFFFFF';
-                    e.currentTarget.style.color = 'var(--sandoz-navy)';
-                  }}
-                >
-                  <Shield size={14} aria-hidden="true" />
-                  Admin Dashboard
-                </button>
-              )}
-
               {/* Profile Pill Button: clicks to open profile */}
               <button
                 type="button"

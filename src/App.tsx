@@ -10,13 +10,11 @@ import { LeaderboardPage } from './features/leaderboard';
 // Admin pages are only downloaded when an admin opens them.
 const AdminApp = lazy(() => import('./features/admin/AdminApp'));
 const isAdminPath = () => window.location.pathname.startsWith('/admin');
-import { Shield } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(() => sessionStorage.getItem('token'));
   const [currentUser, setCurrentUser] = useState<Me | null>(null);
   const [loadingInitial, setLoadingInitial] = useState<boolean>(true);
-  const [adminToast, setAdminToast] = useState<string | null>(null);
   // Signed-in users land on the newsfeed. The profile card is one click away.
   // 'profile' is the account and session card; 'person' is someone's recognition profile.
   // 'admin' and 'leaderboard' were added for Nathan's features. Opening /admin/... directly
@@ -106,11 +104,6 @@ export const App: React.FC = () => {
     setView('feed');
   };
 
-  const handleAdminDashboardClick = () => {
-    setAdminToast('Admin Dashboard is currently under development.');
-    setTimeout(() => setAdminToast(null), 4000);
-  };
-
   if (loadingInitial) {
     return (
       <div style={{
@@ -138,7 +131,6 @@ export const App: React.FC = () => {
         currentView={view}
         onNavigate={navigate}
         onViewProfile={currentUser ? () => openProfile(currentUser.employeeId) : undefined}
-        onAdminDashboard={currentUser?.role === 'ADMIN' ? () => navigate('admin') : undefined}
         onGoHome={currentUser ? () => setView('feed') : undefined}
       />
 
@@ -168,7 +160,6 @@ export const App: React.FC = () => {
           onBack={() => setView('feed')}
           onOpenProfile={openProfile}
           onCompose={() => setView('compose')}
-          onAdminDashboard={currentUser?.role === 'ADMIN' ? () => navigate('admin') : undefined}
           onAvatarUpdated={handleAvatarUpdated}
           onSessionEnded={handleSignOut}
         />

@@ -12,7 +12,6 @@ import {
   Megaphone,
   RefreshCw,
   Send,
-  Shield,
   Sparkles,
   Star,
   Trash2,
@@ -36,8 +35,6 @@ interface ProfilePageProps {
   onOpenProfile: (employeeId: string) => void;
   /** Opens the "give a shout-out" screen. */
   onCompose: () => void;
-  /** Optional handler when Admin Dashboard is clicked */
-  onAdminDashboard?: () => void;
   /** Called when the avatar is updated (uploaded or removed) */
   onAvatarUpdated?: (newAvatarUrl: string | null) => void;
   /** Called when the API says the session is no longer valid or user signs out. */
@@ -70,7 +67,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   onBack,
   onOpenProfile,
   onCompose,
-  onAdminDashboard,
   onAvatarUpdated,
   onSessionEnded,
 }) => {
@@ -78,13 +74,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [reloadKey, setReloadKey] = useState<number>(0);
   const [actionError, setActionError] = useState<string>('');
-  const [adminNotice, setAdminNotice] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState<boolean>(false);
   const [avatarError, setAvatarError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-
-  const isAdmin = currentUser.role === 'ADMIN';
 
   // Kept in a ref so a new function from the parent doesn't load the profile again.
   const sessionEndedRef = useRef(onSessionEnded);
@@ -784,45 +777,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <Megaphone size={16} aria-hidden="true" />
                 {isMe ? 'Give a shout-out' : `Recognise ${firstName}`}
               </button>
-
-              {isAdmin && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onAdminDashboard) {
-                      onAdminDashboard();
-                    } else {
-                      setAdminNotice('Admin Dashboard is currently under development.');
-                    }
-                  }}
-                  title="Admin Dashboard (Administrators Only)"
-                  style={{
-                    padding: '0.7rem 1.6rem',
-                    borderRadius: '3.125rem',
-                    fontWeight: 600,
-                    fontSize: '0.9rem',
-                    border: '1.5px solid var(--sandoz-navy)',
-                    backgroundColor: '#FFFFFF',
-                    color: 'var(--sandoz-navy)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'var(--sandoz-navy)';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#FFFFFF';
-                    e.currentTarget.style.color = 'var(--sandoz-navy)';
-                  }}
-                >
-                  <Shield size={16} aria-hidden="true" />
-                  Admin Dashboard
-                </button>
-              )}
             </div>
 
             {/* Navigation & Session Buttons */}
@@ -878,45 +832,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               )}
             </div>
           </div>
-
-          {adminNotice && (
-            <div
-              role="status"
-              style={{
-                marginTop: '1.25rem',
-                padding: '0.85rem 1.25rem',
-                backgroundColor: 'var(--sandoz-soft-blue-bg)',
-                border: '1px solid var(--sandoz-pill-blue)',
-                borderRadius: '8px',
-                color: 'var(--sandoz-navy)',
-                fontSize: '0.88rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Shield size={16} color="var(--sandoz-blue)" />
-                <span>{adminNotice}</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setAdminNotice(null)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--sandoz-text-muted)',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  fontSize: '1.1rem',
-                  lineHeight: 1,
-                  padding: '0 4px',
-                }}
-              >
-                ×
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Section: Recent Shout-outs Received (from Image 1) */}
