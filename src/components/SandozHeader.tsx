@@ -1,9 +1,9 @@
 import React from 'react';
 import { Me } from '../types';
-import { Award, LogOut, Newspaper, ShieldCheck, Trophy } from 'lucide-react';
+import { Award, BarChart3, Gavel, LogOut, Newspaper, ShieldCheck, Trophy } from 'lucide-react';
 
 /** The pages the header can switch to. */
-export type HeaderView = 'feed' | 'leaderboard' | 'admin' | 'person' | 'profile' | 'compose';
+export type HeaderView = 'feed' | 'auction' | 'leaderboard' | 'admin' | 'person' | 'profile' | 'compose';
 
 interface SandozHeaderProps {
   currentUser: Me | null;
@@ -41,12 +41,17 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({
   onNavigate,
 }) => {
   // Admin appears only for people whose /api/me role is ADMIN (Natalie in the mock data).
+  // The Senior Leadership Team and managers get the same button named Reports: it opens the
+  // admin area's Reports page, which is all they can see of it (/api/me reportsAccess).
   const navItems: { view: HeaderView; label: string; icon: React.ReactNode }[] = [
     { view: 'feed', label: 'Newsfeed', icon: <Newspaper size={15} aria-hidden="true" /> },
+    { view: 'auction', label: 'Auction Table', icon: <Gavel size={15} aria-hidden="true" /> },
     { view: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={15} aria-hidden="true" /> },
     ...(currentUser?.role === 'ADMIN'
       ? [{ view: 'admin' as const, label: 'Admin', icon: <ShieldCheck size={15} aria-hidden="true" /> }]
-      : []),
+      : currentUser?.reportsAccess
+        ? [{ view: 'admin' as const, label: 'Reports', icon: <BarChart3 size={15} aria-hidden="true" /> }]
+        : []),
   ];
   return (
     <header style={{

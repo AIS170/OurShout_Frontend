@@ -1,5 +1,6 @@
 // src/features/admin/users/UsersPage.tsx
-// /admin/users: search people and Suspend / Reinstate them. You can't suspend yourself,
+// /admin/users: search people, see how many shout-outs each gave and received over a chosen
+// period, open a person's page, and Suspend / Reinstate them. You can't suspend yourself,
 // and people who have left Sandoz can't be changed.
 // The server enforces these rules (admin only, not yourself, not leavers) and writes
 // USER_SUSPENDED / USER_REINSTATED audit rows.
@@ -10,6 +11,8 @@ import {
   Caption1,
   Field,
   Input,
+  Label,
+  Link,
   makeStyles,
   MessageBar,
   MessageBarBody,
@@ -21,15 +24,17 @@ import {
   TableHeaderCell,
   TableRow,
   Title1,
+  ToggleButton,
   tokens,
 } from '@fluentui/react-components';
 import { SearchRegular } from '@fluentui/react-icons';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { AdminUserDto } from '../../../shared/types';
-import { useAdminMe, useAdminUsers } from '../adminData';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { monthsBackRange, useAdminMe, useAdminUsers, USER_PERIODS, type UserPeriod } from '../adminData';
 import { ADMIN_NS } from '../i18n';
 import { useDebouncedValue } from '../useDebouncedValue';
+import type { AdminUserStatsDto } from '../userTypes';
 
 const useStyles = makeStyles({
   page: {
@@ -44,11 +49,15 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalL,
   },
   searchField: { flexGrow: 1, minWidth: '200px', maxWidth: '420px' },
+  periodBlock: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXXS },
+  periods: { display: 'flex', flexWrap: 'wrap', gap: tokens.spacingHorizontalXS, minHeight: '32px', alignItems: 'center' },
   tableWrap: { overflowX: 'auto' },
-  table: { minWidth: '900px' },
+  table: { minWidth: '1120px' },
+  row: { cursor: 'pointer' },
   roleCol: { width: '100px' },
   directoryCol: { width: '120px' },
   statusCol: { width: '110px' },
+  countCol: { width: '130px' },
   actionsCol: { width: '150px' },
   nameCell: {
     display: 'flex',
@@ -57,25 +66,31 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalXS,
   },
   email: { overflowWrap: 'anywhere' },
+  num: { fontVariantNumeric: 'tabular-nums' },
   muted: { color: tokens.colorNeutralForeground3 },
 });
 
 export function UsersPage() {
   const styles = useStyles();
   const { t } = useTranslation(ADMIN_NS);
+  const navigate = useNavigate();
+  const location = useLocation();
   const { data: me } = useAdminMe();
 
   const [search, setSearch] = useState('');
   const q = useDebouncedValue(search);
-  const { data: users, isLoading, error, setStatus } = useAdminUsers(q);
+  const [period, setPeriod] = useState<UserPeriod>(1);
+  const { data: users, isLoading, error, setStatus } = useAdminUsers(q, monthsBackRange(period));
 
   const [announcement, setAnnouncement] = useState('');
   const [actionError, setActionError] = useState('');
   const busy = useRef(false);
+  const basePath = location.pathname.replace(/\/+$/, '');
+  const periodLabel = t(`users.period.m${period}`);
 
   // The Suspend/Reinstate button is one element whose label flips, and rows never leave the
   // list on a status change, so keyboard focus stays where it was.
-  async function toggleStatus(user: AdminUserDto) {
+  async function toggleStatus(user: AdminUserStatsDto) {
     if (busy.current) return;
     busy.current = true;
     setActionError('');
@@ -91,14 +106,34 @@ export function UsersPage() {
     }
   }
 
-  function renderRow(user: AdminUserDto) {
+  function renderRow(user: AdminUserStatsDto) {
     const isMe = user.employeeId === me?.employeeId;
     const suspended = user.status === 'SUSPENDED';
+    const href = `${basePath}/${encodeURIComponent(user.employeeId)}`;
     return (
-      <TableRow key={user.employeeId}>
+      <TableRow
+        key={user.employeeId}
+        className={styles.row}
+        // The whole row opens the person's page; the name link does the same for keyboards.
+        onClick={(e) => {
+          if ((e.target as HTMLElement).closest('a, button')) return;
+          navigate(href);
+        }}
+      >
         <TableCell>
           <span className={styles.nameCell}>
-            <span>{user.name}</span>
+            {/* A real link (opens in a new tab with Ctrl+click), routed in-app on a plain click. */}
+            <Link
+              href={href}
+              aria-label={t('users.viewLabel', { name: user.name })}
+              onClick={(e) => {
+                if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+                navigate(href);
+              }}
+            >
+              {user.name}
+            </Link>
             {isMe && (
               <Badge appearance="outline" size="small">
                 {t('users.you')}
@@ -123,6 +158,8 @@ export function UsersPage() {
             {t(`users.status.${user.status}`)}
           </Badge>
         </TableCell>
+        <TableCell className={styles.num}>{user.givenCount}</TableCell>
+        <TableCell className={styles.num}>{user.receivedCount}</TableCell>
         <TableCell>
           {!user.isActive ? (
             <Caption1 className={styles.muted}>{t('users.actions.leftNoChange')}</Caption1>
@@ -166,6 +203,10 @@ export function UsersPage() {
               <TableHeaderCell className={styles.roleCol}>{t('users.col.role')}</TableHeaderCell>
               <TableHeaderCell className={styles.directoryCol}>{t('users.col.directory')}</TableHeaderCell>
               <TableHeaderCell className={styles.statusCol}>{t('users.col.status')}</TableHeaderCell>
+              <TableHeaderCell className={styles.countCol}>{t('users.col.given', { period: periodLabel })}</TableHeaderCell>
+              <TableHeaderCell className={styles.countCol}>
+                {t('users.col.received', { period: periodLabel })}
+              </TableHeaderCell>
               <TableHeaderCell className={styles.actionsCol}>{t('users.col.actions')}</TableHeaderCell>
             </TableRow>
           </TableHeader>
@@ -192,6 +233,16 @@ export function UsersPage() {
             onChange={(_, d) => setSearch(d.value)}
           />
         </Field>
+        <div className={styles.periodBlock}>
+          <Label id="users-period-label">{t('users.periodLabel')}</Label>
+          <div className={styles.periods} role="group" aria-labelledby="users-period-label">
+            {USER_PERIODS.map((p) => (
+              <ToggleButton key={p} size="small" checked={period === p} onClick={() => setPeriod(p)}>
+                {t(`users.period.m${p}`)}
+              </ToggleButton>
+            ))}
+          </div>
+        </div>
         {users && (
           <Caption1 className={styles.muted} aria-live="polite">
             {t('users.resultCount', { count: users.length })}

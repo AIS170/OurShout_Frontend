@@ -15,6 +15,7 @@ import {
   MessageBar,
   MessageBarActions,
   MessageBarBody,
+  MessageBarTitle,
   Select,
   Spinner,
   Table,
@@ -163,11 +164,26 @@ export function PostsPage() {
             {post.editedAt && <Caption1 className={styles.muted}>{t('posts.edited')}</Caption1>}
           </div>
         </TableCell>
-        <TableCell>{post.sender.name}</TableCell>
+        <TableCell>
+          {/* An SLT shout-out is from the leadership team; the admin only posted it. */}
+          {post.kind === 'SLT' ? (
+            <div className={styles.cellStack}>
+              <span>{t('slt.from')}</span>
+              <Caption1 className={styles.muted}>{t('slt.postedBy', { name: post.sender.name })}</Caption1>
+            </div>
+          ) : (
+            post.sender.name
+          )}
+        </TableCell>
         <TableCell>{recipientsLabel(post, t)}</TableCell>
         <TableCell>
           <div className={styles.cellStack}>
             <span>{post.principle.name}</span>
+            {post.kind === 'SLT' && (
+              <Badge appearance="filled" color="warning" size="small">
+                {t('slt.badge')}
+              </Badge>
+            )}
             {post.actOfKindness && (
               <Badge appearance="tint" color="brand" size="small">
                 {t('posts.actOfKindness')}
@@ -269,6 +285,14 @@ export function PostsPage() {
         {t('posts.title')}
       </h1>
       <Body1 as="p">{t('posts.intro')}</Body1>
+
+      {/* multiline: the text always wraps inside the box (the default layout can leave it on one line). */}
+      <MessageBar intent="error" layout="multiline">
+        <MessageBarBody>
+          <MessageBarTitle>{t('posts.warning.title')}</MessageBarTitle>
+          {t('posts.warning.body')}
+        </MessageBarBody>
+      </MessageBar>
 
       {pair && (
         <MessageBar intent="info">

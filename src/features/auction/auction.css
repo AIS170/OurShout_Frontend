@@ -1,0 +1,465 @@
+/* Auction Table. Colours and fonts come from the Sandoz variables in src/index.css. */
+
+.os-auc-page {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ---------- page header and balance ---------- */
+
+.os-auc-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.os-auc-header > div:first-child {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.os-auc-title {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.os-auc-intro {
+  margin-top: 0.35rem;
+  max-width: 60ch;
+  color: var(--sandoz-text-muted);
+}
+
+.os-auc-balance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.9rem 1.15rem;
+  min-width: 220px;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 28, 74, 0.06);
+}
+
+.os-auc-balance-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--sandoz-text-muted);
+}
+
+.os-auc-balance-value {
+  font-family: var(--font-headline);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--sandoz-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- sections and grid ---------- */
+
+.os-auc-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.os-auc-section-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--sandoz-navy);
+}
+
+.os-auc-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1.25rem;
+}
+
+.os-auc-grid > li {
+  display: flex;
+  min-width: 0;
+}
+
+/* ---------- card ---------- */
+
+.os-auc-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 28, 74, 0.06);
+}
+
+.os-auc-card-ended {
+  box-shadow: none;
+}
+
+.os-auc-media {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--sandoz-soft-blue-bg);
+  color: var(--sandoz-pill-blue);
+}
+
+.os-auc-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.os-auc-card-ended .os-auc-media img {
+  filter: grayscale(0.6);
+  opacity: 0.85;
+}
+
+/* "Coming soon": the gavel emblem stands in for the picture until bidding opens. */
+.os-auc-media-soon {
+  flex-direction: column;
+  gap: 0.6rem;
+  background-color: var(--sandoz-navy);
+  color: #ffffff;
+}
+
+.os-auc-emblem {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.os-auc-soon-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.os-auc-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.1rem 1.25rem 1.25rem;
+}
+
+.os-auc-name {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.25;
+  color: var(--sandoz-navy);
+  overflow-wrap: anywhere;
+}
+
+.os-auc-description {
+  color: var(--sandoz-text-body);
+  font-size: 0.93rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.os-auc-muted {
+  color: var(--sandoz-text-muted);
+  font-size: 0.82rem;
+}
+
+/* ---------- current bid ---------- */
+
+.os-auc-bid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background-color: var(--sandoz-soft-blue-bg);
+}
+
+.os-auc-bid-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--sandoz-text-muted);
+}
+
+.os-auc-bid-value {
+  font-family: var(--font-headline);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--sandoz-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.os-auc-bid-none {
+  font-size: 1.15rem;
+}
+
+.os-auc-bid-by {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  color: var(--sandoz-text-body);
+}
+
+.os-auc-bidder {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.os-auc-avatar {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--sandoz-blue);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.os-auc-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.os-auc-bidder strong {
+  color: var(--sandoz-navy);
+}
+
+.os-auc-name-link {
+  border: 0;
+  padding: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+  cursor: pointer;
+}
+
+.os-auc-name-link:hover {
+  color: var(--sandoz-blue);
+  text-decoration: underline;
+}
+
+.os-auc-leading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 3.125rem;
+  border: 1px solid #a7f3d0;
+  background-color: #ecfdf5;
+  color: #065f46;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* The clock stays beside the first line when the text wraps. */
+.os-auc-when {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  color: var(--sandoz-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.os-auc-when svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.os-auc-when-strong {
+  color: var(--sandoz-navy);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.os-auc-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--sandoz-text-dark);
+  font-size: 0.95rem;
+}
+
+.os-auc-result > svg {
+  flex-shrink: 0;
+  color: var(--sandoz-blue);
+}
+
+/* ---------- bid form ---------- */
+
+.os-auc-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto; /* keeps the form at the bottom when cards in a row differ in height */
+  padding-top: 0.25rem;
+}
+
+.os-auc-input {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid var(--sandoz-border-input);
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: var(--sandoz-text-dark);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.os-auc-input:hover:not(:disabled) {
+  border-color: var(--sandoz-blue);
+}
+
+.os-auc-input[aria-invalid='true'] {
+  border-color: #b42318;
+}
+
+.os-auc-input:disabled {
+  background-color: #f5f6f8;
+  color: var(--sandoz-text-muted);
+}
+
+.os-auc-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 3.125rem;
+  border: 1.5px solid var(--sandoz-blue);
+  background-color: var(--sandoz-blue);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.os-auc-btn:hover:not(:disabled) {
+  background-color: var(--sandoz-blue-hover);
+  border-color: var(--sandoz-blue-hover);
+}
+
+.os-auc-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.os-auc-btn-quiet {
+  background-color: #ffffff;
+  color: var(--sandoz-blue);
+}
+
+.os-auc-btn-quiet:hover:not(:disabled) {
+  background-color: var(--sandoz-blue);
+  color: #ffffff;
+}
+
+.os-auc-error {
+  color: #b42318;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.os-auc-placed {
+  color: #065f46;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.os-auc-placed:empty {
+  display: none;
+}
+
+/* ---------- states ---------- */
+
+.os-auc-status {
+  color: var(--sandoz-text-muted);
+}
+
+.os-auc-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 12px;
+}
+
+.os-auc-empty h2 {
+  font-size: 1.25rem;
+}
+
+.os-auc-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Visible keyboard focus on every control. */
+.os-auc-page :focus-visible {
+  outline: 3px solid var(--sandoz-blue);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .os-auc-page {
+    padding: 1.5rem 0.75rem 3rem;
+  }
+
+  .os-auc-title {
+    font-size: 1.6rem;
+  }
+
+  .os-auc-form {
+    flex-direction: column;
+  }
+}

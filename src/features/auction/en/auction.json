@@ -1,0 +1,54 @@
+{
+  "pageTitle": "Auction Table",
+  "pageIntro": "Bid your OurShout points on these items. Whoever has the highest bid when bidding closes wins the item, and the points come off their total.",
+  "balance": {
+    "label": "Available to bid",
+    "points": "{{count}} pts",
+    "held": "{{count}} pts held by your leading bids",
+    "spent": "{{count}} pts spent on items you won"
+  },
+  "sections": {
+    "LIVE": "Open for bids",
+    "UPCOMING": "Coming soon",
+    "ENDED": "Closed"
+  },
+  "points": "{{count}} pts",
+  "live": {
+    "currentBid": "Current bid",
+    "by": "by",
+    "noBids": "No bids yet",
+    "startingBid": "Starting bid {{count}} pts",
+    "closes": "Bidding closes {{when}}",
+    "bidCount_one": "{{count}} bid so far",
+    "bidCount_other": "{{count}} bids so far",
+    "leading": "You're the highest bidder",
+    "yourBid": "Your bid for {{name}}, in points",
+    "minimum": "{{count}} pts or more",
+    "placeBid": "Place bid",
+    "placing": "Placing bid…",
+    "raiseBid": "Raise your bid",
+    "notEnough": "You need {{count}} pts available to bid on this.",
+    "placed": "Your bid of {{count}} pts is in. You're the highest bidder.",
+    "invalid": "Enter a whole number of points, {{count}} or more.",
+    "failed": "Your bid didn't go through. Try again."
+  },
+  "upcoming": {
+    "comingSoon": "Coming soon",
+    "opens": "Bidding opens {{when}}",
+    "closes": "Bidding closes {{when}}"
+  },
+  "ended": {
+    "wonBy": "Won by",
+    "wonFor": "for {{count}} pts",
+    "youWon": "You won this for {{count}} pts",
+    "noBids": "Closed with no bids",
+    "closed": "Closed {{when}}"
+  },
+  "empty": {
+    "title": "Nothing on the table yet",
+    "body": "Items appear here as soon as an admin lists them."
+  },
+  "loading": "Loading the auction table…",
+  "loadError": "We couldn't load the auction table.",
+  "retry": "Try again"
+}

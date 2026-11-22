@@ -10,6 +10,7 @@ import {
   makeStyles,
   MessageBar,
   MessageBarBody,
+  MessageBarTitle,
   Spinner,
   tokens,
   typographyStyles,
@@ -106,6 +107,7 @@ export function PostDetailPage() {
   }
 
   const hidden = post.visibility === 'HIDDEN';
+  const slt = post.kind === 'SLT';
   const canToggle = canChangeVisibility(post.visibility, 'HIDDEN') || canChangeVisibility(post.visibility, 'VISIBLE');
 
   return (
@@ -115,16 +117,33 @@ export function PostDetailPage() {
         {t('posts.detail.title', { id: post.id })}
       </h1>
 
+      {post.visibility !== 'DELETED' && (
+        <MessageBar intent="error" layout="multiline">
+          <MessageBarBody>
+            <MessageBarTitle>{t('posts.warning.title')}</MessageBarTitle>
+            {t('posts.warning.body')}
+          </MessageBarBody>
+        </MessageBar>
+      )}
+
       <article className={styles.card}>
         <div className={styles.header}>
-          <Avatar name={post.sender.name} color="colorful" size={48} />
+          {/* An SLT shout-out is from the leadership team; the admin only posted it. */}
+          <Avatar name={slt ? t('slt.from') : post.sender.name} color="colorful" size={48} />
           <div className={styles.who}>
-            <span className={styles.sender}>{post.sender.name}</span>
+            <span className={styles.sender}>{slt ? t('slt.from') : post.sender.name}</span>
             <Caption1 className={styles.muted}>
-              {[post.sender.jobTitle, post.sender.teamName].filter(Boolean).join(' · ')}
+              {slt
+                ? t('slt.postedBy', { name: post.sender.name })
+                : [post.sender.jobTitle, post.sender.teamName].filter(Boolean).join(' · ')}
             </Caption1>
           </div>
           <div className={styles.badges}>
+            {slt && (
+              <Badge appearance="filled" color="warning">
+                {t('slt.badge')}
+              </Badge>
+            )}
             <Badge appearance="tint" color={VISIBILITY_COLOR[post.visibility]}>
               {t(`posts.visibility.${post.visibility}`)}
             </Badge>

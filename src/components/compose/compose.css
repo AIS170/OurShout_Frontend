@@ -209,6 +209,17 @@ legend.os-question-title {
   min-width: 0;
 }
 
+/* The value's image next to its name in the principle list. */
+.os-choice-image {
+  flex-shrink: 0;
+  width: 84px;
+  height: 48px;
+  border-radius: 6px;
+  /* The whole picture, like on the card. */
+  object-fit: contain;
+  background-color: var(--sandoz-navy);
+}
+
 .os-choice strong {
   color: var(--sandoz-navy);
 }

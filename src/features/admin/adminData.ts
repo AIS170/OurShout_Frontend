@@ -4,10 +4,15 @@
 //
 // Live (TanStack Query against the Flask backend; needs a QueryClientProvider):
 //   useAdminMe()           GET /api/me                      TODO: swap for Rakshil's useMe()
-//   useAdminUsers()        GET /api/admin/users?q=, PATCH /api/admin/users/:employeeId
+//   useAdminUsers()        GET /api/admin/users?q=&from=&to=, PATCH /api/admin/users/:employeeId
+//   useAdminUser()         GET /api/admin/users/:employeeId?from=&to=
+//   useAdminUserShoutouts() GET /api/admin/shoutouts?employeeId=&limit=&cursor=
 //   useAdminShoutouts()    GET /api/admin/shoutouts?visibility=&q=&between=&month=&cursor=
 //   useAdminShoutout()     GET /api/admin/shoutouts/:id (both update via PATCH /api/admin/shoutouts/:id)
 //   useReciprocalAlerts()  GET /api/admin/alerts/reciprocal?month=YYYY-MM (and the Alerts badge)
+//   useAdminAuctions()     GET / POST /api/admin/auctions, DELETE /api/admin/auctions/:id
+//   useSltShoutouts()      GET /api/admin/shoutouts?kind=SLT, POST /api/admin/slt-shoutouts
+//                          (with useDirectorySearch, useTeams, fetchTeamMembers, usePrinciples for its form)
 // Still sample data (the backend has no audit_events table yet):
 //   useAdminAudit()        -> useInfiniteQuery GET /api/admin/audit?action=&actorId=&from=&to=&cursor=
 //                             (the route exists and returns an empty page until the table does)
@@ -24,17 +29,23 @@ import { useCallback, useMemo, useState } from 'react';
 import type {
   AdminUserDto,
   AuditEventDto,
+  CreateShoutoutRequest,
+  EmployeeSummary,
   Me,
   Page,
+  PrincipleDto,
   ReciprocalAlertDto,
   ReportSummaryDto,
   ShoutoutDto,
+  TeamDto,
   UserStatus,
   Visibility,
 } from '../../shared/types';
+import type { AuctionItemDto, CreateAuctionItemRequest } from '../auction/auctionTypes';
 import { apiFetch, apiFetchBlob } from './adminApi';
 import type { ReportInsightsDto } from './reportTypes';
 import { SAMPLE_AUDIT_EVENTS } from './sampleData';
+import type { AdminUserDetailDto, AdminUserStatsDto } from './userTypes';
 
 export interface QueryResult<T> {
   data: T | undefined;
@@ -45,13 +56,23 @@ export interface QueryResult<T> {
 /** TanStack Query keys for the admin feature. */
 export const adminKeys = {
   me: ['me'] as const,
-  users: (q: string) => ['admin', 'users', q] as const,
+  users: (q: string, from = '', to = '') => ['admin', 'users', q, from, to] as const,
   allUsers: ['admin', 'users'] as const,
+  // One person. Not under ['admin', 'users']: that prefix is for the list (an array).
+  user: (employeeId: string, from = '', to = '') => ['admin', 'user', employeeId, from, to] as const,
+  allUserDetails: ['admin', 'user'] as const,
+  // One person's posts. Not under ['admin', 'shoutouts']: the visibility change below reads
+  // key[2] of those as the Posts page's visibility filter.
+  userShoutouts: (employeeId: string, pageSize: number) => ['admin', 'userShoutouts', employeeId, pageSize] as const,
+  allUserShoutouts: ['admin', 'userShoutouts'] as const,
   shoutouts: (visibility: string, q: string, between: string, month: string) =>
     ['admin', 'shoutouts', visibility, q, between, month] as const,
   shoutout: (id: number) => ['admin', 'shoutout', id] as const,
   allShoutouts: ['admin', 'shoutouts'] as const,
   alerts: (month: string) => ['admin', 'alerts', month] as const,
+  auctions: ['admin', 'auctions'] as const,
+  // Not under ['admin', 'shoutouts'] either, for the same reason as userShoutouts.
+  sltShoutouts: ['admin', 'sltShoutouts'] as const,
 };
 
 // ───── Me ─────
@@ -144,9 +165,13 @@ export function useSetShoutoutVisibility(): (id: number, visibility: Visibility)
         });
       }
       queryClient.setQueryData(adminKeys.shoutout(id), updated);
-      // The feed, leaderboards and the alert count depend on visibility too.
+      // The feed, leaderboards, the alert count and the per-user counts and logs depend on visibility too.
       void queryClient.invalidateQueries({ queryKey: ['admin', 'alerts'] });
       void queryClient.invalidateQueries({ queryKey: ['shoutouts'] });
+      void queryClient.invalidateQueries({ queryKey: adminKeys.allUsers });
+      void queryClient.invalidateQueries({ queryKey: adminKeys.allUserDetails });
+      void queryClient.invalidateQueries({ queryKey: adminKeys.allUserShoutouts });
+      void queryClient.invalidateQueries({ queryKey: adminKeys.sltShoutouts });
       return updated;
     },
     [queryClient],
@@ -222,43 +247,235 @@ export function useAdminShoutout(id: number): AdminShoutout {
 
 // ───── Users ─────
 
-export interface AdminUsers extends QueryResult<AdminUserDto[]> {
-  /** PATCH /api/admin/users/:employeeId { status }. You can't suspend yourself. */
-  setStatus: (employeeId: string, status: UserStatus) => Promise<AdminUserDto>;
+/** How far back the Users pages count shout-outs: this calendar month, or the last 3, 6 or 12. */
+export type UserPeriod = 1 | 3 | 6 | 12;
+export const USER_PERIODS: UserPeriod[] = [1, 3, 6, 12];
+
+/**
+ * Date range for a period, in UTC calendar dates: from the 1st of the month (months - 1) back,
+ * to today. The same convention as the Reports presets.
+ */
+export function monthsBackRange(months: UserPeriod, now: Date = new Date()): ReportRange {
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - (months - 1), 1));
+  return { from: start.toISOString().slice(0, 10), to: now.toISOString().slice(0, 10) };
 }
 
-/** Users for the admin Users page, by name (GET /api/admin/users?q=). */
-export function useAdminUsers(q: string): AdminUsers {
-  const queryClient = useQueryClient();
-  const trimmed = q.trim();
-  const query = useQuery({
-    queryKey: adminKeys.users(trimmed),
-    queryFn: () =>
-      apiFetch<AdminUserDto[]>(`/api/admin/users${trimmed ? `?q=${encodeURIComponent(trimmed)}` : ''}`),
-    placeholderData: keepPreviousData, // keep the table on screen while a new search loads
-  });
+type SetUserStatus = (employeeId: string, status: UserStatus) => Promise<AdminUserDto>;
 
-  const setStatus = useCallback(
+/** PATCH a person's status, then update every cached copy (each Users list and the user page). */
+function useSetUserStatus(): SetUserStatus {
+  const queryClient = useQueryClient();
+  return useCallback(
     async (employeeId: string, status: UserStatus) => {
       const updated = await apiFetch<AdminUserDto>(`/api/admin/users/${encodeURIComponent(employeeId)}`, {
         method: 'PATCH',
         body: { status },
       });
-      // Update this person in every cached search result.
-      queryClient.setQueriesData<AdminUserDto[]>({ queryKey: adminKeys.allUsers }, (old) =>
-        old?.map((u) => (u.employeeId === employeeId ? updated : u)),
+      // Merge, don't replace: the PATCH response has no shout-out counts.
+      queryClient.setQueriesData<AdminUserStatsDto[]>({ queryKey: adminKeys.allUsers }, (old) =>
+        old?.map((u) => (u.employeeId === employeeId ? { ...u, ...updated } : u)),
+      );
+      queryClient.setQueriesData<AdminUserDetailDto>({ queryKey: [...adminKeys.allUserDetails, employeeId] }, (old) =>
+        old ? { ...old, ...updated } : old,
       );
       return updated;
     },
     [queryClient],
   );
+}
+
+export interface AdminUsers extends QueryResult<AdminUserStatsDto[]> {
+  /** PATCH /api/admin/users/:employeeId { status }. You can't suspend yourself. */
+  setStatus: SetUserStatus;
+}
+
+/**
+ * Users for the admin Users page, by name (GET /api/admin/users?q=&from=&to=).
+ * The counts on each row cover `range`; leave it out for all time (name lookups don't care).
+ */
+export function useAdminUsers(q: string, range?: ReportRange): AdminUsers {
+  const trimmed = q.trim();
+  const from = range?.from ?? '';
+  const to = range?.to ?? '';
+  const setStatus = useSetUserStatus();
+  const query = useQuery({
+    queryKey: adminKeys.users(trimmed, from, to),
+    queryFn: () =>
+      apiFetch<AdminUserStatsDto[]>(`/api/admin/users${rangeQuery({ from, to }, trimmed ? { q: trimmed } : {})}`),
+    placeholderData: keepPreviousData, // keep the table on screen while a new search loads
+  });
 
   return { data: query.data, isLoading: query.isLoading, error: query.error, setStatus };
 }
 
+export interface AdminUser extends QueryResult<AdminUserDetailDto> {
+  setStatus: (status: UserStatus) => Promise<AdminUserDto>;
+}
+
+/** One person with their counts for `range` and their points (GET /api/admin/users/:employeeId). */
+export function useAdminUser(employeeId: string, range: ReportRange): AdminUser {
+  const setStatus = useSetUserStatus();
+  const query = useQuery({
+    queryKey: adminKeys.user(employeeId, range.from, range.to),
+    queryFn: () =>
+      apiFetch<AdminUserDetailDto>(`/api/admin/users/${encodeURIComponent(employeeId)}${rangeQuery(range)}`),
+    enabled: employeeId !== '',
+    // Keep the page on screen while a new period loads, but never show another person's numbers.
+    placeholderData: (previous) => (previous?.employeeId === employeeId ? previous : undefined),
+  });
+  return {
+    data: query.data,
+    isLoading: query.isLoading,
+    error: query.error,
+    setStatus: (status) => setStatus(employeeId, status),
+  };
+}
+
+export interface AdminUserShoutouts {
+  /** The pages loaded so far, newest first; each holds up to pageSize posts. */
+  pages: Page<ShoutoutDto>[] | undefined;
+  isLoading: boolean;
+  error: Error | null;
+  hasNextPage: boolean;
+  fetchNextPage: () => Promise<void>;
+  isFetchingNextPage: boolean;
+}
+
+/**
+ * Everything one person sent or received, in any visibility, a page at a time
+ * (GET /api/admin/shoutouts?employeeId=&limit=&cursor=).
+ */
+export function useAdminUserShoutouts(employeeId: string, pageSize: number): AdminUserShoutouts {
+  const query = useInfiniteQuery({
+    queryKey: adminKeys.userShoutouts(employeeId, pageSize),
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams({ employeeId, limit: String(pageSize) });
+      if (pageParam) params.set('cursor', pageParam);
+      return apiFetch<Page<ShoutoutDto>>(`/api/admin/shoutouts?${params.toString()}`);
+    },
+    getNextPageParam: (last) => last.nextCursor,
+    enabled: employeeId !== '',
+  });
+
+  const fetchNextPage = useCallback(async () => {
+    await query.fetchNextPage();
+  }, [query]);
+
+  return {
+    pages: query.data?.pages,
+    isLoading: query.isLoading,
+    error: query.error,
+    hasNextPage: query.hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+  };
+}
+
+// ───── SLT shout-outs ─────
+// An admin posts these on the Senior Leadership Team's behalf; the feed shows them in gold.
+
+/** People to recognise, by name (GET /api/directory/search?q=, at least 2 characters; never the caller). */
+export function useDirectorySearch(q: string): QueryResult<EmployeeSummary[]> {
+  const trimmed = q.trim();
+  const query = useQuery({
+    queryKey: ['directory', 'search', trimmed],
+    queryFn: () => apiFetch<EmployeeSummary[]>(`/api/directory/search?q=${encodeURIComponent(trimmed)}&limit=8`),
+    enabled: trimmed.length >= 2,
+    placeholderData: keepPreviousData,
+  });
+  return { data: trimmed.length >= 2 ? query.data : undefined, isLoading: query.isLoading, error: query.error };
+}
+
+/** Every team, for "add a whole team" (GET /api/teams). */
+export function useTeams(): QueryResult<TeamDto[]> {
+  const query = useQuery({ queryKey: ['teams'], queryFn: () => apiFetch<TeamDto[]>('/api/teams') });
+  return { data: query.data, isLoading: query.isLoading, error: query.error };
+}
+
+/** A team's active members, without the caller (GET /api/teams/:teamId/members). */
+export function fetchTeamMembers(teamId: string): Promise<EmployeeSummary[]> {
+  return apiFetch<EmployeeSummary[]>(`/api/teams/${encodeURIComponent(teamId)}/members`);
+}
+
+/** The principles people can be recognised for (GET /api/principles: active ones, in order). */
+export function usePrinciples(): QueryResult<PrincipleDto[]> {
+  const query = useQuery({ queryKey: ['principles'], queryFn: () => apiFetch<PrincipleDto[]>('/api/principles') });
+  return { data: query.data, isLoading: query.isLoading, error: query.error };
+}
+
+export interface SltShoutouts extends QueryResult<ShoutoutDto[]> {
+  /** POST /api/admin/slt-shoutouts. Rejects with the server's AdminApiError (its message says what's wrong). */
+  create: (shoutout: CreateShoutoutRequest) => Promise<ShoutoutDto>;
+}
+
+/** The SLT shout-outs posted so far, newest first (GET /api/admin/shoutouts?kind=SLT). */
+export function useSltShoutouts(): SltShoutouts {
+  const queryClient = useQueryClient();
+  const query = useQuery({
+    queryKey: adminKeys.sltShoutouts,
+    queryFn: async () => (await apiFetch<Page<ShoutoutDto>>('/api/admin/shoutouts?kind=SLT&limit=50')).items,
+  });
+
+  const create = useCallback(
+    async (shoutout: CreateShoutoutRequest) => {
+      const created = await apiFetch<ShoutoutDto>('/api/admin/slt-shoutouts', { method: 'POST', body: shoutout });
+      queryClient.setQueryData<ShoutoutDto[]>(adminKeys.sltShoutouts, (old) => [created, ...(old ?? [])]);
+      // A new post changes the Posts list, the people it recognised and the reports.
+      void queryClient.invalidateQueries({ queryKey: adminKeys.allShoutouts });
+      void queryClient.invalidateQueries({ queryKey: adminKeys.allUsers });
+      void queryClient.invalidateQueries({ queryKey: adminKeys.allUserDetails });
+      void queryClient.invalidateQueries({ queryKey: adminKeys.allUserShoutouts });
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'reports'] });
+      return created;
+    },
+    [queryClient],
+  );
+
+  return { data: query.data, isLoading: query.isLoading, error: query.error, create };
+}
+
+// ───── Auction items ─────
+
+export interface AdminAuctions extends QueryResult<AuctionItemDto[]> {
+  /** POST /api/admin/auctions. Rejects with the server's AdminApiError (its message says what's wrong). */
+  createItem: (item: CreateAuctionItemRequest) => Promise<AuctionItemDto>;
+  /** DELETE /api/admin/auctions/:id. Only while the item has no bids. */
+  removeItem: (id: number) => Promise<void>;
+}
+
+/** Every auction item, for the "Add auction item" page (GET /api/admin/auctions). */
+export function useAdminAuctions(): AdminAuctions {
+  const queryClient = useQueryClient();
+  const query = useQuery({
+    queryKey: adminKeys.auctions,
+    queryFn: () => apiFetch<AuctionItemDto[]>('/api/admin/auctions'),
+  });
+
+  const createItem = useCallback(
+    async (item: CreateAuctionItemRequest) => {
+      const created = await apiFetch<AuctionItemDto>('/api/admin/auctions', { method: 'POST', body: item });
+      // The server orders the list (live, upcoming, ended), so ask it again rather than guess.
+      await queryClient.invalidateQueries({ queryKey: adminKeys.auctions });
+      return created;
+    },
+    [queryClient],
+  );
+
+  const removeItem = useCallback(
+    async (id: number) => {
+      await apiFetch<{ id: number }>(`/api/admin/auctions/${id}`, { method: 'DELETE' });
+      queryClient.setQueryData<AuctionItemDto[]>(adminKeys.auctions, (old) => old?.filter((i) => i.id !== id));
+    },
+    [queryClient],
+  );
+
+  return { data: query.data, isLoading: query.isLoading, error: query.error, createItem, removeItem };
+}
+
 // ───── Audit log (sample data) ─────
 
-/** The only allowed values of AuditEvent.action (A3), in the order the filter lists them. */
+/** The only allowed values of AuditEvent.action (A3) plus the auction actions, in the order the filter lists them. */
 export const AUDIT_ACTIONS = [
   'SHOUTOUT_CREATED',
   'SHOUTOUT_EDITED',
@@ -271,6 +488,9 @@ export const AUDIT_ACTIONS = [
   'USER_REINSTATED',
   'EMAIL_RETRIED',
   'LOGIN_REJECTED',
+  'AUCTION_ITEM_CREATED',
+  'AUCTION_ITEM_REMOVED',
+  'AUCTION_BID_PLACED',
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 

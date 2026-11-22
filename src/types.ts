@@ -1,5 +1,8 @@
-export type Role = 'EMPLOYEE' | 'ADMIN';
+// SLT = Senior Leadership Team. They see the same Reports page as an admin, and nothing else of admin.
+export type Role = 'EMPLOYEE' | 'SLT' | 'ADMIN';
 export type UserStatus = 'ACTIVE' | 'SUSPENDED' | 'INACTIVE';
+/** Who may open Reports: 'ALL' = admins and SLT (everything), 'TEAM' = a manager (their own team). */
+export type ReportsAccess = 'ALL' | 'TEAM' | null;
 
 export interface Persona {
   personaId: string;
@@ -24,6 +27,7 @@ export interface Me {
   status: UserStatus;
   points: number;
   avatarUrl?: string | null;
+  reportsAccess?: ReportsAccess;
 }
 
 export interface ApiError {

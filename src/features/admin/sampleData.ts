@@ -20,6 +20,7 @@ export const SAMPLE_ME: Me = {
   role: 'ADMIN',
   status: 'ACTIVE',
   points: 0,
+  reportsAccess: 'ALL',
 };
 
 export const PRIYA: EmployeeSummary = {
