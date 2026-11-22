@@ -237,7 +237,9 @@ export const FeedPage: React.FC<FeedPageProps> = ({
   return (
     <div className="os-feed-wrap">
       <div className="os-feed-layout">
-      <main className="os-feed">
+      {/* On wide screens the filter bar sits in its own sticky column on the left of the posts;
+          on narrow ones it stays between the heading and the posts (see feed.css). */}
+      <main className="os-feed os-feed-filtered">
         <div className="os-feed-header">
           <div>
             <h1 className="os-feed-title">Newsfeed</h1>
@@ -256,29 +258,31 @@ export const FeedPage: React.FC<FeedPageProps> = ({
 
         <FeedFilterBar filter={filter} principles={principles} teams={teams} onChange={setFilter} />
 
-        {loadState === 'ready' && items.length > 0 && (
-          <p className="os-count" aria-live="polite">
-            Showing {items.length} {items.length === 1 ? 'shout-out' : 'shout-outs'}
-          </p>
-        )}
+        <div className="os-feed-posts">
+          {loadState === 'ready' && items.length > 0 && (
+            <p className="os-count" aria-live="polite">
+              Showing {items.length} {items.length === 1 ? 'shout-out' : 'shout-outs'}
+            </p>
+          )}
 
-        {/* Polite live region: announces a saved change to screen readers and shows it on screen. */}
-        <div role="status" aria-live="polite">
-          {announcement && (
-            <div className="os-note os-note-success">
-              <CheckCircle2 size={18} aria-hidden="true" />
-              {announcement}
+          {/* Polite live region: announces a saved change to screen readers and shows it on screen. */}
+          <div role="status" aria-live="polite">
+            {announcement && (
+              <div className="os-note os-note-success">
+                <CheckCircle2 size={18} aria-hidden="true" />
+                {announcement}
+              </div>
+            )}
+          </div>
+          {actionError && (
+            <div className="os-note os-note-error" role="alert">
+              <AlertCircle size={18} aria-hidden="true" />
+              {actionError}
             </div>
           )}
-        </div>
-        {actionError && (
-          <div className="os-note os-note-error" role="alert">
-            <AlertCircle size={18} aria-hidden="true" />
-            {actionError}
-          </div>
-        )}
 
-        {renderBody()}
+          {renderBody()}
+        </div>
       </main>
 
       {/* Right column (stacks under the feed on narrow screens): Nathan's leaderboard. */}

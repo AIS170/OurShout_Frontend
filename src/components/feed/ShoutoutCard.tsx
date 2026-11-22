@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Heart, Pencil, ThumbsUp } from 'lucide-react';
+import { Crown, Heart, Pencil, ThumbsUp } from 'lucide-react';
 import { EmployeeSummary, ShoutoutDto } from './feedTypes';
 import { ClampedText } from './ClampedText';
 import { formatFullDate, formatRelativeTime } from './relativeTime';
+import { valueImage } from './valueImages';
 
 /** Individual names shown before the rest collapse into "+N more". */
 const MAX_NAMES = 3;
 
 /** Number of banner colours defined in feed.css (os-banner-0 to os-banner-4). */
 const BANNER_COLOURS = 5;
+
+/** Who an SLT shout-out is shown as coming from. */
+const SLT_NAME = 'Senior Leadership Team';
 
 const initials = (name: string): string =>
   name
@@ -116,8 +120,9 @@ interface ShoutoutCardProps {
 }
 
 /**
- * One shout-out on the newsfeed: principle banner, who gave it to whom, why and impact,
- * the act-of-kindness badge, a like toggle, and Edit on your own posts.
+ * One shout-out on the newsfeed, laid out like a meeting card: the value's image as a banner,
+ * the value's name, who gave it to whom, why and impact, the act-of-kindness badge, then a
+ * footer row with the like toggle and Edit on your own posts.
  * React renders all text, so quotes, ampersands and apostrophes are safe exactly as typed.
  */
 export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({
@@ -127,35 +132,63 @@ export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({
   hideActions = false,
   onOpenProfile,
 }) => {
-  const banner = `os-banner os-banner-${(shoutout.principle.id - 1) % BANNER_COLOURS}`;
+  // An id of 0 is the compose preview before a principle is picked: no colour, no image.
+  const chosen = shoutout.principle.id > 0;
+  const banner = chosen
+    ? `os-banner os-banner-${(shoutout.principle.id - 1) % BANNER_COLOURS}`
+    : 'os-banner os-banner-none';
+  const image = valueImage(shoutout.principle.id);
   const likes = `${shoutout.likeCount} ${shoutout.likeCount === 1 ? 'like' : 'likes'}`;
+  // An SLT shout-out is the highest recognition: an admin posts it on the Senior Leadership
+  // Team's behalf, so the card is gold and names the leadership team, not the admin.
+  const slt = shoutout.kind === 'SLT';
 
   return (
     <article
-      className="os-card"
-      aria-label={`Shout-out from ${shoutout.sender.name}`}
+      className={slt ? 'os-card os-card-slt' : 'os-card'}
+      aria-label={slt ? `SLT shout-out from the ${SLT_NAME}` : `Shout-out from ${shoutout.sender.name}`}
       tabIndex={-1}
       data-shoutout-id={shoutout.id}
     >
+      {slt && (
+        <div className="os-slt-ribbon">
+          <Crown size={16} aria-hidden="true" />
+          SLT shout-out
+        </div>
+      )}
+      {/* Decorative: the value's name is the text right below it. */}
+      {image && (
+        // The whole picture, never cropped: it sits centred on a blurred copy of itself, which
+        // fills the sides whatever the picture's shape.
+        <div className="os-card-media" style={{ '--os-media': `url("${image}")` } as React.CSSProperties}>
+          <img className="os-card-image" src={image} alt="" />
+        </div>
+      )}
       <div className={banner}>{shoutout.principle.name}</div>
 
       <div className="os-card-body">
         <div className="os-card-head">
-          <div className="os-avatar" aria-hidden="true" style={{ overflow: 'hidden' }}>
-            {shoutout.sender.avatarUrl ? (
-              <img
-                src={shoutout.sender.avatarUrl}
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              initials(shoutout.sender.name)
-            )}
-          </div>
+          {slt ? (
+            <div className="os-avatar os-avatar-slt" aria-hidden="true">
+              <Crown size={20} />
+            </div>
+          ) : (
+            <div className="os-avatar" aria-hidden="true" style={{ overflow: 'hidden' }}>
+              {shoutout.sender.avatarUrl ? (
+                <img
+                  src={shoutout.sender.avatarUrl}
+                  alt=""
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                initials(shoutout.sender.name)
+              )}
+            </div>
+          )}
           <div className="os-who">
             <p className="os-people">
-              <PersonName person={shoutout.sender} onOpenProfile={onOpenProfile} /> to{' '}
-              <Recipients shoutout={shoutout} onOpenProfile={onOpenProfile} />
+              {slt ? <strong>{SLT_NAME}</strong> : <PersonName person={shoutout.sender} onOpenProfile={onOpenProfile} />}{' '}
+              to <Recipients shoutout={shoutout} onOpenProfile={onOpenProfile} />
             </p>
             <p className="os-meta">
               <time dateTime={shoutout.createdAt} title={formatFullDate(shoutout.createdAt)}>
@@ -164,44 +197,45 @@ export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({
               {shoutout.editedAt && ' · edited'}
             </p>
           </div>
-          {shoutout.actOfKindness && (
-            <span className="os-badge">
-              <Heart size={13} fill="currentColor" aria-hidden="true" />
-              Act of kindness
-            </span>
-          )}
         </div>
 
         {/* Keyed by the text so an edited paragraph starts collapsed again. */}
         <ClampedText key={`why-${shoutout.reason}`} label="Why" text={shoutout.reason} />
         <ClampedText key={`impact-${shoutout.impact}`} label="Impact" text={shoutout.impact} />
 
-        {!hideActions && (
-          <div className="os-card-foot">
-            <button
-              type="button"
-              className="os-btn os-btn-quiet os-like"
-              aria-pressed={shoutout.likedByMe}
-              aria-label={`Like this shout-out. ${likes} so far`}
-              onClick={() => onLikeChange?.(shoutout, !shoutout.likedByMe)}
-            >
-              <ThumbsUp size={16} fill={shoutout.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
-              {shoutout.likeCount}
-            </button>
-            {shoutout.canEdit && onEdit && (
-              <button
-                type="button"
-                className="os-btn os-btn-quiet"
-                aria-label={`Edit your shout-out to ${recipientsSummary(shoutout)}`}
-                onClick={() => onEdit(shoutout)}
-              >
-                <Pencil size={15} aria-hidden="true" />
-                Edit
-              </button>
-            )}
-          </div>
+        {shoutout.actOfKindness && (
+          <span className="os-badge">
+            <Heart size={13} fill="currentColor" aria-hidden="true" />
+            Act of kindness
+          </span>
         )}
       </div>
+
+      {!hideActions && (
+        <div className="os-card-foot">
+          <button
+            type="button"
+            className="os-btn os-btn-quiet os-like"
+            aria-pressed={shoutout.likedByMe}
+            aria-label={`Like this shout-out. ${likes} so far`}
+            onClick={() => onLikeChange?.(shoutout, !shoutout.likedByMe)}
+          >
+            <ThumbsUp size={16} fill={shoutout.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
+            {shoutout.likeCount}
+          </button>
+          {shoutout.canEdit && onEdit && (
+            <button
+              type="button"
+              className="os-btn os-btn-quiet"
+              aria-label={`Edit your shout-out to ${recipientsSummary(shoutout)}`}
+              onClick={() => onEdit(shoutout)}
+            >
+              <Pencil size={15} aria-hidden="true" />
+              Edit
+            </button>
+          )}
+        </div>
+      )}
     </article>
   );
 };

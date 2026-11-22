@@ -1,7 +1,8 @@
 // src/features/admin/AdminLayout.tsx
 // The /admin/* shell: a side nav and the current admin page. It renders inside Rakshil's
 // Layout (which owns <main> and the skip link), so it doesn't add another <main>.
-// Hiding this UI is a convenience only: every /api/admin route is checked by requireAdmin.
+// Hiding this UI is a convenience only: every /api/admin route is checked by requireAdmin
+// (the three report routes by require_reports_access: admins, SLT and managers).
 import {
   CounterBadge,
   makeStyles,
@@ -13,7 +14,7 @@ import {
   tokens,
 } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAdminMe, useOpenAlertCount } from './adminData';
 import { ADMIN_NS } from './i18n';
 import { ADMIN_SECTIONS } from './sections';
@@ -79,6 +80,7 @@ export function AdminLayout() {
   const styles = useStyles();
   const { t } = useTranslation(ADMIN_NS);
   const { data: me, isLoading, error } = useAdminMe();
+  const location = useLocation();
   // Only ask for admin data once /api/me says this is an admin.
   const { data: alertCount = 0 } = useOpenAlertCount(me?.role === 'ADMIN');
 
@@ -93,6 +95,17 @@ export function AdminLayout() {
   }
 
   if (me.role !== 'ADMIN') {
+    // The Senior Leadership Team and managers get the Reports page and nothing else: no side
+    // nav, and any other admin address goes back to Reports. The server decides what the report
+    // covers (everything for SLT, their own team for a manager).
+    if (me.reportsAccess) {
+      if (!/\/admin\/reports\/?$/.test(location.pathname)) return <Navigate to="/admin/reports" replace />;
+      return (
+        <div className={styles.content}>
+          <Outlet />
+        </div>
+      );
+    }
     return (
       <MessageBar intent="warning">
         <MessageBarBody>

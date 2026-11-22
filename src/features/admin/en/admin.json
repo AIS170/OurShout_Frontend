@@ -14,7 +14,9 @@
     "reports": "Reports",
     "alerts": "Alerts",
     "alertsWithCount_one": "Alerts, {{count}} open alert",
-    "alertsWithCount_other": "Alerts, {{count}} open alerts"
+    "alertsWithCount_other": "Alerts, {{count}} open alerts",
+    "auctions": "Add auction item",
+    "slt": "SLT shout-out"
   },
   "comingSoon": {
     "body": "This page is still being built."
@@ -22,6 +24,10 @@
   "posts": {
     "title": "Posts",
     "intro": "Every shout-out in every state. Open a post to read it in full. Hidden posts disappear from the feed, profiles, leaderboards and points until you unhide them. Deleting is permanent.",
+    "warning": {
+      "title": "Warning: deleting a post can't be undone",
+      "body": "Changes here take effect straight away. A deleted post is gone for good from the feed, profiles, leaderboards and points. A hidden post stays hidden until an admin unhides it."
+    },
     "filters": {
       "label": "Filter posts",
       "visibility": "Visibility",
@@ -104,9 +110,17 @@
   },
   "users": {
     "title": "Users",
-    "intro": "Suspended people can't sign in or post until you reinstate them. Their past shout-outs stay as they are.",
+    "intro": "Suspended people can't sign in or post until you reinstate them. Their past shout-outs stay as they are. Select a person to see their shout-outs.",
     "search": "Search",
     "searchPlaceholder": "Name, email, job title or team",
+    "periodLabel": "Count shout-outs over",
+    "period": {
+      "m1": "This month",
+      "m3": "3 months",
+      "m6": "6 months",
+      "m12": "1 year"
+    },
+    "viewLabel": "Open {{name}}'s page",
     "resultCount_one": "{{count}} person",
     "resultCount_other": "{{count}} people",
     "tableLabel": "Users",
@@ -117,11 +131,14 @@
       "role": "Role",
       "directory": "Directory",
       "status": "Status",
+      "given": "Shout-outs given ({{period}})",
+      "received": "Shout-outs received ({{period}})",
       "actions": "Actions"
     },
     "you": "You",
     "role": {
       "EMPLOYEE": "Employee",
+      "SLT": "SLT",
       "ADMIN": "Admin"
     },
     "directory": {
@@ -147,7 +164,34 @@
     "empty": "No one matches that search.",
     "loading": "Loading users…",
     "loadError": "We couldn't load the users. Refresh the page to try again.",
-    "actionError": "That change didn't save. Try again."
+    "actionError": "That change didn't save. Try again.",
+    "detail": {
+      "back": "Back to users",
+      "loading": "Loading this person…",
+      "notFound": "There's no one with that employee ID.",
+      "loadError": "We couldn't load this person. Refresh the page to try again.",
+      "given": "Shout-outs given",
+      "received": "Shout-outs received",
+      "points": "Points",
+      "allTime": "All time",
+      "logTitle": "Recent shout-outs",
+      "logIntro": "Everything {{name}} has given or received, newest first. Hidden and deleted posts are listed too, but only live posts count in the numbers above.",
+      "col": {
+        "direction": "Type",
+        "with": "With"
+      },
+      "direction": {
+        "given": "Given",
+        "received": "Received"
+      },
+      "showMore": "Show more",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{page}}",
+      "logEmpty": "No shout-outs yet.",
+      "logLoading": "Loading shout-outs…",
+      "logError": "We couldn't load the shout-outs. Refresh the page to try again."
+    }
   },
   "audit": {
     "title": "Audit log",
@@ -184,7 +228,10 @@
       "USER_SUSPENDED": "User suspended",
       "USER_REINSTATED": "User reinstated",
       "EMAIL_RETRIED": "Email retried",
-      "LOGIN_REJECTED": "Sign-in rejected"
+      "LOGIN_REJECTED": "Sign-in rejected",
+      "AUCTION_ITEM_CREATED": "Auction item added",
+      "AUCTION_ITEM_REMOVED": "Auction item removed",
+      "AUCTION_BID_PLACED": "Auction bid placed"
     },
     "showDetails": "Show details",
     "hideDetails": "Hide details",
@@ -221,6 +268,116 @@
     "empty": "No reciprocal pairs in {{month}}.",
     "loading": "Loading alerts…",
     "loadError": "We couldn't load the alerts. Refresh the page to try again."
+  },
+  "slt": {
+    "title": "SLT shout-out",
+    "intro": "Post a shout-out on behalf of the Senior Leadership Team. It is the highest recognition: on the newsfeed it has a gold frame and is shown as from the Senior Leadership Team, not from you. The people recognised get their usual points.",
+    "who": "Who is being recognised?",
+    "search": "Search for a colleague",
+    "searchHint": "Type at least 2 letters of a name.",
+    "results": "People found",
+    "noResults": "No one else matches that name.",
+    "team": "Or add a whole team",
+    "teamPlaceholder": "Choose a team",
+    "teamOption": "{{team}} ({{count}})",
+    "addTeam": "Add team",
+    "chosen_one": "Recognising {{count}} person",
+    "chosen_other": "Recognising {{count}} people",
+    "noneChosen": "Nobody picked yet.",
+    "remove": "Remove {{name}}",
+    "principle": "Which Sandoz Way principle are you recognising them for?",
+    "principlePlaceholder": "Choose a principle",
+    "counter": "{{count}} / {{max}}",
+    "kindness": "Also log this as an act of kindness",
+    "errors": {
+      "people": "Pick at least one person.",
+      "principle": "Choose a principle.",
+      "reason": "Say why they are being recognised.",
+      "impact": "Say what the impact was.",
+      "team": "That team's members couldn't be loaded. Try again."
+    },
+    "submit": "Post SLT shout-out",
+    "saving": "Posting…",
+    "saveError": "The shout-out wasn't posted. Try again.",
+    "announce": "The SLT shout-out to {{label}} is on the newsfeed.",
+    "listTitle": "SLT shout-outs so far",
+    "empty": "No SLT shout-outs yet.",
+    "loading": "Loading SLT shout-outs…",
+    "loadError": "We couldn't load the SLT shout-outs. Refresh the page to try again.",
+    "badge": "SLT shout-out",
+    "from": "Senior Leadership Team",
+    "postedBy": "posted by {{name}}"
+  },
+  "auctions": {
+    "title": "Add auction item",
+    "intro": "List something people can bid their OurShout points on. It appears on the Auction Table straight away, marked as coming soon until bidding starts. The highest bid when bidding ends wins, and those points come off the winner's total.",
+    "fields": {
+      "name": "Item name",
+      "description": "Description",
+      "descriptionHint": "Optional. Up to {{max}} characters.",
+      "image": "Picture",
+      "imageHint": "Optional. PNG, JPG, WEBP or GIF, up to 5 MB.",
+      "imagePreview": "Preview of {{name}}",
+      "imageRemove": "Remove picture",
+      "startingBid": "Starting bid",
+      "pts": "pts",
+      "startsAt": "Bid start date and time",
+      "endsAt": "Bid end date and time",
+      "timeNote": "Times are in your own time zone."
+    },
+    "errors": {
+      "name": "Give the item a name.",
+      "startingBid": "Enter a whole number of points, 1 or more.",
+      "startsAt": "Pick when bidding starts.",
+      "endsAt": "Pick when bidding ends.",
+      "endBeforeStart": "Bidding must end after it starts.",
+      "endInPast": "Bidding must end in the future.",
+      "imageType": "The picture must be a PNG, JPG, WEBP or GIF.",
+      "imageSize": "The picture is larger than 5 MB.",
+      "imageRead": "That picture couldn't be read. Try another file."
+    },
+    "submit": "Add auction item",
+    "saving": "Adding…",
+    "saveError": "The item wasn't added. Try again.",
+    "announce": {
+      "LIVE": "{{name}} is on the Auction Table and open for bids.",
+      "UPCOMING": "{{name}} is on the Auction Table as coming soon.",
+      "ENDED": "{{name}} was added.",
+      "removed": "{{name}} was removed."
+    },
+    "listTitle": "Listed items",
+    "col": {
+      "item": "Item",
+      "startingBid": "Starting bid",
+      "opens": "Bidding starts",
+      "closes": "Bidding ends",
+      "status": "Status",
+      "currentBid": "Current bid",
+      "actions": "Actions"
+    },
+    "status": {
+      "LIVE": "Open for bids",
+      "UPCOMING": "Coming soon",
+      "ENDED": "Closed"
+    },
+    "points": "{{count}} pts",
+    "ledBy": "Led by {{name}}",
+    "wonBy": "Won by {{name}}",
+    "noBids": "No bids",
+    "remove": {
+      "button": "Remove",
+      "label": "Remove {{name}}",
+      "locked": "Has bids, so it stays.",
+      "title": "Remove this item?",
+      "body": "{{name}} will be taken off the Auction Table. Nobody has bid on it yet.",
+      "confirm": "Remove item",
+      "cancel": "Cancel",
+      "hasBids": "Someone has just bid on this item, so it can't be removed.",
+      "error": "The item wasn't removed. Try again."
+    },
+    "empty": "Nothing is listed yet.",
+    "loading": "Loading auction items…",
+    "loadError": "We couldn't load the auction items. Refresh the page to try again."
   },
   "reports": {
     "title": "Reports",
@@ -282,17 +439,32 @@
       "byMonth": "Shout-outs by month",
       "byPrinciple": "By Sandoz Way principle",
       "byWeekday": "By day of the week",
-      "byTeam": "Recognitions by team"
+      "byTeam": "Most Recognized Teams",
+      "byGiverTeam": "Most Recognitions given by Team"
     },
     "summary": {
       "busiestMonth": "Busiest month: {{label}}, with {{count}} shout-outs.",
       "topPrinciple": "Most recognised principle: {{label}} ({{count}}).",
       "busiestDay": "Busiest day: {{label}} ({{count}}).",
       "topTeam": "Most recognised team: {{label}} ({{count}} recognitions).",
+      "topGiverTeam": "Team that gave the most recognitions: {{label}} ({{count}}).",
+      "teamRecognised": "Your team recognised {{label}} most ({{count}} recognitions).",
+      "teamRecognisedBy": "{{label}} recognised your team most ({{count}} recognitions).",
       "none": "No shout-outs in this period."
     },
     "topReceivers": "Most recognised people",
     "topGivers": "Most generous recognisers",
+    "team": {
+      "title": "Team report",
+      "intro_one": "How recognition is going for the {{count}} person who reports directly to you. Only live shout-outs count: hidden and deleted posts are left out.",
+      "intro_other": "How recognition is going for the {{count}} people who report directly to you. Only live shout-outs count: hidden and deleted posts are left out.",
+      "introLoading": "How recognition is going for the people who report directly to you.",
+      "byTeam": "Teams your team recognised most",
+      "byGiverTeam": "Teams that recognised your team most",
+      "topReceivers": "Most recognised people in your team",
+      "topGivers": "Your team's most generous recognisers",
+      "crossTeamDetail": "of your team's recognitions went outside the team"
+    },
     "flows": {
       "title": "Recognition across teams",
       "intro": "The busiest routes where someone recognised a person in another team.",

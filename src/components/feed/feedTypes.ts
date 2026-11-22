@@ -39,6 +39,11 @@ export interface ShoutoutDto {
   visibility: Visibility;
   createdAt: string;
   editedAt: string | null;
+  /**
+   * 'SLT' = an admin posted it on the Senior Leadership Team's behalf: the card is gold and says
+   * it is from the leadership team. Left out (or 'STANDARD') for an ordinary shout-out.
+   */
+  kind?: 'STANDARD' | 'SLT';
 }
 
 export interface Page<T> {

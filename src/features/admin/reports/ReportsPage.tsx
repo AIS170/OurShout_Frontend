@@ -31,7 +31,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import type { LeaderboardEntry } from '../../../shared/types';
-import { downloadReportCsv, useReportInsights, useReportSummary, type ReportRange } from '../adminData';
+import { downloadReportCsv, useAdminMe, useReportInsights, useReportSummary, type ReportRange } from '../adminData';
 import { ADMIN_NS } from '../i18n';
 import { formatMonth } from '../posts/postFormat';
 import { ChartCard, type ChartRow } from './ChartCard';
@@ -75,6 +75,8 @@ const useStyles = makeStyles({
   tile: {
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
     gap: tokens.spacingVerticalXXS,
     padding: tokens.spacingHorizontalL,
     border: `1px solid ${tokens.colorNeutralStroke2}`,
@@ -133,6 +135,11 @@ export function ReportsPage() {
 
   const summary = useReportSummary(queryRange);
   const insights = useReportInsights(queryRange);
+  // Admins and the Senior Leadership Team see the whole company. A manager sees a team report:
+  // the same figures for the people who report directly to them. The server decides which (see /api/me).
+  const { data: me } = useAdminMe();
+  const isAdmin = me?.role === 'ADMIN';
+  const team = me?.reportsAccess === 'TEAM';
   const [exporting, setExporting] = useState<'' | 'all' | 'kindness'>('');
   const [exportError, setExportError] = useState('');
 
@@ -198,6 +205,7 @@ export function ReportsPage() {
     const months: ChartRow[] = s.byMonth.map((m) => ({ label: formatMonth(m.month, locale), value: m.count }));
     const principles: ChartRow[] = s.byPrinciple.map((p) => ({ label: p.name, value: p.count }));
     const teams: ChartRow[] = s.byTeam.map((p) => ({ label: p.teamName, value: p.count }));
+    const giverTeams: ChartRow[] = x.byGiverTeam.map((p) => ({ label: p.teamName, value: p.count }));
     const weekdays: ChartRow[] = x.byWeekday.map((w) => ({ label: weekdayName(w.weekday), value: w.count }));
 
     return (
@@ -245,7 +253,9 @@ export function ReportsPage() {
           <div className={styles.tile}>
             <span className={styles.tileLabel}>{t('reports.tiles.crossTeam')}</span>
             <p className={styles.tileValue}>{pct.format(x.crossTeam.share)}</p>
-            <Caption1 className={styles.muted}>{t('reports.tiles.crossTeamDetail')}</Caption1>
+            <Caption1 className={styles.muted}>
+              {t(team ? 'reports.team.crossTeamDetail' : 'reports.tiles.crossTeamDetail')}
+            </Caption1>
           </div>
           <div className={styles.tile}>
             <span className={styles.tileLabel}>{t('reports.tiles.likes')}</span>
@@ -266,13 +276,16 @@ export function ReportsPage() {
                 })}
               </Body1>
             </div>
-            <Button
-              icon={<ArrowRightRegular />}
-              iconPosition="after"
-              onClick={() => navigate(`../posts/${x.mostLiked!.shoutoutId}`, { relative: 'path' })}
-            >
-              {t('reports.mostLiked.view')}
-            </Button>
+            {/* The post page is part of admin moderation, so only admins get the link. */}
+            {isAdmin && (
+              <Button
+                icon={<ArrowRightRegular />}
+                iconPosition="after"
+                onClick={() => navigate(`../posts/${x.mostLiked!.shoutoutId}`, { relative: 'path' })}
+              >
+                {t('reports.mostLiked.view')}
+              </Button>
+            )}
           </div>
         )}
 
@@ -299,56 +312,68 @@ export function ReportsPage() {
             rows={weekdays}
             valueLabel={t('reports.table.shoutouts')}
           />
+          {/* In a team report these two are: who your team recognised, and who recognised your team. */}
           <ChartCard
             wide
             kind="bar"
-            title={t('reports.charts.byTeam')}
-            summary={topSummary('topTeam', teams)}
+            title={t(team ? 'reports.team.byTeam' : 'reports.charts.byTeam')}
+            summary={topSummary(team ? 'teamRecognised' : 'topTeam', teams)}
             rows={teams}
+            valueLabel={t('reports.table.recipients')}
+          />
+          <ChartCard
+            wide
+            kind="bar"
+            title={t(team ? 'reports.team.byGiverTeam' : 'reports.charts.byGiverTeam')}
+            summary={topSummary(team ? 'teamRecognisedBy' : 'topGiverTeam', giverTeams)}
+            rows={giverTeams}
             valueLabel={t('reports.table.recipients')}
           />
 
           <section className={styles.card} aria-labelledby="top-receivers">
             <h2 id="top-receivers" className={styles.cardTitle}>
-              {t('reports.topReceivers')}
+              {t(team ? 'reports.team.topReceivers' : 'reports.topReceivers')}
             </h2>
             {rankList(x.topReceivers)}
           </section>
           <section className={styles.card} aria-labelledby="top-givers">
             <h2 id="top-givers" className={styles.cardTitle}>
-              {t('reports.topGivers')}
+              {t(team ? 'reports.team.topGivers' : 'reports.topGivers')}
             </h2>
             {rankList(x.topGivers)}
           </section>
 
-          <section className={styles.card} aria-labelledby="team-flows">
-            <h2 id="team-flows" className={styles.cardTitle}>
-              {t('reports.flows.title')}
-            </h2>
-            <Caption1 className={styles.muted}>{t('reports.flows.intro')}</Caption1>
-            {x.teamFlows.length === 0 ? (
-              <Caption1 className={styles.muted}>{t('reports.noneInRange')}</Caption1>
-            ) : (
-              <Table size="small" aria-labelledby="team-flows">
-                <TableHeader>
-                  <TableRow>
-                    <TableHeaderCell>{t('reports.flows.from')}</TableHeaderCell>
-                    <TableHeaderCell>{t('reports.flows.to')}</TableHeaderCell>
-                    <TableHeaderCell className={styles.num}>{t('reports.table.recipients')}</TableHeaderCell>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {x.teamFlows.map((f) => (
-                    <TableRow key={`${f.fromTeamId}-${f.toTeamId}`}>
-                      <TableCell>{f.fromTeamName}</TableCell>
-                      <TableCell>{f.toTeamName}</TableCell>
-                      <TableCell className={styles.num}>{f.count}</TableCell>
+          {/* A team report has no flows table: the two team charts above already say it. */}
+          {!team && (
+            <section className={styles.card} aria-labelledby="team-flows">
+              <h2 id="team-flows" className={styles.cardTitle}>
+                {t('reports.flows.title')}
+              </h2>
+              <Caption1 className={styles.muted}>{t('reports.flows.intro')}</Caption1>
+              {x.teamFlows.length === 0 ? (
+                <Caption1 className={styles.muted}>{t('reports.noneInRange')}</Caption1>
+              ) : (
+                <Table size="small" aria-labelledby="team-flows">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHeaderCell>{t('reports.flows.from')}</TableHeaderCell>
+                      <TableHeaderCell>{t('reports.flows.to')}</TableHeaderCell>
+                      <TableHeaderCell className={styles.num}>{t('reports.table.recipients')}</TableHeaderCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </section>
+                  </TableHeader>
+                  <TableBody>
+                    {x.teamFlows.map((f) => (
+                      <TableRow key={`${f.fromTeamId}-${f.toTeamId}`}>
+                        <TableCell>{f.fromTeamName}</TableCell>
+                        <TableCell>{f.toTeamName}</TableCell>
+                        <TableCell className={styles.num}>{f.count}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </section>
+          )}
           <section className={styles.card} aria-labelledby="by-country">
             <h2 id="by-country" className={styles.cardTitle}>
               {t('reports.country.title')}
@@ -381,9 +406,15 @@ export function ReportsPage() {
   return (
     <section className={styles.page} aria-labelledby="reports-title">
       <Title1 as="h1" id="reports-title">
-        {t('reports.title')}
+        {t(team ? 'reports.team.title' : 'reports.title')}
       </Title1>
-      <Body1 as="p">{t('reports.intro')}</Body1>
+      <Body1 as="p">
+        {!team
+          ? t('reports.intro')
+          : insights.data
+            ? t('reports.team.intro', { count: insights.data.scope.teamSize ?? 0 })
+            : t('reports.team.introLoading')}
+      </Body1>
 
       <div className={styles.controls} role="group" aria-label={t('reports.rangeLabel')}>
         <div className={styles.presets} role="group" aria-label={t('reports.presetsLabel')}>

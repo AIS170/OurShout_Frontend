@@ -4,7 +4,10 @@
 
 // shared/types.ts — the ONLY shared type file. Owner: Rakshil. Do not edit without team agreement.
 
-export type Role = 'EMPLOYEE' | 'ADMIN';
+// Added after A4 (needs team agreement): the SLT role, Me.reportsAccess and ShoutoutDto.kind.
+export type Role = 'EMPLOYEE' | 'SLT' | 'ADMIN'; // SLT = Senior Leadership Team
+export type ReportsAccess = 'ALL' | 'TEAM' | null; // admins and SLT: everything; a manager: their team
+export type ShoutoutKind = 'STANDARD' | 'SLT';     // SLT = posted by an admin on the leadership team's behalf
 export type UserStatus = 'ACTIVE' | 'SUSPENDED';
 export type Visibility = 'VISIBLE' | 'HIDDEN' | 'DELETED';
 export type PrincipleStatus = 'ACTIVE' | 'RETIRED';
@@ -33,7 +36,7 @@ export interface EmployeeSummary {
   employeeId: string; name: string; email: string; jobTitle: string | null;
   teamId: string; teamName: string; country: string;
 }
-export interface Me extends EmployeeSummary { role: Role; status: UserStatus; points: number }
+export interface Me extends EmployeeSummary { role: Role; status: UserStatus; points: number; reportsAccess: ReportsAccess }
 
 export interface Persona {
   personaId: string; label: string; description: string;
@@ -64,6 +67,7 @@ export interface ShoutoutDto {
   visibility: Visibility;   // only ever VISIBLE in the feed; admins also see others
   createdAt: string;        // ISO
   editedAt: string | null;  // ISO
+  kind: ShoutoutKind;       // SLT: shown in gold, as from the Senior Leadership Team
 }
 export interface Page<T> { items: T[]; nextCursor: string | null }
 

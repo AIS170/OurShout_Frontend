@@ -15,12 +15,13 @@
   gap: 1.5rem;
 }
 
-/* Feed + right column (leaderboard). One column, sidebar underneath, on narrow screens. */
+/* Feed (filters + posts) + right column (leaderboard). One column, sidebar underneath, on narrow screens. */
 .os-feed-layout {
-  max-width: 1200px;
+  max-width: 1480px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 820px) minmax(0, 320px);
+  /* 1084px = 240px filter bar + 1.5rem gap + the 820px posts column. */
+  grid-template-columns: minmax(0, 1084px) minmax(0, 320px);
   justify-content: center;
   align-items: start;
   column-gap: 0.5rem;
@@ -30,6 +31,56 @@
   margin: 0;
   width: 100%;
   box-sizing: border-box;
+}
+
+/* Everything under the filter bar: the count, messages and the posts. */
+.os-feed-posts {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Wide screens: the filter bar becomes a sticky vertical bar on the left of the posts. */
+@media (min-width: 1101px) {
+  .os-feed-filtered {
+    max-width: none;
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-areas:
+      'filters header'
+      'filters posts';
+    grid-template-rows: auto 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .os-feed-filtered > .os-feed-header {
+    grid-area: header;
+  }
+
+  .os-feed-filtered > .os-feed-posts {
+    grid-area: posts;
+  }
+
+  /* Lines up with the leaderboard card on the right, at rest and while scrolling: that column
+     sticks at 96px and has 2.5rem of padding above its card. */
+  .os-feed-filtered > .os-filters {
+    grid-area: filters;
+    position: sticky;
+    top: calc(96px + 2.5rem);
+    margin-top: 14px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .os-feed-filtered > .os-filters .os-field {
+    flex: 0 0 auto;
+  }
+
+  .os-feed-filtered > .os-filters .os-filters-title {
+    display: block;
+  }
 }
 
 .os-feed-side {
@@ -176,6 +227,15 @@
   flex: 1 1 180px;
 }
 
+/* Heading of the vertical bar; hidden while the bar is a single row. */
+.os-filters-title {
+  display: none;
+  color: var(--sandoz-navy);
+  font-family: var(--font-headline);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
 .os-label {
   font-size: 0.78rem;
   font-weight: 600;
@@ -294,10 +354,79 @@
   box-shadow: 0 4px 20px rgba(0, 28, 74, 0.06);
 }
 
+/* ---------- SLT shout-out: the gold card ---------- */
+
+/* The highest recognition, posted on the Senior Leadership Team's behalf: a gold frame and ribbon. */
+.os-card-slt {
+  border: 3px solid #d4a72c;
+  box-shadow:
+    0 0 0 4px rgba(212, 167, 44, 0.22),
+    0 10px 28px rgba(122, 88, 0, 0.2);
+}
+
+.os-slt-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1.25rem;
+  background: linear-gradient(90deg, #c9981a 0%, #f6dc85 30%, #fff3c4 50%, #f6dc85 70%, #c9981a 100%);
+  color: #4a3500;
+  font-family: var(--font-headline);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.os-avatar.os-avatar-slt {
+  background: linear-gradient(135deg, #f6dc85, #c9981a);
+  color: #4a3500;
+}
+
+.os-card-slt .os-card-foot {
+  background-color: #fffaeb;
+  border-top-color: #ecd58a;
+}
+
+/* Meeting-card banner: the value's picture across the top of the card. The whole picture is
+   shown at a fixed height, so a tall picture doesn't make the post tall; a blurred, enlarged
+   copy of it (--os-media, set on the element) fills the space on either side. */
+.os-card-media {
+  position: relative;
+  height: 210px;
+  overflow: hidden;
+  background-color: var(--sandoz-navy);
+}
+
+.os-card-media::before {
+  content: '';
+  position: absolute;
+  inset: -24px;
+  background-image: var(--os-media);
+  background-position: center;
+  background-size: cover;
+  filter: blur(18px) brightness(0.8);
+}
+
+.os-card-image {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .os-banner {
   padding: 0.6rem 1.25rem;
   font-weight: 600;
   font-size: 0.95rem;
+}
+
+/* The compose preview before a principle is picked. */
+.os-banner-none {
+  background-color: var(--sandoz-soft-blue-bg);
+  color: var(--sandoz-navy);
 }
 
 /* One colour per principle, picked by its id. A sixth principle reuses the first colour. */
@@ -390,6 +519,11 @@
   font-size: 0.8rem;
 }
 
+/* Under Why and Impact on a card, the badge keeps its own width instead of stretching. */
+.os-card-body > .os-badge {
+  align-self: flex-start;
+}
+
 .os-badge {
   flex-shrink: 0;
   display: inline-flex;
@@ -423,13 +557,16 @@
   overflow: hidden;
 }
 
+/* The card's action row, set off from the body like the footer of a meeting card. */
 .os-card-foot {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.6rem;
-  padding-top: 0.25rem;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--sandoz-border-grey);
+  background-color: #fafbfc;
 }
 
 .os-like[aria-pressed='true'] {

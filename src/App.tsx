@@ -6,6 +6,7 @@ import { FeedPage } from './pages/FeedPage';
 import { ComposePage } from './pages/ComposePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { LeaderboardPage } from './features/leaderboard';
+import { AuctionPage } from './features/auction';
 
 // Admin pages are only downloaded when an admin opens them.
 const AdminApp = lazy(() => import('./features/admin/AdminApp'));
@@ -17,9 +18,9 @@ export const App: React.FC = () => {
   const [loadingInitial, setLoadingInitial] = useState<boolean>(true);
   // Signed-in users land on the newsfeed. The profile card is one click away.
   // 'profile' is the account and session card; 'person' is someone's recognition profile.
-  // 'admin' and 'leaderboard' were added for Nathan's features. Opening /admin/... directly
+  // 'admin', 'leaderboard' and 'auction' were added for Nathan's features. Opening /admin/... directly
   // (bookmark or reload) starts in the admin view; non-admins are sent back to the feed below.
-  const [view, setView] = useState<'feed' | 'profile' | 'compose' | 'person' | 'leaderboard' | 'admin'>(
+  const [view, setView] = useState<'feed' | 'profile' | 'compose' | 'person' | 'leaderboard' | 'auction' | 'admin'>(
     () => (isAdminPath() ? 'admin' : 'feed')
   );
   const [profileId, setProfileId] = useState<string>('');
@@ -36,9 +37,11 @@ export const App: React.FC = () => {
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
-  // Only admins (Natalie in the mock data) can be in the admin view.
+  // The admin view is for admins (Natalie in the mock data), and for the Senior Leadership Team
+  // and managers, who get its Reports page only (the admin area and the server both enforce that).
+  const canOpenAdmin = (user: Me) => user.role === 'ADMIN' || Boolean(user.reportsAccess);
   useEffect(() => {
-    if (view === 'admin' && currentUser && currentUser.role !== 'ADMIN') setView('feed');
+    if (view === 'admin' && currentUser && !canOpenAdmin(currentUser)) setView('feed');
   }, [view, currentUser]);
 
   const navigate = (target: HeaderView) => {
@@ -134,10 +137,10 @@ export const App: React.FC = () => {
         onGoHome={currentUser ? () => setView('feed') : undefined}
       />
 
-      {currentUser && view === 'admin' && currentUser.role === 'ADMIN' ? (
+      {currentUser && view === 'admin' && canOpenAdmin(currentUser) ? (
         <Suspense
           fallback={
-            <p style={{ textAlign: 'center', padding: '3rem', color: 'var(--sandoz-text-muted)' }}>Loading admin…</p>
+            <p style={{ textAlign: 'center', padding: '3rem', color: 'var(--sandoz-text-muted)' }}>Loading…</p>
           }
         >
           <AdminApp />
@@ -145,6 +148,11 @@ export const App: React.FC = () => {
       ) : currentUser && view === 'leaderboard' ? (
         <div className="os-feed-wrap">
           <LeaderboardPage onOpenProfile={openProfile} />
+        </div>
+      ) : currentUser && view === 'auction' ? (
+        <div className="os-feed-wrap">
+          {/* Winning an item spends points, so the header's total is refreshed when that happens. */}
+          <AuctionPage onOpenProfile={openProfile} onPointsChanged={refreshCurrentUser} />
         </div>
       ) : currentUser && view === 'compose' ? (
         <ComposePage

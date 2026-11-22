@@ -5,6 +5,7 @@ import { PersonSearch } from '../components/compose/PersonSearch';
 import { TeamPicker } from '../components/compose/TeamPicker';
 import { createShoutout, MAX_TEAM_PEOPLE, MIN_TEAM_PEOPLE } from '../components/compose/composeApi';
 import { ShoutoutCard } from '../components/feed/ShoutoutCard';
+import { valueImage } from '../components/feed/valueImages';
 import { ApiRequestError, fetchPrinciples, fetchTeams } from '../components/feed/feedApi';
 import {
   CreateShoutoutRequest,
@@ -244,7 +245,7 @@ export const ComposePage: React.FC<ComposePageProps> = ({ currentUser, onDone, o
     recognitionType: type ?? 'INDIVIDUAL',
     principle: chosenPrinciple
       ? { id: chosenPrinciple.id, name: chosenPrinciple.name }
-      : { id: 1, name: 'Your chosen principle' },
+      : { id: 0, name: 'Your chosen principle' }, // 0 = none yet: the card shows no value image
     reason: reason.trim() || 'Your answer will appear here.',
     impact: impact.trim() || 'Your answer will appear here.',
     actOfKindness: kindness === true,
@@ -486,6 +487,9 @@ export const ComposePage: React.FC<ComposePageProps> = ({ currentUser, onDone, o
                         setErrors((current) => ({ ...current, principle: undefined }));
                       }}
                     />
+                    {valueImage(principle.id) && (
+                      <img className="os-choice-image" src={valueImage(principle.id)!} alt="" />
+                    )}
                     <span>
                       <strong>{principle.name}</strong>
                       <span className="os-muted">{principle.description}</span>

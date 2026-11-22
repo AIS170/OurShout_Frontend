@@ -8,10 +8,16 @@ interface FeedFilterBarProps {
   onChange: (filter: FeedFilter) => void;
 }
 
-/** The newsfeed's filter bar: principle, team (any recipient in that team) and sort order. */
+/**
+ * The newsfeed's filter bar: principle, team (any recipient in that team) and sort order.
+ * A sticky vertical bar on the left of the posts on wide screens, a single row on narrow ones.
+ */
 export const FeedFilterBar: React.FC<FeedFilterBarProps> = ({ filter, principles, teams, onChange }) => {
   return (
     <div className="os-filters" role="group" aria-label="Filter the newsfeed">
+      <p className="os-filters-title" aria-hidden="true">
+        Filters
+      </p>
       <div className="os-field">
         <label className="os-label" htmlFor="feed-principle">
           Principle

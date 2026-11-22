@@ -6,6 +6,14 @@ import type { LeaderboardEntry } from '../../shared/types';
 
 export interface ReportInsightsDto {
   from: string; to: string;                 // 'YYYY-MM-DD', the range actually covered
+  /**
+   * What the report covers, decided by the server from who is signed in.
+   * ALL: the whole company (admins and the Senior Leadership Team).
+   * TEAM: a manager's team (the people who report directly to them).
+   * In a TEAM report summary.byTeam is the teams the team recognised, byGiverTeam the teams
+   * that recognised it, and teamFlows is empty.
+   */
+  scope: { kind: 'ALL' | 'TEAM'; teamSize: number | null };
   total: number;                            // VISIBLE shout-outs in the range
   /** The same number of days just before `from`; null for "all time". */
   previousPeriod: { from: string; to: string; total: number } | null;
@@ -27,4 +35,6 @@ export interface ReportInsightsDto {
   topReceivers: LeaderboardEntry[];         // top 5
   byWeekday: { weekday: number; count: number }[];   // 0 = Monday .. 6 = Sunday, always 7 entries
   teamFlows: { fromTeamId: string; fromTeamName: string; toTeamId: string; toTeamName: string; count: number }[];
+  /** Recognitions (recipient rows) by the sender's team; sums to the same total as summary.byTeam. */
+  byGiverTeam: { teamId: string; teamName: string; count: number }[];
 }
