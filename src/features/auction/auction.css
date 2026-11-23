@@ -1502,11 +1502,18 @@
   margin-top: 0.2rem;
 }
 
+.os-forza-leading-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  flex-wrap: wrap;
+}
+
 .os-forza-leading-tag {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  margin-top: 0.4rem;
   padding: 2px 8px;
   border-radius: 4px;
   background-color: #ecfdf5;
@@ -1514,6 +1521,27 @@
   font-size: 0.72rem;
   font-weight: 700;
   border: 1px solid #a7f3d0;
+}
+
+.os-forza-withdraw-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background-color: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.os-forza-withdraw-link-btn:hover {
+  background-color: #ffe4e6;
+  border-color: #fda4af;
+  transform: translateY(-1px);
 }
 
 /* ---------- Live Bidding Activity Feed Card (Recent Bids Feed) ---------- */
@@ -2017,6 +2045,117 @@
   background-color: #fef2f2;
   color: #b91c1c;
   border: 1px solid #fecaca;
+}
+
+/* ---------- Withdraw Bid Controls ---------- */
+
+.os-forza-withdraw-row {
+  display: flex;
+  align-items: center;
+  margin-top: 0.15rem;
+}
+
+.os-forza-withdraw-main-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  border: 1.5px dashed #fca5a5;
+  background-color: #fff1f2;
+  color: #be123c;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.os-forza-withdraw-main-btn:hover {
+  background-color: #ffe4e6;
+  border-color: #f87171;
+  color: #9f1239;
+  transform: translateY(-1px);
+}
+
+.os-forza-withdraw-confirm-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background-color: #fffbeb;
+  border: 1.5px solid #fde68a;
+  color: #78350f;
+}
+
+.os-forza-withdraw-confirm-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.os-forza-withdraw-icon {
+  color: #d97706;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.os-forza-withdraw-confirm-text strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #92400e;
+}
+
+.os-forza-withdraw-confirm-text p {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.78rem;
+  color: #78350f;
+  line-height: 1.35;
+}
+
+.os-forza-withdraw-confirm-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.os-forza-btn-confirm-withdraw {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.os-forza-btn-confirm-withdraw:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.os-forza-btn-cancel-withdraw {
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid var(--sandoz-border-grey);
+  background-color: #ffffff;
+  color: var(--sandoz-text-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.os-forza-btn-cancel-withdraw:hover:not(:disabled) {
+  background-color: #f1f5f9;
 }
 
 .os-forza-upcoming-box {

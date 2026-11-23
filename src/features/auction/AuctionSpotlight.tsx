@@ -4,6 +4,7 @@
 // countdown timers, and bidder profile link.
 import React, { useEffect, useState, type FormEvent } from 'react';
 import {
+  AlertCircle,
   Award,
   Bell,
   BellRing,
@@ -17,6 +18,7 @@ import {
   ShieldCheck,
   Sparkles,
   Trophy,
+  Undo2,
   User,
   X,
   Zap,
@@ -35,6 +37,7 @@ interface AuctionSpotlightProps {
   isNotified?: boolean;
   onToggleNotification?: (itemId: number) => void;
   onBid: (itemId: number, amount: number) => Promise<AuctionItemDto>;
+  onWithdrawBid?: (itemId: number) => Promise<AuctionItemDto>;
   onOpenProfile?: (employeeId: string) => void;
   onPrev: () => void;
   onNext: () => void;
@@ -132,6 +135,7 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
   isNotified = false,
   onToggleNotification,
   onBid,
+  onWithdrawBid,
   onOpenProfile,
   onPrev,
   onNext,
@@ -140,6 +144,9 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [placed, setPlaced] = useState('');
+  const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
+  const [withdrawSuccess, setWithdrawSuccess] = useState('');
 
   // Live countdown state ticking every second
   const targetDate = item.status === 'UPCOMING' ? item.startsAt : item.endsAt;
@@ -153,11 +160,14 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  // Adjust amount input when minNextBid changes
+  // Adjust amount input when minNextBid changes or item changes
   useEffect(() => {
     setAmount((cur) => (Number(cur) >= item.minNextBid ? cur : String(item.minNextBid)));
     setError('');
     setPlaced('');
+    setShowWithdrawConfirm(false);
+    setWithdrawing(false);
+    setWithdrawSuccess('');
   }, [item.id, item.minNextBid]);
 
   const canSpend = balance.available + (item.leadingIsMe ? item.currentBid ?? 0 : 0);
@@ -171,6 +181,24 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
   const handleSetExact = (val: number) => {
     setAmount(String(val));
   };
+
+  async function handleWithdraw() {
+    if (!onWithdrawBid || withdrawing) return;
+    setWithdrawing(true);
+    setError('');
+    setPlaced('');
+    setWithdrawSuccess('');
+    try {
+      const bidAmount = item.currentBid;
+      await onWithdrawBid(item.id);
+      setShowWithdrawConfirm(false);
+      setWithdrawSuccess(`Your leading bid of ${bidAmount} pts was successfully withdrawn. Held points have returned to your balance!`);
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : 'Failed to withdraw bid.');
+    } finally {
+      setWithdrawing(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -407,9 +435,22 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
               )}
 
               {item.leadingIsMe && (
-                <div className="os-forza-leading-tag">
-                  <CheckCircle2 size={13} aria-hidden="true" />
-                  You hold the highest bid!
+                <div className="os-forza-leading-group">
+                  <div className="os-forza-leading-tag">
+                    <CheckCircle2 size={13} aria-hidden="true" />
+                    You hold the highest bid!
+                  </div>
+                  {isLive && !showWithdrawConfirm && (
+                    <button
+                      type="button"
+                      onClick={() => setShowWithdrawConfirm(true)}
+                      className="os-forza-withdraw-link-btn"
+                      title="Withdraw this bid"
+                    >
+                      <Undo2 size={12} />
+                      <span>Withdraw Bid</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -614,10 +655,64 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
                   </span>
                 </div>
 
+                {/* Withdraw Leading Bid Action (Only available if you hold the highest bid) */}
+                {item.leadingIsMe && (
+                  showWithdrawConfirm ? (
+                    <div className="os-forza-withdraw-confirm-box" role="alert">
+                      <div className="os-forza-withdraw-confirm-text">
+                        <AlertCircle size={18} className="os-forza-withdraw-icon" aria-hidden="true" />
+                        <div>
+                          <strong>Withdraw leading bid on {item.name}?</strong>
+                          <p>
+                            Your current bid of <strong>{item.currentBid} pts</strong> will be cancelled and returned to your available points.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="os-forza-withdraw-confirm-actions">
+                        <button
+                          type="button"
+                          onClick={handleWithdraw}
+                          className="os-forza-btn-confirm-withdraw"
+                          disabled={withdrawing}
+                        >
+                          <Undo2 size={14} />
+                          <span>{withdrawing ? 'Withdrawing…' : 'Yes, Withdraw Bid'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowWithdrawConfirm(false)}
+                          className="os-forza-btn-cancel-withdraw"
+                          disabled={withdrawing}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="os-forza-withdraw-row">
+                      <button
+                        type="button"
+                        onClick={() => setShowWithdrawConfirm(true)}
+                        className="os-forza-withdraw-main-btn"
+                        title="Withdraw your highest bid and release held points"
+                      >
+                        <Undo2 size={14} />
+                        <span>Withdraw Leading Bid ({item.currentBid} pts)</span>
+                      </button>
+                    </div>
+                  )
+                )}
+
                 {placed && (
                   <div className="os-forza-alert is-success" role="status">
                     <CheckCircle2 size={16} />
                     <span>{placed}</span>
+                  </div>
+                )}
+                {withdrawSuccess && (
+                  <div className="os-forza-alert is-success" role="status">
+                    <CheckCircle2 size={16} />
+                    <span>{withdrawSuccess}</span>
                   </div>
                 )}
                 {error && (

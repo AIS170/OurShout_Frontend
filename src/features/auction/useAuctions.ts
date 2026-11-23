@@ -15,6 +15,8 @@ export interface AuctionsState {
   reload: () => void;
   /** POST /api/auctions/:id/bids. Rejects with the server's AdminApiError (its message is shown). */
   placeBid: (itemId: number, amount: number) => Promise<AuctionItemDto>;
+  /** DELETE /api/auctions/:id/bids. Only available if caller is the leading bidder. */
+  withdrawBid: (itemId: number) => Promise<AuctionItemDto>;
 }
 
 export function useAuctions(): AuctionsState {
@@ -76,5 +78,25 @@ export function useAuctions(): AuctionsState {
     [reload],
   );
 
-  return { data, isLoading, error, reload, placeBid };
+  const withdrawBid = useCallback(
+    async (itemId: number) => {
+      try {
+        const result = await apiFetch<PlaceBidResponse>(`/api/auctions/${itemId}/bids`, {
+          method: 'DELETE',
+        });
+        setData((old) =>
+          old
+            ? { items: old.items.map((i) => (i.id === itemId ? result.item : i)), balance: result.balance }
+            : old,
+        );
+        return result.item;
+      } catch (err) {
+        reload();
+        throw err;
+      }
+    },
+    [reload],
+  );
+
+  return { data, isLoading, error, reload, placeBid, withdrawBid };
 }

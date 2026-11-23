@@ -36,7 +36,7 @@ export interface AuctionPageProps {
 type FilterTab = 'ALL' | 'TRENDING' | 'LIVE' | 'UPCOMING' | 'ENDED';
 
 export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps) {
-  const { data, isLoading, error, reload, placeBid } = useAuctions();
+  const { data, isLoading, error, reload, placeBid, withdrawBid } = useAuctions();
   const [filter, setFilter] = useState<FilterTab>('ALL');
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
@@ -309,6 +309,7 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
             isNotified={notifiedItemIds.has(spotlightItem.id)}
             onToggleNotification={handleToggleNotification}
             onBid={placeBid}
+            onWithdrawBid={withdrawBid}
             onOpenProfile={onOpenProfile}
             onPrev={handlePrev}
             onNext={handleNext}
