@@ -3,7 +3,7 @@
 // Clicking puts the lot into the main Spotlight.
 // Shows a mystery '?' cover when UPCOMING, or the admin's uploaded photo when LIVE/ENDED.
 import React from 'react';
-import { Award, Clock, Flame, Trophy } from 'lucide-react';
+import { Award, Bell, Clock, Flame, Trophy, X } from 'lucide-react';
 import { AuctionCover } from './AuctionCover';
 import type { AuctionBalanceDto, AuctionItemDto } from './auctionTypes';
 import { t } from './i18n';
@@ -13,6 +13,8 @@ export interface AuctionCardProps {
   balance?: AuctionBalanceDto;
   isSpotlight?: boolean;
   trendingRank?: number;
+  isNotified?: boolean;
+  onToggleNotification?: (itemId: number) => void;
   onSelect?: () => void;
   /** Legacy props for backward compatibility */
   onBid?: (itemId: number, amount: number) => Promise<AuctionItemDto>;
@@ -23,6 +25,8 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
   item,
   isSpotlight = false,
   trendingRank,
+  isNotified = false,
+  onToggleNotification,
   onSelect,
 }) => {
   const isLive = item.status === 'LIVE';
@@ -79,6 +83,32 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
             <span>#{trendingRank}</span>
           </div>
         )}
+
+        {/* Mock Bid Notification Bell / Cross Emblem */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleNotification?.(item.id);
+          }}
+          className={`os-forza-card-notif-btn ${isNotified ? 'is-active' : ''}`}
+          title={
+            isNotified
+              ? 'Email alerts active · Click cross emblem to disable'
+              : 'Set email updates on this bid (mock)'
+          }
+          aria-label={
+            isNotified
+              ? `Disable notifications for ${item.name}`
+              : `Enable notifications for ${item.name}`
+          }
+        >
+          {isNotified ? (
+            <X size={12} className="os-forza-cross-icon" aria-hidden="true" />
+          ) : (
+            <Bell size={12} aria-hidden="true" />
+          )}
+        </button>
       </div>
 
       {/* Lot Details */}
@@ -106,11 +136,19 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
           )}
         </div>
 
-        {item.leadingIsMe && (
-          <div className="os-forza-card-leading-badge">
-            Leading
-          </div>
-        )}
+        <div className="os-forza-card-footer-tags">
+          {item.leadingIsMe && (
+            <div className="os-forza-card-leading-badge">
+              Leading
+            </div>
+          )}
+          {isNotified && (
+            <div className="os-forza-card-watching-tag" title="Email alerts active (mock)">
+              <Bell size={10} aria-hidden="true" />
+              <span>Watching</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

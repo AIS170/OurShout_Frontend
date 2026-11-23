@@ -8,6 +8,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Award,
+  BellRing,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -37,6 +38,36 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
   const { data, isLoading, error, reload, placeBid } = useAuctions();
   const [filter, setFilter] = useState<FilterTab>('ALL');
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
+  // Mock bid notification / email alert subscriptions
+  const [notifiedItemIds, setNotifiedItemIds] = useState<Set<number>>(() => {
+    try {
+      const saved = localStorage.getItem('sandoz_auction_watched_lots');
+      if (saved) {
+        return new Set(JSON.parse(saved));
+      }
+    } catch {
+      // ignore
+    }
+    return new Set<number>();
+  });
+
+  const handleToggleNotification = (itemId: number) => {
+    setNotifiedItemIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      try {
+        localStorage.setItem('sandoz_auction_watched_lots', JSON.stringify([...next]));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
 
   // Track points change to notify parent
   const spent = data?.balance.spent;
@@ -202,6 +233,12 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
               <span className="os-forza-key-hint">
                 Scroll with <kbd>◀</kbd> <kbd>▶</kbd> or click lots below
               </span>
+              {notifiedItemIds.size > 0 && (
+                <span className="os-forza-nav-notif-pill">
+                  <BellRing size={12} />
+                  {notifiedItemIds.size} {notifiedItemIds.size === 1 ? 'lot' : 'lots'} watched
+                </span>
+              )}
             </div>
 
             {/* Carousel Arrow Controls */}
@@ -237,6 +274,8 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
             lotIndex={selectedIndex}
             totalLots={filteredItems.length}
             isTrendingTab={filter === 'TRENDING'}
+            isNotified={notifiedItemIds.has(spotlightItem.id)}
+            onToggleNotification={handleToggleNotification}
             onBid={placeBid}
             onOpenProfile={onOpenProfile}
             onPrev={handlePrev}
@@ -357,6 +396,8 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
                   balance={data.balance}
                   isSpotlight={idx === selectedIndex}
                   trendingRank={filter === 'TRENDING' ? idx + 1 : undefined}
+                  isNotified={notifiedItemIds.has(item.id)}
+                  onToggleNotification={handleToggleNotification}
                   onSelect={() => setSelectedIndex(idx)}
                   onOpenProfile={onOpenProfile}
                   onBid={placeBid}

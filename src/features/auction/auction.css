@@ -471,7 +471,7 @@
 
 .os-forza-theme {
   max-width: 1220px;
-  gap: 2.25rem;
+  gap: 1.25rem;
 }
 
 /* ---------- Forza Header & Points HUD ---------- */
@@ -605,7 +605,7 @@
 .os-forza-spotlight-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.5rem;
 }
 
 .os-forza-spotlight-nav-header {
@@ -619,8 +619,21 @@
 .os-forza-nav-hint {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.65rem;
   flex-wrap: wrap;
+}
+
+.os-forza-nav-notif-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 3.125rem;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .os-forza-spotlight-tag {
@@ -705,11 +718,11 @@
   background-color: #ffffff;
   border: 1px solid var(--sandoz-border-grey);
   border-radius: 18px;
-  padding: 1.75rem;
+  padding: 1.25rem 1.5rem;
   box-shadow: 0 10px 32px rgba(0, 28, 74, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.95rem;
   position: relative;
   overflow: hidden;
 }
@@ -720,7 +733,41 @@
   justify-content: space-between;
   gap: 1rem;
   border-bottom: 1px solid var(--sandoz-border-grey);
-  padding-bottom: 0.9rem;
+  padding-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-top-notif-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 3.125rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border: 1.5px solid var(--sandoz-pill-blue);
+  background-color: var(--sandoz-soft-blue-bg);
+  color: var(--sandoz-blue);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.os-forza-top-notif-btn:hover {
+  background-color: #dbeafe;
+  border-color: var(--sandoz-blue);
+  transform: translateY(-1px);
+}
+
+.os-forza-top-notif-btn.is-active {
+  background-color: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.os-forza-top-notif-btn.is-active:hover {
+  background-color: #fee2e2;
+  border-color: #ef4444;
 }
 
 .os-forza-lot-badge {
@@ -796,8 +843,8 @@
 
 .os-forza-spotlight-grid {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 1.75rem;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 1.35rem;
   align-items: stretch;
 }
 
@@ -817,7 +864,9 @@
 .os-forza-stage-frame {
   position: relative;
   width: 100%;
-  min-height: 380px;
+  min-height: 300px;
+  aspect-ratio: 16 / 10;
+  max-height: 350px;
   border-radius: 14px;
   overflow: hidden;
   background-color: #0f172a;
@@ -1111,13 +1160,13 @@
 .os-forza-console {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  justify-content: space-between;
+  gap: 0.85rem;
+  justify-content: flex-start;
 }
 
 .os-forza-spotlight-title {
   font-family: var(--font-headline);
-  font-size: 1.85rem;
+  font-size: 1.7rem;
   font-weight: 700;
   color: var(--sandoz-navy);
   margin: 0;
@@ -1125,9 +1174,9 @@
 }
 
 .os-forza-spotlight-desc {
-  margin: 0.5rem 0 0 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  margin: 0.35rem 0 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
   color: var(--sandoz-text-body);
 }
 
@@ -1136,7 +1185,7 @@
 .os-forza-telemetry-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 @media (max-width: 550px) {
@@ -1148,8 +1197,8 @@
 .os-forza-stat-card {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  padding: 0.9rem 1.1rem;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
   border-radius: 12px;
   background-color: var(--sandoz-soft-blue-bg);
   border: 1px solid var(--sandoz-pill-blue);
@@ -1281,13 +1330,164 @@
   border: 1px solid #a7f3d0;
 }
 
+/* Mock Email Bid Updates Card in Spotlight Console */
+
+.os-forza-notif-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.os-forza-notif-card.is-active {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border-color: #86efac;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.1);
+}
+
+.os-forza-notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-notif-title-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+
+.os-forza-notif-icon-bubble {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.os-forza-notif-icon-bubble.is-active {
+  background-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.os-forza-notif-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.os-forza-notif-badge-line {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-notif-heading {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+}
+
+.os-forza-notif-pill {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background-color: #e0e7ff;
+  color: #3730a3;
+  letter-spacing: 0.05em;
+}
+
+.os-forza-notif-subtitle {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--sandoz-text-muted);
+  line-height: 1.35;
+}
+
+.os-forza-notif-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--sandoz-border-grey);
+  background-color: #ffffff;
+  color: var(--sandoz-navy);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.os-forza-notif-action-btn:hover {
+  border-color: var(--sandoz-blue);
+  color: var(--sandoz-blue);
+  background-color: var(--sandoz-soft-blue-bg);
+}
+
+.os-forza-notif-action-btn.is-active {
+  background-color: #ffffff;
+  border-color: #f87171;
+  color: #b91c1c;
+}
+
+.os-forza-notif-action-btn.is-active:hover {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+  color: #991b1b;
+}
+
+.os-forza-cross-icon {
+  stroke-width: 2.5;
+}
+
+.os-forza-notif-email-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  color: #166534;
+  background-color: rgba(22, 101, 52, 0.06);
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid rgba(22, 101, 52, 0.12);
+}
+
+.os-forza-notif-live-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  margin-left: auto;
+  animation: os-forza-pulse 1.8s infinite;
+}
+
 /* Action Area & Form */
 
 .os-forza-action-area {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  margin-top: auto;
+  gap: 0.55rem;
 }
 
 .os-forza-bid-form {
@@ -1693,7 +1893,7 @@
 
 .os-forza-card-active-tag {
   position: absolute;
-  top: 8px;
+  bottom: 8px;
   right: 8px;
   z-index: 5;
   background-color: var(--sandoz-blue);
@@ -1705,6 +1905,66 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Card Mock Notification Bell Button */
+.os-forza-card-notif-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 6;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.os-forza-card-notif-btn:hover {
+  transform: scale(1.12);
+  background-color: var(--sandoz-blue);
+  border-color: var(--sandoz-blue);
+  color: #ffffff;
+}
+
+.os-forza-card-notif-btn.is-active {
+  background-color: #ef4444;
+  border-color: #f87171;
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.os-forza-card-notif-btn.is-active:hover {
+  background-color: #dc2626;
+  border-color: #ef4444;
+}
+
+.os-forza-card-footer-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-card-watching-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
 .os-forza-card-content {

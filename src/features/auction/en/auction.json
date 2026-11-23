@@ -72,6 +72,18 @@
     "leadingNotice": "You currently hold the leading bid!",
     "scrollHint": "Use Left / Right arrows or click cards to switch spotlight",
     "selectToSpotlight": "Spotlight",
-    "activeSpotlight": "In Spotlight"
+    "activeSpotlight": "In Spotlight",
+    "mockAlerts": {
+      "title": "Bid Email Alerts",
+      "simulationBadge": "MOCK SIMULATION",
+      "activeDesc": "Email updates active · You will receive email notifications on new bids and outbids.",
+      "inactiveDesc": "Get notified via Sandoz email when a new bid is placed or if you are outbid.",
+      "enableBtn": "Notify on Bids",
+      "disableBtn": "Disable Alerts",
+      "activeTooltip": "Email notifications active · Click cross emblem to disable",
+      "inactiveTooltip": "Set mock email updates for this auction",
+      "topPillActive": "Alerts Active",
+      "topPillInactive": "Watch Lot"
+    }
   }
 }

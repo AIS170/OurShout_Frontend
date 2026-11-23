@@ -5,14 +5,18 @@
 import React, { useEffect, useState, type FormEvent } from 'react';
 import {
   Award,
+  Bell,
+  BellRing,
   CheckCircle2,
   Clock,
   Flame,
   Gavel,
   Lock,
+  Mail,
   Sparkles,
   Trophy,
   User,
+  X,
   Zap,
 } from 'lucide-react';
 import { formatFullDate } from '../../components/feed/relativeTime';
@@ -26,6 +30,8 @@ interface AuctionSpotlightProps {
   lotIndex: number;
   totalLots: number;
   isTrendingTab?: boolean;
+  isNotified?: boolean;
+  onToggleNotification?: (itemId: number) => void;
   onBid: (itemId: number, amount: number) => Promise<AuctionItemDto>;
   onOpenProfile?: (employeeId: string) => void;
   onPrev: () => void;
@@ -63,6 +69,8 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
   lotIndex,
   totalLots,
   isTrendingTab = false,
+  isNotified = false,
+  onToggleNotification,
   onBid,
   onOpenProfile,
   onPrev,
@@ -170,6 +178,30 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
               AUCTION CONCLUDED
             </span>
           )}
+
+          {/* Mock Watch / Email Notification Pill Toggle */}
+          <button
+            type="button"
+            onClick={() => onToggleNotification?.(item.id)}
+            className={`os-forza-top-notif-btn ${isNotified ? 'is-active' : ''}`}
+            title={
+              isNotified
+                ? 'Email updates active · Click cross emblem to disable'
+                : 'Set email updates for this auction (mock simulation)'
+            }
+          >
+            {isNotified ? (
+              <>
+                <X size={13} className="os-forza-cross-icon" aria-hidden="true" />
+                <span>Alerts Active (Disable)</span>
+              </>
+            ) : (
+              <>
+                <Bell size={13} aria-hidden="true" />
+                <span>Notify on Bids</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
@@ -275,6 +307,63 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Mock Email Bid Updates Panel (Simulates email notifications, fills console empty space) */}
+          <div className={`os-forza-notif-card ${isNotified ? 'is-active' : ''}`}>
+            <div className="os-forza-notif-header">
+              <div className="os-forza-notif-title-group">
+                <div className={`os-forza-notif-icon-bubble ${isNotified ? 'is-active' : ''}`}>
+                  {isNotified ? (
+                    <BellRing size={16} aria-hidden="true" />
+                  ) : (
+                    <Bell size={16} aria-hidden="true" />
+                  )}
+                </div>
+                <div className="os-forza-notif-info">
+                  <div className="os-forza-notif-badge-line">
+                    <strong className="os-forza-notif-heading">Email Bid Updates</strong>
+                    <span className="os-forza-notif-pill">MOCK SIMULATION</span>
+                  </div>
+                  <p className="os-forza-notif-subtitle">
+                    {isNotified
+                      ? 'Email alerts active · You will receive email notifications on new bids and outbids.'
+                      : 'Set email notifications to get alerted whenever someone bids or you get outbid.'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onToggleNotification?.(item.id)}
+                className={`os-forza-notif-action-btn ${isNotified ? 'is-active' : ''}`}
+                title={
+                  isNotified
+                    ? 'Click cross emblem to disable email notifications'
+                    : 'Click to enable mock email bid updates'
+                }
+              >
+                {isNotified ? (
+                  <>
+                    <X size={14} className="os-forza-cross-icon" aria-hidden="true" />
+                    <span>Disable Alerts</span>
+                  </>
+                ) : (
+                  <>
+                    <Bell size={14} aria-hidden="true" />
+                    <span>Enable Alerts</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {isNotified && (
+              <div className="os-forza-notif-email-bar">
+                <Mail size={12} aria-hidden="true" />
+                <span>Simulated alerts sent to: <strong>employee@sandoz.com</strong></span>
+                <span className="os-forza-notif-live-pulse" />
+              </div>
+            )}
           </div>
 
           {/* Interactive Bidding Action Console */}
