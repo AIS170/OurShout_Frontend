@@ -465,6 +465,26 @@
       "topGivers": "Your team's most generous recognisers",
       "crossTeamDetail": "of your team's recognitions went outside the team"
     },
+    "split": {
+      "tileGiven": "Shout-outs given",
+      "tileReceived": "Shout-outs received",
+      "tileGivenTeam": "Sent by people in your team",
+      "tileReceivedTeam": "Recognising someone in your team",
+      "tileGivenAll": "Sent by employees. SLT shout-outs aren't counted as given.",
+      "tileReceivedAll": "Recognising at least one employee",
+      "trendTitle": "Given and received by month",
+      "trendSummaryTeam": "Your team in this period: {{given}} given, {{received}} received. A shout-out between two teammates counts on both sides.",
+      "trendSummaryAll": "In this period: {{given}} given, {{received}} received. Across the company the two match, apart from SLT shout-outs, which are received but not given by anyone.",
+      "given": "Given",
+      "received": "Received",
+      "month": "Month",
+      "person": "Person",
+      "peopleTitleTeam": "Given and received by team member",
+      "peopleTitleAll": "Given and received by person",
+      "peopleIntroTeam": "Everyone who reports directly to you, most active first.",
+      "peopleIntroAll": "Everyone who gave or received a shout-out in this period, most active first.",
+      "peopleIntroCapped": "The {{shown}} most active of the {{count}} people who gave or received a shout-out in this period."
+    },
     "flows": {
       "title": "Recognition across teams",
       "intro": "The busiest routes where someone recognised a person in another team.",

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Crown, Heart, Pencil, ThumbsUp } from 'lucide-react';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { Crown, Heart, MessageCircle, Pencil, ThumbsUp } from 'lucide-react';
 import { EmployeeSummary, ShoutoutDto } from './feedTypes';
 import { ClampedText } from './ClampedText';
+import { CommentThread } from './CommentThread';
 import { formatFullDate, formatRelativeTime } from './relativeTime';
 import { valueImage } from './valueImages';
 
@@ -113,7 +114,7 @@ interface ShoutoutCardProps {
   shoutout: ShoutoutDto;
   onLikeChange?: (shoutout: ShoutoutDto, liked: boolean) => void;
   onEdit?: (shoutout: ShoutoutDto) => void;
-  /** Leaves out the like and edit buttons. Used for the preview while writing a shout-out. */
+  /** Leaves out the like, comment and edit buttons. Used for the preview while writing a shout-out. */
   hideActions?: boolean;
   /** When given, every name on the card links to that person's profile. */
   onOpenProfile?: (employeeId: string) => void;
@@ -122,7 +123,8 @@ interface ShoutoutCardProps {
 /**
  * One shout-out on the newsfeed, laid out like a meeting card: the value's image as a banner,
  * the value's name, who gave it to whom, why and impact, the act-of-kindness badge, then a
- * footer row with the like toggle and Edit on your own posts.
+ * footer row with the like toggle, the Comments button and Edit on your own posts. The Comments
+ * button opens the thread under the footer.
  * React renders all text, so quotes, ampersands and apostrophes are safe exactly as typed.
  */
 export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({
@@ -142,6 +144,16 @@ export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({
   // An SLT shout-out is the highest recognition: an admin posts it on the Senior Leadership
   // Team's behalf, so the card is gold and names the leadership team, not the admin.
   const slt = shoutout.kind === 'SLT';
+
+  // The thread stays closed, and nothing is fetched, until someone asks for it. The count starts
+  // from the feed and then follows the thread as comments are posted and deleted.
+  const commentsId = useId();
+  const [showComments, setShowComments] = useState<boolean>(false);
+  const [commentCount, setCommentCount] = useState<number>(shoutout.commentCount ?? 0);
+  useEffect(() => {
+    setCommentCount(shoutout.commentCount ?? 0);
+  }, [shoutout.commentCount]);
+  const comments = `${commentCount} ${commentCount === 1 ? 'comment' : 'comments'}`;
 
   return (
     <article
@@ -213,16 +225,29 @@ export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({
 
       {!hideActions && (
         <div className="os-card-foot">
-          <button
-            type="button"
-            className="os-btn os-btn-quiet os-like"
-            aria-pressed={shoutout.likedByMe}
-            aria-label={`Like this shout-out. ${likes} so far`}
-            onClick={() => onLikeChange?.(shoutout, !shoutout.likedByMe)}
-          >
-            <ThumbsUp size={16} fill={shoutout.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
-            {shoutout.likeCount}
-          </button>
+          <div className="os-card-actions">
+            <button
+              type="button"
+              className="os-btn os-btn-quiet os-like"
+              aria-pressed={shoutout.likedByMe}
+              aria-label={`Like this shout-out. ${likes} so far`}
+              onClick={() => onLikeChange?.(shoutout, !shoutout.likedByMe)}
+            >
+              <ThumbsUp size={16} fill={shoutout.likedByMe ? 'currentColor' : 'none'} aria-hidden="true" />
+              {shoutout.likeCount}
+            </button>
+            <button
+              type="button"
+              className="os-btn os-btn-quiet os-comment-toggle"
+              aria-expanded={showComments}
+              aria-controls={showComments ? commentsId : undefined}
+              aria-label={`Comments on this shout-out. ${comments} so far`}
+              onClick={() => setShowComments((open) => !open)}
+            >
+              <MessageCircle size={16} aria-hidden="true" />
+              {commentCount}
+            </button>
+          </div>
           {shoutout.canEdit && onEdit && (
             <button
               type="button"
@@ -235,6 +260,15 @@ export const ShoutoutCard: React.FC<ShoutoutCardProps> = ({
             </button>
           )}
         </div>
+      )}
+
+      {!hideActions && showComments && (
+        <CommentThread
+          id={commentsId}
+          shoutoutId={shoutout.id}
+          onCountChange={setCommentCount}
+          onOpenProfile={onOpenProfile}
+        />
       )}
     </article>
   );

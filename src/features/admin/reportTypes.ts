@@ -2,7 +2,13 @@
 // PROPOSED addition to shared/types.ts (Rakshil owns that file): the response of
 // GET /api/admin/reports/insights. Kept here until the team agrees it; then move it to
 // shared/types.ts unchanged and import it from there.
-import type { LeaderboardEntry } from '../../shared/types';
+import type { EmployeeSummary, LeaderboardEntry } from '../../shared/types';
+
+/** One side of the given / received split: its total and its count for each month of the report. */
+export interface ReportSideDto {
+  total: number;
+  byMonth: { month: string; count: number }[];   // 'YYYY-MM', every month of the range, gaps as 0
+}
 
 export interface ReportInsightsDto {
   from: string; to: string;                 // 'YYYY-MM-DD', the range actually covered
@@ -37,4 +43,15 @@ export interface ReportInsightsDto {
   teamFlows: { fromTeamId: string; fromTeamName: string; toTeamId: string; toTeamName: string; count: number }[];
   /** Recognitions (recipient rows) by the sender's team; sums to the same total as summary.byTeam. */
   byGiverTeam: { teamId: string; teamName: string; count: number }[];
+  /**
+   * Given and received, kept apart. Given: shout-outs sent by the people the report covers (never
+   * SLT shout-outs). Received: shout-outs that recognised at least one of them. A shout-out
+   * between two teammates is in both, so these don't add up to `total`.
+   */
+  given: ReportSideDto;
+  received: ReportSideDto;
+  /** Each person's own two counts, most active first. TEAM: every team member. ALL: the most active 50. */
+  byPerson: { employee: EmployeeSummary; given: number; received: number }[];
+  /** How many people byPerson would list without the cap. */
+  byPersonTotal: number;
 }

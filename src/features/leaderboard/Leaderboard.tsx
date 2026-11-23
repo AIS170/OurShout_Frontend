@@ -52,8 +52,13 @@ export function Leaderboard({ onOpenProfile, headingLevel = 2, defaultPeriod = '
             {entries.map((entry, index) => (
               <li key={entry.employee.employeeId} className="os-lb-item">
                 <span className={`os-lb-rank os-lb-rank-${index + 1}`}>{t('rank', { rank: index + 1 })}</span>
+                {/* The person's profile picture, or their initials when they have none. */}
                 <span className="os-lb-avatar" aria-hidden="true">
-                  {initials(entry.employee.name)}
+                  {entry.employee.avatarUrl ? (
+                    <img src={entry.employee.avatarUrl} alt="" />
+                  ) : (
+                    initials(entry.employee.name)
+                  )}
                 </span>
                 <span className="os-lb-person">
                   {onOpenProfile ? (

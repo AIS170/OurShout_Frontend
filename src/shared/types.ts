@@ -35,6 +35,7 @@ export interface ApiError { error: { code: ErrorCode; message: string } }
 export interface EmployeeSummary {
   employeeId: string; name: string; email: string; jobTitle: string | null;
   teamId: string; teamName: string; country: string;
+  avatarUrl?: string | null; // added after A4: the profile picture; without one, show initials
 }
 export interface Me extends EmployeeSummary { role: Role; status: UserStatus; points: number; reportsAccess: ReportsAccess }
 

@@ -584,6 +584,180 @@
   align-self: center;
 }
 
+/* ---------- comments ---------- */
+
+/* Like and Comments sit together on the left of the footer; Edit stays on the right. */
+.os-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.os-comment-toggle[aria-expanded='true'] {
+  background-color: var(--sandoz-soft-blue-bg);
+  border-color: var(--sandoz-blue);
+  color: var(--sandoz-blue);
+}
+
+/* The thread opens under the card's footer. */
+.os-comments {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem 1.25rem;
+  border-top: 1px solid var(--sandoz-border-grey);
+}
+
+.os-card-slt .os-comments {
+  border-top-color: #ecd58a;
+}
+
+/* Cards also appear on the profile page, outside .os-feed, so the thread sets its own focus ring. */
+.os-comments :focus-visible,
+.os-card-foot :focus-visible {
+  outline: 3px solid var(--sandoz-blue);
+  outline-offset: 2px;
+}
+
+.os-comments-status {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--sandoz-text-muted);
+  font-size: 0.88rem;
+}
+
+/* "View all 5 comments" / "Show fewer comments", above the thread. */
+.os-comments-view-all {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.4rem;
+  color: var(--sandoz-text-muted);
+}
+
+.os-comments-view-all:hover,
+.os-comments-view-all[aria-expanded='true'] {
+  color: var(--sandoz-blue);
+}
+
+.os-comment-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.os-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.os-avatar.os-avatar-sm {
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  font-size: 0.75rem;
+}
+
+.os-avatar-sm img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The comment itself: a soft bubble beside the avatar. */
+.os-comment-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 4px 12px 12px 12px;
+  background-color: var(--sandoz-soft-blue-bg);
+}
+
+.os-comment-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.6rem;
+  color: var(--sandoz-navy);
+  font-size: 0.92rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.os-comment-time {
+  color: var(--sandoz-text-muted);
+  font-size: 0.78rem;
+}
+
+/* Line breaks are kept as typed; a long unbroken word wraps instead of widening the card. */
+.os-comment-text {
+  color: var(--sandoz-text-dark);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.os-comment-delete,
+.os-comment-confirm {
+  font-size: 0.8rem;
+}
+
+.os-comment-delete {
+  color: var(--sandoz-text-muted);
+}
+
+.os-comment-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--sandoz-text-dark);
+}
+
+.os-comment-confirm .os-btn-link {
+  font-size: inherit;
+}
+
+.os-comment-danger {
+  color: #b42318;
+}
+
+.os-comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.os-comment-form-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--sandoz-text-muted);
+  font-size: 0.8rem;
+}
+
+/* Read by screen readers, not shown: "Your comment was posted." */
+.os-comments-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* ---------- edit dialog ---------- */
 
 .os-dialog {
