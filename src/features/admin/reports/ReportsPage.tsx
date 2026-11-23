@@ -35,6 +35,7 @@ import { downloadReportCsv, useAdminMe, useReportInsights, useReportSummary, typ
 import { ADMIN_NS } from '../i18n';
 import { formatMonth } from '../posts/postFormat';
 import { ChartCard, type ChartRow } from './ChartCard';
+import { GivenReceivedPeople, GivenReceivedTrend } from './GivenReceived';
 
 type Preset = 'month' | 'quarter' | 'year' | 'all' | 'custom';
 const PRESETS: Exclude<Preset, 'custom'>[] = ['month', 'quarter', 'year', 'all'];
@@ -67,11 +68,15 @@ const useStyles = makeStyles({
   dateField: { width: '160px' },
   exports: { display: 'flex', flexWrap: 'wrap', gap: tokens.spacingHorizontalS, marginLeft: 'auto' },
   muted: { color: tokens.colorNeutralForeground3 },
+  // A team report has eight tiles (four to a row) and the full report six (three to a row), so
+  // both make two even rows with no stragglers. On a narrow screen both go two to a row.
   tiles: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))',
+    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
     gap: tokens.spacingHorizontalM,
+    '@media (max-width: 900px)': { gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' },
   },
+  tilesSix: { gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' },
   tile: {
     display: 'flex',
     flexDirection: 'column',
@@ -214,7 +219,7 @@ export function ReportsPage() {
           {t('reports.covering', { from: shortDate(s.from), to: shortDate(s.to) })}
         </Caption1>
 
-        <div className={styles.tiles}>
+        <div className={team ? styles.tiles : `${styles.tiles} ${styles.tilesSix}`}>
           <div className={styles.tile}>
             <span className={styles.tileLabel}>{t('reports.tiles.total')}</span>
             <p className={styles.tileValue}>{x.total}</p>
@@ -228,6 +233,28 @@ export function ReportsPage() {
                   })}
             </Caption1>
           </div>
+          {/* Given and received as their own numbers, on a team report only. Across the whole
+              company every shout-out is given by one employee and received by another, so both
+              would just repeat the total. They don't add up to the total: a shout-out between
+              two teammates is in both. */}
+          {team && x.given && x.received && (
+            <>
+              <div className={styles.tile}>
+                <span className={styles.tileLabel}>{t('reports.split.tileGiven')}</span>
+                <p className={styles.tileValue}>{x.given.total}</p>
+                <Caption1 className={styles.muted}>
+                  {t(team ? 'reports.split.tileGivenTeam' : 'reports.split.tileGivenAll')}
+                </Caption1>
+              </div>
+              <div className={styles.tile}>
+                <span className={styles.tileLabel}>{t('reports.split.tileReceived')}</span>
+                <p className={styles.tileValue}>{x.received.total}</p>
+                <Caption1 className={styles.muted}>
+                  {t(team ? 'reports.split.tileReceivedTeam' : 'reports.split.tileReceivedAll')}
+                </Caption1>
+              </div>
+            </>
+          )}
           <div className={styles.tile}>
             <span className={styles.tileLabel}>{t('reports.tiles.recognised')}</span>
             <p className={styles.tileValue}>{x.peopleRecognised}</p>
@@ -298,6 +325,14 @@ export function ReportsPage() {
             rows={months}
             valueLabel={t('reports.table.shoutouts')}
           />
+          {/* The month-by-month split is for a team report too, for the same reason as the tiles.
+              The per-person table is in both: who gives and who receives differs person to person. */}
+          {team && x.given && x.received && (
+            <GivenReceivedTrend given={x.given} received={x.received} team={team} locale={locale} />
+          )}
+          {x.byPerson && (
+            <GivenReceivedPeople byPerson={x.byPerson} byPersonTotal={x.byPersonTotal} team={team} />
+          )}
           <ChartCard
             kind="bar"
             title={t('reports.charts.byPrinciple')}

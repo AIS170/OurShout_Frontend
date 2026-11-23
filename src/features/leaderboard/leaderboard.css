@@ -113,6 +113,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -120,6 +121,13 @@
   color: var(--sandoz-navy);
   font-size: 0.8rem;
   font-weight: 700;
+}
+
+.os-lb-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .os-lb-person {

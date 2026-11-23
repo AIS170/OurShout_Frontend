@@ -34,6 +34,8 @@ export interface ShoutoutDto {
   country: string;
   likeCount: number;
   likedByMe: boolean;
+  /** How many comments are under it. Left out on the preview while writing a shout-out. */
+  commentCount?: number;
   /** True when the signed-in user sent it. */
   canEdit: boolean;
   visibility: Visibility;
@@ -68,6 +70,29 @@ export interface TeamDto {
 export interface LikeResult {
   likeCount: number;
   likedByMe: boolean;
+}
+
+/** One comment under a shout-out. */
+export interface CommentDto {
+  id: number;
+  shoutoutId: number;
+  author: EmployeeSummary;
+  text: string;
+  createdAt: string;
+  /** True for your own comments, and for every comment when you are an admin. */
+  canDelete: boolean;
+}
+
+/** What GET /api/shoutouts/:id/comments returns: oldest first. commentCount is the full total. */
+export interface CommentList {
+  items: CommentDto[];
+  commentCount: number;
+}
+
+/** What POST /api/shoutouts/:id/comments returns. */
+export interface CommentResult {
+  comment: CommentDto;
+  commentCount: number;
 }
 
 /** Body of POST /api/shoutouts. */
@@ -118,3 +143,6 @@ export const DEFAULT_FEED_FILTER: FeedFilter = { sort: 'newest', principleId: nu
 
 /** Limit for "why" and "impact", after trimming. The server enforces the same limit. */
 export const MAX_TEXT_LENGTH = 500;
+
+/** Limit for a comment, after trimming. The server enforces the same limit. */
+export const MAX_COMMENT_LENGTH = 300;
