@@ -590,6 +590,13 @@ export function useReportInsights(range: ReportRange): QueryResult<ReportInsight
   return { data: query.data, isLoading: query.isLoading, error: query.error };
 }
 
+export async function saveKindnessGoal(goal: number): Promise<{ goal: number }> {
+  return apiFetch<{ goal: number }>('/api/admin/reports/kindness-goal', {
+    method: 'POST',
+    body: { goal },
+  });
+}
+
 /**
  * Downloads GET /api/admin/reports/export.csv. A plain link can't send the login token,
  * so fetch it and hand the browser a file.

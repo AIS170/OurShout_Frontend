@@ -34,7 +34,7 @@ export interface ReportInsightsDto {
   };
   crossTeam: { recipientRows: number; crossTeamRows: number; share: number };   // share 0..1
   teamShoutouts: { count: number; share: number };
-  kindness: { count: number; share: number };
+  kindness: { count: number; share: number; goal?: number };
   likes: { total: number; averagePerPost: number };
   mostLiked: { shoutoutId: number; senderName: string; principleName: string; likeCount: number; createdAt: string } | null;
   topGivers: LeaderboardEntry[];            // top 5

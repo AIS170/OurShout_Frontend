@@ -36,6 +36,7 @@ import { ADMIN_NS } from '../i18n';
 import { formatMonth } from '../posts/postFormat';
 import { ChartCard, type ChartRow } from './ChartCard';
 import { GivenReceivedPeople, GivenReceivedTrend } from './GivenReceived';
+import { KindnessProgressCard } from './KindnessProgressCard';
 
 type Preset = 'month' | 'quarter' | 'year' | 'all' | 'custom';
 const PRESETS: Exclude<Preset, 'custom'>[] = ['month', 'quarter', 'year', 'all'];
@@ -290,6 +291,14 @@ export function ReportsPage() {
             <Caption1 className={styles.muted}>{t('reports.tiles.likesDetail', { count: x.likes.total })}</Caption1>
           </div>
         </div>
+
+        {/* Kindness Campaign Progress Bar */}
+        <KindnessProgressCard
+          currentCount={x.kindness.count}
+          serverGoal={x.kindness.goal}
+          totalPosts={x.total}
+          isAdmin={isAdmin}
+        />
 
         {x.mostLiked && (
           <div className={styles.highlight}>
