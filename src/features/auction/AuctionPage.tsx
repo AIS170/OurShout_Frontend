@@ -2,7 +2,7 @@
 // Forza Auction House Experience:
 // - Spotlight showcase for the currently selected auction lot
 // - Left & Right arrow buttons and keyboard navigation (ArrowLeft / ArrowRight)
-// - Horizontal lot carousel reel with smooth auto-scroll to the spotlight item
+// - Horizontal lot carousel reel showcasing all auction lots
 // - Unrevealed items (UPCOMING) display a mystery '?' question mark cover
 // - Once out (LIVE or ENDED), the admin's uploaded photo replaces the '?'
 import React, { useEffect, useRef, useState } from 'react';
@@ -37,9 +37,6 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
   const { data, isLoading, error, reload, placeBid } = useAuctions();
   const [filter, setFilter] = useState<FilterTab>('ALL');
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-
-  const carouselRef = useRef<HTMLUListElement>(null);
-  const cardRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   // Track points change to notify parent
   const spent = data?.balance.spent;
@@ -79,19 +76,6 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
       setSelectedIndex(Math.max(0, filteredItems.length - 1));
     }
   }, [filteredItems.length, selectedIndex]);
-
-  // Smooth scroll active card into view
-  useEffect(() => {
-    if (filteredItems.length === 0) return;
-    const cardEl = cardRefs.current[selectedIndex];
-    if (cardEl && carouselRef.current) {
-      cardEl.scrollIntoView({
-        behavior: 'smooth',
-        inline: 'center',
-        block: 'nearest',
-      });
-    }
-  }, [selectedIndex, filteredItems]);
 
   // Arrow navigation handlers
   const handlePrev = () => {
@@ -362,11 +346,10 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
 
         {/* Scrollable Track */}
         <div className="os-forza-track-container">
-          <ul ref={carouselRef} className="os-forza-carousel-track">
+          <ul className="os-forza-carousel-track">
             {filteredItems.map((item, idx) => (
               <li
                 key={item.id}
-                ref={(el) => (cardRefs.current[idx] = el)}
                 className="os-forza-track-item"
               >
                 <AuctionCard
