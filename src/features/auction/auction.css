@@ -522,6 +522,71 @@
   line-height: 1.5;
 }
 
+/* ---------- Header Telemetry Bar (Bridges Title and Balance HUD) ---------- */
+
+.os-forza-header-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1 1 360px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.os-forza-hud-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.9rem;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 28, 74, 0.04);
+  flex: 1 1 135px;
+  min-width: 130px;
+}
+
+.os-forza-chip-icon {
+  flex-shrink: 0;
+}
+
+.os-forza-chip-icon.is-blue {
+  color: var(--sandoz-blue);
+}
+
+.os-forza-chip-icon.is-amber {
+  color: #d97706;
+}
+
+.os-forza-chip-icon.is-purple {
+  color: #7c3aed;
+}
+
+.os-forza-chip-data {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.os-forza-chip-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sandoz-text-muted);
+}
+
+.os-forza-chip-value {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--sandoz-navy);
+}
+
+.os-forza-chip-sub {
+  font-size: 0.66rem;
+  color: var(--sandoz-text-muted);
+}
+
 .os-forza-balance-hud {
   display: flex;
   flex-direction: column;
@@ -634,6 +699,56 @@
   color: #15803d;
   font-size: 0.75rem;
   font-weight: 700;
+}
+
+/* ---------- Lot Scrubber (Sub-header lot pills) ---------- */
+
+.os-forza-lot-scrubber {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-scrubber-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 3.125rem;
+  border: 1px solid var(--sandoz-border-grey);
+  background-color: #ffffff;
+  color: var(--sandoz-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.os-forza-scrubber-pill:hover {
+  border-color: var(--sandoz-blue);
+  color: var(--sandoz-blue);
+  background-color: var(--sandoz-soft-blue-bg);
+}
+
+.os-forza-scrubber-pill.is-active {
+  background-color: var(--sandoz-navy);
+  border-color: var(--sandoz-navy);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 28, 74, 0.2);
+}
+
+.os-forza-scrubber-idx {
+  font-family: var(--font-headline);
+  letter-spacing: 0.04em;
+}
+
+.os-forza-scrubber-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #60a5fa;
+  box-shadow: 0 0 6px #60a5fa;
 }
 
 .os-forza-spotlight-tag {
@@ -794,6 +909,51 @@
   color: var(--sandoz-text-muted);
 }
 
+.os-forza-top-left-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 4px;
+  background-color: var(--sandoz-soft-blue-bg);
+  border: 1px solid var(--sandoz-pill-blue);
+  color: var(--sandoz-blue);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.os-forza-sku-tag {
+  font-size: 0.72rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--sandoz-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.os-forza-top-center-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 3.125rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: var(--sandoz-text-body);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.os-forza-shield-icon {
+  color: #10b981;
+}
+
 .os-forza-status-group {
   display: flex;
   align-items: center;
@@ -929,6 +1089,82 @@
   color: #fef3c7;
   font-size: 0.78rem;
   font-weight: 700;
+}
+
+/* ---------- Lot Specifications & Fulfillment Box (Fills space under stage image) ---------- */
+
+.os-forza-specs-box {
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.os-forza-specs-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sandoz-navy);
+}
+
+.os-forza-specs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.os-forza-spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.45rem 0.65rem;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 8px;
+}
+
+.os-forza-spec-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sandoz-text-muted);
+}
+
+.os-forza-spec-val {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+}
+
+.os-forza-specs-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.os-forza-perk-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  color: var(--sandoz-text-muted);
+  line-height: 1.35;
+}
+
+.os-forza-perk-check {
+  color: #10b981;
+  flex-shrink: 0;
 }
 
 /* ==========================================================================
@@ -1328,6 +1564,204 @@
   font-size: 0.72rem;
   font-weight: 700;
   border: 1px solid #a7f3d0;
+}
+
+/* ---------- Live Bidding Activity Feed Card (Recent Bids Feed) ---------- */
+
+.os-forza-bid-feed-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 28, 74, 0.04);
+}
+
+.os-forza-bid-feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.4rem;
+}
+
+.os-forza-feed-title-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--sandoz-navy);
+}
+
+.os-forza-feed-flame {
+  color: #d97706;
+}
+
+.os-forza-feed-count {
+  font-size: 0.7rem;
+  color: var(--sandoz-text-muted);
+  font-weight: 600;
+}
+
+.os-forza-live-pulse-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #10b981;
+  letter-spacing: 0.06em;
+}
+
+.os-forza-pulse-ring {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: os-forza-pulse 1.8s infinite;
+}
+
+.os-forza-bid-feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-height: 155px;
+  overflow-y: auto;
+}
+
+.os-forza-feed-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  transition: background-color 0.15s ease;
+}
+
+.os-forza-feed-entry.is-leading {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.os-forza-feed-rank {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+
+.os-forza-feed-bidder {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.os-forza-feed-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--sandoz-blue);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.os-forza-feed-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.os-forza-feed-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.os-forza-feed-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.os-forza-feed-btn:hover {
+  color: var(--sandoz-blue);
+  text-decoration: underline;
+}
+
+.os-forza-feed-person-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.os-forza-feed-dept {
+  font-size: 0.65rem;
+  color: var(--sandoz-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.os-forza-feed-time {
+  font-size: 0.68rem;
+  color: var(--sandoz-text-muted);
+  white-space: nowrap;
+}
+
+.os-forza-feed-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+.os-forza-feed-amount strong {
+  font-family: var(--font-headline);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--sandoz-navy);
+}
+
+.os-forza-feed-amount span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--sandoz-blue);
+}
+
+.os-forza-feed-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.65rem;
+  font-size: 0.75rem;
+  color: var(--sandoz-text-muted);
+  text-align: center;
 }
 
 /* Mock Email Bid Updates Card in Spotlight Console */

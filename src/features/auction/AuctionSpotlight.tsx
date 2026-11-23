@@ -13,13 +13,15 @@ import {
   Gavel,
   Lock,
   Mail,
+  Package,
+  ShieldCheck,
   Sparkles,
   Trophy,
   User,
   X,
   Zap,
 } from 'lucide-react';
-import { formatFullDate } from '../../components/feed/relativeTime';
+import { formatFullDate, formatRelativeTime } from '../../components/feed/relativeTime';
 import { AuctionCover } from './AuctionCover';
 import type { AuctionBalanceDto, AuctionBidder, AuctionItemDto } from './auctionTypes';
 import { t } from './i18n';
@@ -45,7 +47,7 @@ const initials = (name: string): string =>
     .join('')
     .slice(0, 2);
 
-function formatTimeRemaining(targetIso: string): { label: string; urgent: boolean; isPast: boolean } {
+export function formatTimeRemaining(targetIso: string): { label: string; urgent: boolean; isPast: boolean } {
   const diff = new Date(targetIso).getTime() - Date.now();
   if (diff <= 0) return { label: '00:00:00', urgent: true, isPast: true };
 
@@ -61,6 +63,64 @@ function formatTimeRemaining(targetIso: string): { label: string; urgent: boolea
     return { label: `${days}d ${hours}h ${pad(minutes)}m`, urgent: false, isPast: false };
   }
   return { label: `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`, urgent, isPast: false };
+}
+
+function getLotMeta(item: AuctionItemDto) {
+  const name = item.name.toLowerCase();
+  if (name.includes('headphone') || name.includes('quietcomfort') || name.includes('audio')) {
+    return {
+      category: '🎧 Audio & Wearables',
+      sku: 'SKU #SNDZ-AUD-045',
+      retailEst: '$399 AUD',
+      warranty: '2-Year Bose Warranty',
+    };
+  }
+  if (name.includes('parking') || name.includes('vip')) {
+    return {
+      category: '🚗 Workplace Perks',
+      sku: 'SKU #SNDZ-PRK-001',
+      retailEst: 'Exclusive Priority',
+      warranty: 'Reserved 1 Month',
+    };
+  }
+  if (name.includes('hoodie') || name.includes('jacket') || name.includes('apparel')) {
+    return {
+      category: '⚡ Sandoz Apparel',
+      sku: 'SKU #SNDZ-APP-012',
+      retailEst: '$120 AUD',
+      warranty: 'Embroidered Cotton',
+    };
+  }
+  if (name.includes('lunch') || name.includes('dining') || name.includes('restaurant')) {
+    return {
+      category: '🍽 Dining & Events',
+      sku: 'SKU #SNDZ-EXP-008',
+      retailEst: '$450 AUD',
+      warranty: 'All-Inclusive Dining',
+    };
+  }
+  if (name.includes('espresso') || name.includes('coffee') || name.includes('barista')) {
+    return {
+      category: '☕ Kitchen & Lifestyle',
+      sku: 'SKU #SNDZ-KIT-023',
+      retailEst: '$850 AUD',
+      warranty: '3-Year Manufacturer',
+    };
+  }
+  if (name.includes('hydro') || name.includes('flask') || name.includes('bottle')) {
+    return {
+      category: '💧 Wellness & Office',
+      sku: 'SKU #SNDZ-WEL-006',
+      retailEst: '$65 AUD',
+      warranty: 'Lifetime Bottle Guarantee',
+    };
+  }
+  return {
+    category: '🎁 Sandoz Reward',
+    sku: `SKU #SNDZ-LOT-${String(item.id).padStart(3, '0')}`,
+    retailEst: `${Math.round(item.startingBid * 1.5)} AUD Est.`,
+    warranty: 'Official Sandoz Reward',
+  };
 }
 
 export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
@@ -136,15 +196,25 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
   const isLive = item.status === 'LIVE';
   const isUpcoming = item.status === 'UPCOMING';
   const isEnded = item.status === 'ENDED';
+  const meta = getLotMeta(item);
 
   return (
     <article className="os-forza-spotlight" aria-labelledby={`spotlight-title-${item.id}`}>
       {/* Top Telemetry / Status Ribbon */}
       <div className="os-forza-spotlight-topbar">
-        <div className="os-forza-lot-badge">
-          <span className="os-forza-lot-num">LOT {String(lotIndex + 1).padStart(2, '0')}</span>
-          <span className="os-forza-lot-sep">/</span>
-          <span className="os-forza-lot-total">{String(totalLots).padStart(2, '0')}</span>
+        <div className="os-forza-top-left-badges">
+          <div className="os-forza-lot-badge">
+            <span className="os-forza-lot-num">LOT {String(lotIndex + 1).padStart(2, '0')}</span>
+            <span className="os-forza-lot-sep">/</span>
+            <span className="os-forza-lot-total">{String(totalLots).padStart(2, '0')}</span>
+          </div>
+          <span className="os-forza-category-tag">{meta.category}</span>
+          <span className="os-forza-sku-tag">{meta.sku}</span>
+        </div>
+
+        <div className="os-forza-top-center-banner">
+          <ShieldCheck size={14} className="os-forza-shield-icon" />
+          <span>Sandoz Employee Benefit · Verified Campus Fulfillment</span>
         </div>
 
         <div className="os-forza-status-group">
@@ -206,7 +276,7 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
       </div>
 
       <div className="os-forza-spotlight-grid">
-        {/* Left Side: Cinematic Media Stage */}
+        {/* Left Side: Cinematic Media Stage + Lot Specifications */}
         <div className="os-forza-stage">
           <div className="os-forza-stage-frame">
             <AuctionCover item={item} variant="spotlight" />
@@ -229,6 +299,42 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
                   <span>{item.bidCount} {item.bidCount === 1 ? 'Bid' : 'Bids'}</span>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Lot Specifications & Fulfillment Box (Fills space under the preview image!) */}
+          <div className="os-forza-specs-box">
+            <div className="os-forza-specs-header">
+              <Package size={14} />
+              <span>LOT SPECIFICATIONS & REWARD PERKS</span>
+            </div>
+            <div className="os-forza-specs-grid">
+              <div className="os-forza-spec-item">
+                <span className="os-forza-spec-label">EST. RETAIL VALUE</span>
+                <strong className="os-forza-spec-val">{meta.retailEst}</strong>
+              </div>
+              <div className="os-forza-spec-item">
+                <span className="os-forza-spec-label">CONDITION</span>
+                <strong className="os-forza-spec-val">Factory Sealed · New</strong>
+              </div>
+              <div className="os-forza-spec-item">
+                <span className="os-forza-spec-label">COLLECTION</span>
+                <strong className="os-forza-spec-val">HR Desk / Site Courier</strong>
+              </div>
+              <div className="os-forza-spec-item">
+                <span className="os-forza-spec-label">WARRANTY</span>
+                <strong className="os-forza-spec-val">{meta.warranty}</strong>
+              </div>
+            </div>
+            <div className="os-forza-specs-perks">
+              <div className="os-forza-perk-row">
+                <CheckCircle2 size={13} className="os-forza-perk-check" />
+                <span>Points only deducted from your balance if you hold the winning bid at close.</span>
+              </div>
+              <div className="os-forza-perk-row">
+                <CheckCircle2 size={13} className="os-forza-perk-check" />
+                <span>Official Sandoz recognition reward with zero out-of-pocket employee expense.</span>
+              </div>
             </div>
           </div>
         </div>
@@ -304,6 +410,68 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
                 <div className="os-forza-leading-tag">
                   <CheckCircle2 size={13} aria-hidden="true" />
                   You hold the highest bid!
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Live Bidding Activity Feed (Recent Bids Log) */}
+          <div className="os-forza-bid-feed-card">
+            <div className="os-forza-bid-feed-header">
+              <div className="os-forza-feed-title-line">
+                <Flame size={14} className="os-forza-feed-flame" />
+                <strong>LIVE BIDDING ACTIVITY</strong>
+                <span className="os-forza-feed-count">{item.bidCount} {item.bidCount === 1 ? 'Bid' : 'Bids'} Placed</span>
+              </div>
+              <span className="os-forza-live-pulse-indicator">
+                <span className="os-forza-pulse-ring" />
+                REAL-TIME
+              </span>
+            </div>
+
+            <div className="os-forza-bid-feed-list">
+              {item.recentBids && item.recentBids.length > 0 ? (
+                item.recentBids.map((b, idx) => (
+                  <div key={b.id} className={`os-forza-feed-entry ${idx === 0 ? 'is-leading' : ''}`}>
+                    <div className="os-forza-feed-rank">
+                      {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
+                    </div>
+                    <div className="os-forza-feed-bidder">
+                      <div className="os-forza-feed-avatar">
+                        {b.bidder.avatarUrl ? (
+                          <img src={b.bidder.avatarUrl} alt="" />
+                        ) : (
+                          initials(b.bidder.name)
+                        )}
+                      </div>
+                      <div className="os-forza-feed-names">
+                        {onOpenProfile ? (
+                          <button
+                            type="button"
+                            className="os-forza-feed-btn"
+                            onClick={() => onOpenProfile(b.bidder.employeeId)}
+                          >
+                            {b.bidder.name}
+                          </button>
+                        ) : (
+                          <span className="os-forza-feed-person-name">{b.bidder.name}</span>
+                        )}
+                        <span className="os-forza-feed-dept">{b.bidder.teamName || b.bidder.jobTitle}</span>
+                      </div>
+                    </div>
+                    <div className="os-forza-feed-time">
+                      {formatRelativeTime(b.createdAt)}
+                    </div>
+                    <div className="os-forza-feed-amount">
+                      <strong>{b.amount}</strong>
+                      <span>PTS</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="os-forza-feed-empty">
+                  <User size={16} />
+                  <span>No bids placed yet · Starting reserve is <strong>{item.startingBid} pts</strong></span>
                 </div>
               )}
             </div>

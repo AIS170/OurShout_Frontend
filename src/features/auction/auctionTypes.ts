@@ -10,6 +10,13 @@ export interface AuctionBidder extends EmployeeSummary {
   avatarUrl: string | null;
 }
 
+export interface AuctionBidEntry {
+  id: number;
+  amount: number;
+  createdAt: string;
+  bidder: AuctionBidder;
+}
+
 export interface AuctionItemDto {
   id: number;
   name: string;
@@ -22,6 +29,7 @@ export interface AuctionItemDto {
   currentBid: number | null;        // the leading bid; the winning bid once ENDED
   currentBidder: AuctionBidder | null;
   bidCount: number;
+  recentBids?: AuctionBidEntry[];
   minNextBid: number;               // startingBid, or currentBid + 1
   leadingIsMe: boolean;
 }

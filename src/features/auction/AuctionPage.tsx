@@ -14,12 +14,13 @@ import {
   Clock,
   Flame,
   Gavel,
+  Package,
   RefreshCw,
   Sparkles,
   Trophy,
 } from 'lucide-react';
 import { AuctionCard } from './AuctionCard';
-import { AuctionSpotlight } from './AuctionSpotlight';
+import { AuctionSpotlight, formatTimeRemaining } from './AuctionSpotlight';
 import type { AuctionItemDto, AuctionStatus } from './auctionTypes';
 import { t } from './i18n';
 import { useAuctions } from './useAuctions';
@@ -182,6 +183,7 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
   const liveCount = allItems.filter((i) => i.status === 'LIVE').length;
   const upcomingCount = allItems.filter((i) => i.status === 'UPCOMING').length;
   const endedCount = allItems.filter((i) => i.status === 'ENDED').length;
+  const totalBidsCount = allItems.reduce((acc, it) => acc + (it.bidCount || 0), 0);
 
   return (
     <main className="os-auc-page os-forza-theme" id="main-content">
@@ -195,6 +197,36 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
           </div>
           <h1 className="os-forza-main-title">{t('pageTitle')}</h1>
           <p className="os-forza-main-intro">{t('pageIntro')}</p>
+        </div>
+
+        {/* Live Catalog Telemetry HUD Bar (Fills empty space in the header!) */}
+        <div className="os-forza-header-telemetry" aria-label="Auction Overview Telemetry">
+          <div className="os-forza-hud-chip">
+            <Package size={16} className="os-forza-chip-icon is-blue" aria-hidden="true" />
+            <div className="os-forza-chip-data">
+              <span className="os-forza-chip-label">CATALOG REWARDS</span>
+              <strong className="os-forza-chip-value">{allItems.length} Lots Listed</strong>
+              <span className="os-forza-chip-sub">{liveCount} Live Now · {upcomingCount} Soon</span>
+            </div>
+          </div>
+          <div className="os-forza-hud-chip">
+            <Flame size={16} className="os-forza-chip-icon is-amber" aria-hidden="true" />
+            <div className="os-forza-chip-data">
+              <span className="os-forza-chip-label">TOTAL BIDDING</span>
+              <strong className="os-forza-chip-value">{totalBidsCount} Bids Placed</strong>
+              <span className="os-forza-chip-sub">Contested across company</span>
+            </div>
+          </div>
+          <div className="os-forza-hud-chip">
+            <Clock size={16} className="os-forza-chip-icon is-purple" aria-hidden="true" />
+            <div className="os-forza-chip-data">
+              <span className="os-forza-chip-label">ACTIVE LOT TIME</span>
+              <strong className="os-forza-chip-value">
+                {spotlightItem ? formatTimeRemaining(spotlightItem.endsAt).label : '—'}
+              </strong>
+              <span className="os-forza-chip-sub">Current lot closes</span>
+            </div>
+          </div>
         </div>
 
         {/* Live Points Telemetry HUD */}
@@ -239,6 +271,24 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
                   {notifiedItemIds.size} {notifiedItemIds.size === 1 ? 'lot' : 'lots'} watched
                 </span>
               )}
+            </div>
+
+            {/* Direct Lot Scrubber / Numbered Selector Pills (Fills empty space in nav bar!) */}
+            <div className="os-forza-lot-scrubber" role="tablist" aria-label="Quick Lot Navigation">
+              {filteredItems.map((item, idx) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={idx === selectedIndex}
+                  onClick={() => setSelectedIndex(idx)}
+                  className={`os-forza-scrubber-pill ${idx === selectedIndex ? 'is-active' : ''}`}
+                  title={`${item.name} (${item.currentBid ?? item.startingBid} pts)`}
+                >
+                  <span className="os-forza-scrubber-idx">{String(idx + 1).padStart(2, '0')}</span>
+                  <span className="os-forza-scrubber-dot" />
+                </button>
+              ))}
             </div>
 
             {/* Carousel Arrow Controls */}
