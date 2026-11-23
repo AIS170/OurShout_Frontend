@@ -25,6 +25,7 @@ interface AuctionSpotlightProps {
   balance: AuctionBalanceDto;
   lotIndex: number;
   totalLots: number;
+  isTrendingTab?: boolean;
   onBid: (itemId: number, amount: number) => Promise<AuctionItemDto>;
   onOpenProfile?: (employeeId: string) => void;
   onPrev: () => void;
@@ -61,6 +62,7 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
   balance,
   lotIndex,
   totalLots,
+  isTrendingTab = false,
   onBid,
   onOpenProfile,
   onPrev,
@@ -138,6 +140,18 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
         </div>
 
         <div className="os-forza-status-group">
+          {isTrendingTab ? (
+            <span className="os-forza-status-pill is-trending">
+              <Flame size={13} aria-hidden="true" />
+              #{lotIndex + 1} MOST POPULAR
+            </span>
+          ) : item.bidCount >= 3 ? (
+            <span className="os-forza-status-pill is-trending">
+              <Flame size={13} aria-hidden="true" />
+              TRENDING LOT
+            </span>
+          ) : null}
+
           {isLive && (
             <span className="os-forza-status-pill is-live">
               <span className="os-forza-live-dot" />
@@ -388,3 +402,4 @@ export const AuctionSpotlight: React.FC<AuctionSpotlightProps> = ({
     </article>
   );
 };
+

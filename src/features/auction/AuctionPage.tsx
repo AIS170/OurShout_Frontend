@@ -31,7 +31,7 @@ export interface AuctionPageProps {
   onPointsChanged?: () => void;
 }
 
-type FilterTab = 'ALL' | 'LIVE' | 'UPCOMING' | 'ENDED';
+type FilterTab = 'ALL' | 'TRENDING' | 'LIVE' | 'UPCOMING' | 'ENDED';
 
 export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps) {
   const { data, isLoading, error, reload, placeBid } = useAuctions();
@@ -52,10 +52,26 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
 
   // Filter items
   const allItems = data?.items || [];
+
+  // Trending/Popular items: ranked by bid count (descending), then current/starting bid
+  const trendingItems = React.useMemo(() => {
+    return allItems
+      .filter((item) => item.bidCount > 0)
+      .sort((a, b) => {
+        if (b.bidCount !== a.bidCount) return b.bidCount - a.bidCount;
+        return (b.currentBid ?? b.startingBid) - (a.currentBid ?? a.startingBid);
+      });
+  }, [allItems]);
+
   const filteredItems = React.useMemo(() => {
     if (filter === 'ALL') return allItems;
+    if (filter === 'TRENDING') {
+      return trendingItems.length > 0
+        ? trendingItems
+        : [...allItems].sort((a, b) => b.bidCount - a.bidCount);
+    }
     return allItems.filter((item) => item.status === filter);
-  }, [allItems, filter]);
+  }, [allItems, filter, trendingItems]);
 
   // Keep selected index in bounds when items or filter changes
   useEffect(() => {
@@ -236,6 +252,7 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
             balance={data.balance}
             lotIndex={selectedIndex}
             totalLots={filteredItems.length}
+            isTrendingTab={filter === 'TRENDING'}
             onBid={placeBid}
             onOpenProfile={onOpenProfile}
             onPrev={handlePrev}
@@ -259,6 +276,28 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
               }}
             >
               All Lots ({allItems.length})
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={filter === 'TRENDING'}
+              className={`os-forza-tab is-trending-tab ${filter === 'TRENDING' ? 'is-active' : ''}`}
+              onClick={() => {
+                setFilter('TRENDING');
+                setSelectedIndex(0);
+              }}
+              title="Items with the most bids"
+            >
+              <Flame
+                size={13}
+                aria-hidden="true"
+                style={{
+                  color: filter === 'TRENDING' ? '#FDE68A' : '#F59E0B',
+                  fill: filter === 'TRENDING' ? '#FDE68A' : 'none',
+                  marginRight: '2px',
+                }}
+              />
+              Trending ({trendingItems.length})
             </button>
             <button
               type="button"
@@ -334,6 +373,7 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
                   item={item}
                   balance={data.balance}
                   isSpotlight={idx === selectedIndex}
+                  trendingRank={filter === 'TRENDING' ? idx + 1 : undefined}
                   onSelect={() => setSelectedIndex(idx)}
                   onOpenProfile={onOpenProfile}
                   onBid={placeBid}

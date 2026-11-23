@@ -12,6 +12,7 @@ export interface AuctionCardProps {
   item: AuctionItemDto;
   balance?: AuctionBalanceDto;
   isSpotlight?: boolean;
+  trendingRank?: number;
   onSelect?: () => void;
   /** Legacy props for backward compatibility */
   onBid?: (itemId: number, amount: number) => Promise<AuctionItemDto>;
@@ -21,6 +22,7 @@ export interface AuctionCardProps {
 export const AuctionCard: React.FC<AuctionCardProps> = ({
   item,
   isSpotlight = false,
+  trendingRank,
   onSelect,
 }) => {
   const isLive = item.status === 'LIVE';
@@ -68,6 +70,13 @@ export const AuctionCard: React.FC<AuctionCardProps> = ({
         {isSpotlight && (
           <div className="os-forza-card-active-tag">
             <span>SPOTLIGHT</span>
+          </div>
+        )}
+
+        {trendingRank !== undefined && (
+          <div className="os-forza-card-rank-tag">
+            <Flame size={11} aria-hidden="true" />
+            <span>#{trendingRank}</span>
           </div>
         )}
       </div>

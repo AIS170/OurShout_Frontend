@@ -79,3 +79,4 @@ export const AuctionCover: React.FC<AuctionCoverProps> = ({ item, variant = 'thu
     </div>
   );
 };
+
