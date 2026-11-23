@@ -69,6 +69,7 @@ export interface ShoutoutDto {
   createdAt: string;        // ISO
   editedAt: string | null;  // ISO
   kind: ShoutoutKind;       // SLT: shown in gold, as from the Senior Leadership Team
+  scheduledFor?: string | null; // ISO; set when scheduled for a future date & time
 }
 export interface Page<T> { items: T[]; nextCursor: string | null }
 
@@ -80,6 +81,7 @@ export interface CreateShoutoutRequest {
   reason: string;           // 1–500 chars after trimming
   impact: string;           // 1–500 chars after trimming
   actOfKindness: boolean;   // required yes/no, no default in the UI
+  scheduledFor?: string;    // optional future ISO date/time for scheduled posts
 }
 export interface EditShoutoutRequest {
   principleId?: number; reason?: string; impact?: string; actOfKindness?: boolean;

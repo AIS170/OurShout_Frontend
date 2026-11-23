@@ -60,6 +60,7 @@ export interface ShoutoutDto {
    * it is from the leadership team. Left out (or 'STANDARD') for an ordinary shout-out.
    */
   kind?: 'STANDARD' | 'SLT';
+  scheduledFor?: string | null;
 }
 
 export interface Page<T> {

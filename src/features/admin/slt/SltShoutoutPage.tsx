@@ -29,7 +29,7 @@ import {
   tokens,
   typographyStyles,
 } from '@fluentui/react-components';
-import { AddRegular, DismissRegular, OpenRegular, SearchRegular, StarRegular } from '@fluentui/react-icons';
+import { AddRegular, CalendarClockRegular, ClockRegular, DismissRegular, OpenRegular, SearchRegular, StarRegular } from '@fluentui/react-icons';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -43,7 +43,7 @@ import { useDebouncedValue } from '../useDebouncedValue';
 const MAX_TEXT = 500;
 const MAX_PEOPLE = 50;
 
-type Errors = Partial<Record<'people' | 'principle' | 'reason' | 'impact', string>>;
+type Errors = Partial<Record<'people' | 'principle' | 'reason' | 'impact' | 'schedule', string>>;
 
 const useStyles = makeStyles({
   page: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL },
@@ -101,6 +101,9 @@ export function SltShoutoutPage() {
   const [reason, setReason] = useState('');
   const [impact, setImpact] = useState('');
   const [kindness, setKindness] = useState(false);
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [scheduledTime, setScheduledTime] = useState('');
   const [errors, setErrors] = useState<Errors>({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
@@ -144,6 +147,9 @@ export function SltShoutoutPage() {
     setReason('');
     setImpact('');
     setKindness(false);
+    setIsScheduled(false);
+    setScheduledDate('');
+    setScheduledTime('');
     setErrors({});
   }
 
@@ -155,6 +161,23 @@ export function SltShoutoutPage() {
     if (!principleId) problems.principle = t('slt.errors.principle');
     if (!reason.trim()) problems.reason = t('slt.errors.reason');
     if (!impact.trim()) problems.impact = t('slt.errors.impact');
+
+    let scheduledIso: string | undefined = undefined;
+    if (isScheduled) {
+      if (!scheduledDate || !scheduledTime) {
+        problems.schedule = 'Please choose both a date and time for the scheduled post.';
+      } else {
+        const schedDt = new Date(`${scheduledDate}T${scheduledTime}`);
+        if (isNaN(schedDt.getTime())) {
+          problems.schedule = 'Please enter a valid date and time.';
+        } else if (schedDt.getTime() <= Date.now()) {
+          problems.schedule = 'Scheduled post date & time must be in the future.';
+        } else {
+          scheduledIso = schedDt.toISOString();
+        }
+      }
+    }
+
     setErrors(problems);
     setAnnouncement('');
     setSaveError('');
@@ -177,8 +200,18 @@ export function SltShoutoutPage() {
         reason: reason.trim(),
         impact: impact.trim(),
         actOfKindness: kindness,
+        scheduledFor: scheduledIso,
       });
-      setAnnouncement(t('slt.announce', { label: recipientsLabel(created, t) }));
+
+      if (scheduledIso) {
+        const formattedDate = new Intl.DateTimeFormat(i18n.language || 'en-AU', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        }).format(new Date(scheduledIso));
+        setAnnouncement(`SLT shout-out to ${recipientsLabel(created, t)} scheduled for ${formattedDate}.`);
+      } else {
+        setAnnouncement(t('slt.announce', { label: recipientsLabel(created, t) }));
+      }
       reset();
     } catch (err) {
       // The server's message says what's wrong (someone has left, the principle was retired…).
@@ -190,17 +223,51 @@ export function SltShoutoutPage() {
 
   function renderRow(post: ShoutoutDto) {
     const href = `${adminBase}/posts/${post.id}`;
+    const isFutureScheduled = Boolean(
+      post.scheduledFor && new Date(post.scheduledFor).getTime() > Date.now()
+    );
+
     return (
       <TableRow key={post.id}>
         <TableCell>
-          <time dateTime={post.createdAt}>{dateFormat.format(new Date(post.createdAt))}</time>
+          {isFutureScheduled && post.scheduledFor ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  color: '#92400E',
+                  fontWeight: 600,
+                  fontSize: '0.74rem',
+                }}
+              >
+                <ClockRegular style={{ fontSize: '12px' }} />
+                Scheduled for:
+              </span>
+              <time dateTime={post.scheduledFor} style={{ fontWeight: 600 }}>
+                {new Intl.DateTimeFormat(i18n.language || 'en-AU', {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                }).format(new Date(post.scheduledFor))}
+              </time>
+            </div>
+          ) : (
+            <time dateTime={post.createdAt}>{dateFormat.format(new Date(post.createdAt))}</time>
+          )}
         </TableCell>
         <TableCell>{recipientsLabel(post, t)}</TableCell>
         <TableCell>{post.principle.name}</TableCell>
         <TableCell>
-          <Badge appearance="tint" color={VISIBILITY_COLOR[post.visibility]}>
-            {t(`posts.visibility.${post.visibility}`)}
-          </Badge>
+          {isFutureScheduled ? (
+            <Badge appearance="tint" color="warning" icon={<ClockRegular />}>
+              Scheduled
+            </Badge>
+          ) : (
+            <Badge appearance="tint" color={VISIBILITY_COLOR[post.visibility]}>
+              {t(`posts.visibility.${post.visibility}`)}
+            </Badge>
+          )}
         </TableCell>
         <TableCell>
           <Button
@@ -396,13 +463,117 @@ export function SltShoutoutPage() {
         </Field>
         <Checkbox label={t('slt.kindness')} checked={kindness} onChange={(_, d) => setKindness(d.checked === true)} />
 
+        {/* Schedule Post: Date & Time */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: tokens.spacingVerticalS,
+            padding: tokens.spacingHorizontalM,
+            backgroundColor: isScheduled ? '#FEFCE8' : tokens.colorNeutralBackground3,
+            borderRadius: tokens.borderRadiusMedium,
+            border: isScheduled ? '1.5px solid #D4A72C' : '1px solid transparent',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          <Checkbox
+            label="Schedule this post for a future date & time"
+            checked={isScheduled}
+            onChange={(_, d) => {
+              const active = d.checked === true;
+              setIsScheduled(active);
+              setErrors((e) => ({ ...e, schedule: undefined }));
+              if (active && !scheduledDate) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const yyyy = tomorrow.getFullYear();
+                const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+                const dd = String(tomorrow.getDate()).padStart(2, '0');
+                setScheduledDate(`${yyyy}-${mm}-${dd}`);
+                setScheduledTime('09:00');
+              }
+            }}
+          />
+
+          {isScheduled && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalS, marginTop: tokens.spacingVerticalXXS }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: tokens.spacingHorizontalM, alignItems: 'flex-start' }}>
+                <Field
+                  label="Publish Date"
+                  required
+                  className={styles.grow}
+                  validationState={errors.schedule ? 'error' : 'none'}
+                >
+                  <Input
+                    type="date"
+                    value={scheduledDate}
+                    min={new Date().toISOString().slice(0, 10)}
+                    onChange={(_, d) => {
+                      setScheduledDate(d.value);
+                      setErrors((e) => ({ ...e, schedule: undefined }));
+                    }}
+                  />
+                </Field>
+
+                <Field
+                  label="Publish Time"
+                  required
+                  className={styles.grow}
+                  validationState={errors.schedule ? 'error' : 'none'}
+                  validationMessage={errors.schedule}
+                >
+                  <Input
+                    type="time"
+                    value={scheduledTime}
+                    onChange={(_, d) => {
+                      setScheduledTime(d.value);
+                      setErrors((e) => ({ ...e, schedule: undefined }));
+                    }}
+                  />
+                </Field>
+              </div>
+
+              {scheduledDate && scheduledTime && (
+                <Caption1
+                  style={{
+                    color: '#92400E',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    padding: '4px 8px',
+                    backgroundColor: 'rgba(254, 243, 199, 0.6)',
+                    borderRadius: '4px',
+                  }}
+                >
+                  <ClockRegular /> Post will publish on{' '}
+                  {new Intl.DateTimeFormat(i18n.language || 'en-AU', {
+                    dateStyle: 'full',
+                    timeStyle: 'short',
+                  }).format(new Date(`${scheduledDate}T${scheduledTime}`))}
+                </Caption1>
+              )}
+            </div>
+          )}
+        </div>
+
         {saveError && (
           <MessageBar intent="error">
             <MessageBarBody>{saveError}</MessageBarBody>
           </MessageBar>
         )}
-        <Button className={styles.submit} type="submit" appearance="primary" icon={<StarRegular />} disabled={saving}>
-          {t(saving ? 'slt.saving' : 'slt.submit')}
+        <Button
+          className={styles.submit}
+          type="submit"
+          appearance="primary"
+          icon={isScheduled ? <CalendarClockRegular /> : <StarRegular />}
+          disabled={saving}
+        >
+          {saving
+            ? t('slt.saving')
+            : isScheduled
+              ? 'Schedule SLT Shout-out'
+              : t('slt.submit')}
         </Button>
       </form>
 
