@@ -557,6 +557,12 @@ export function SltShoutoutPage() {
           )}
         </div>
 
+        <MessageBar intent="warning">
+          <MessageBarBody>
+            Please refraining from using any future or in-the-work products in your shoutout
+          </MessageBarBody>
+        </MessageBar>
+
         {saveError && (
           <MessageBar intent="error">
             <MessageBarBody>{saveError}</MessageBarBody>

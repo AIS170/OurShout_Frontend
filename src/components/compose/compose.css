@@ -64,6 +64,33 @@
   line-height: 1.5;
 }
 
+/* ---------- compliance notice ---------- */
+
+.os-compliance-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.15rem;
+  background-color: #fef3c7;
+  border: 1.5px solid #fcd34d;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.os-compliance-notice.is-start {
+  max-width: 540px;
+  margin: 0.5rem auto 1.25rem;
+}
+
+.os-compliance-icon {
+  flex-shrink: 0;
+  color: #d97706;
+}
+
 .os-btn-large {
   padding: 0.8rem 1.8rem;
   font-size: 1rem;

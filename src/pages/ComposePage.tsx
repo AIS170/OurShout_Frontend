@@ -282,6 +282,10 @@ export const ComposePage: React.FC<ComposePageProps> = ({ currentUser, onDone, o
               OurShout makes it easy to recognise great work at Sandoz—say thanks, celebrate our values, and make
               everyday impact visible.
             </p>
+            <div className="os-compliance-notice is-start" role="note">
+              <AlertCircle size={20} aria-hidden="true" className="os-compliance-icon" />
+              <span>Please refraining from using any future or in-the-work products in your shoutout</span>
+            </div>
             <button type="button" className="os-btn os-btn-primary os-btn-large" onClick={() => setStage('who')}>
               Start now
               <ArrowRight size={18} aria-hidden="true" />
@@ -597,6 +601,11 @@ export const ComposePage: React.FC<ComposePageProps> = ({ currentUser, onDone, o
               <p className="os-hint">This is how it will look on the newsfeed.</p>
               <ShoutoutCard shoutout={preview} hideActions />
             </section>
+
+            <div className="os-compliance-notice" role="note">
+              <AlertCircle size={18} aria-hidden="true" className="os-compliance-icon" />
+              <span>Please refraining from using any future or in-the-work products in your shoutout</span>
+            </div>
 
             <div className="os-panel-actions os-panel-actions-split">
               <button type="button" className="os-btn os-btn-quiet" onClick={() => setStage('who')}>

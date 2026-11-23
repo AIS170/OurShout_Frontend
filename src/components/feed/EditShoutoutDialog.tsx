@@ -206,6 +206,11 @@ export const EditShoutoutDialog: React.FC<EditShoutoutDialogProps> = ({ shoutout
           </div>
         </fieldset>
 
+        <div className="os-compliance-notice" role="note" style={{ marginBottom: '1rem' }}>
+          <AlertCircle size={18} aria-hidden="true" className="os-compliance-icon" />
+          <span>Please refraining from using any future or in-the-work products in your shoutout</span>
+        </div>
+
         <div className="os-dialog-actions">
           <button type="button" className="os-btn os-btn-quiet" onClick={onClose}>
             Cancel

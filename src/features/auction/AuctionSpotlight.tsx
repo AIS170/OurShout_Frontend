@@ -70,6 +70,38 @@ export function formatTimeRemaining(targetIso: string): { label: string; urgent:
 
 function getLotMeta(item: AuctionItemDto) {
   const name = item.name.toLowerCase();
+  if (name.includes('coaching') || name.includes('clint')) {
+    return {
+      category: '🎓 Leadership & Mentorship',
+      sku: 'SKU #SNDZ-EXP-001',
+      retailEst: 'Priceless Session',
+      warranty: '1-on-1 Executive Coaching',
+    };
+  }
+  if (name.includes('cooking') || name.includes('liz')) {
+    return {
+      category: '🍳 Culinary Masterclass',
+      sku: 'SKU #SNDZ-EXP-002',
+      retailEst: 'Exclusive Experience',
+      warranty: 'Personalized Cooking Session',
+    };
+  }
+  if (name.includes('warehouse') || name.includes('wendy')) {
+    return {
+      category: '🏭 Behind-the-Scenes Tour',
+      sku: 'SKU #SNDZ-EXP-003',
+      retailEst: 'VIP Facility Access',
+      warranty: 'Guided Supply Chain Tour',
+    };
+  }
+  if (name.includes('dinner') || name.includes('mel')) {
+    return {
+      category: '🍷 Executive Dining',
+      sku: 'SKU #SNDZ-EXP-004',
+      retailEst: 'Fine Dining Experience',
+      warranty: 'Evening Discussion & Dinner',
+    };
+  }
   if (name.includes('headphone') || name.includes('quietcomfort') || name.includes('audio')) {
     return {
       category: '🎧 Audio & Wearables',
