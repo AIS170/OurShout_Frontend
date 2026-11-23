@@ -176,6 +176,7 @@ export const App: React.FC = () => {
           currentUser={currentUser}
           onCompose={() => setView('compose')}
           onOpenProfile={openProfile}
+          onViewLeaderboard={() => setView('leaderboard')}
           onSessionEnded={handleSignOut}
         />
       ) : (

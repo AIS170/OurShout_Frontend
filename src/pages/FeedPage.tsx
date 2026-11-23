@@ -21,7 +21,7 @@ import {
   TeamDto,
 } from '../components/feed/feedTypes';
 import '../components/feed/feed.css';
-import { Leaderboard } from '../features/leaderboard';
+import { SltShoutouts } from '../components/feed/SltShoutouts';
 
 interface FeedPageProps {
   currentUser: Me;
@@ -29,6 +29,8 @@ interface FeedPageProps {
   onCompose: () => void;
   /** Opens a colleague's profile, from a name on a card. */
   onOpenProfile: (employeeId: string) => void;
+  /** Switches to the full leaderboard page when clicked. */
+  onViewLeaderboard?: () => void;
   /** Called when the API says the session is no longer valid (expired, suspended, left). */
   onSessionEnded: () => void;
 }
@@ -45,6 +47,7 @@ export const FeedPage: React.FC<FeedPageProps> = ({
   currentUser,
   onCompose,
   onOpenProfile,
+  onViewLeaderboard,
   onSessionEnded,
 }) => {
   const [filter, setFilter] = useState<FeedFilter>(DEFAULT_FEED_FILTER);
@@ -285,9 +288,9 @@ export const FeedPage: React.FC<FeedPageProps> = ({
         </div>
       </main>
 
-      {/* Right column (stacks under the feed on narrow screens): Nathan's leaderboard. */}
-      <aside className="os-feed-side" aria-label="Leaderboard">
-        <Leaderboard onOpenProfile={onOpenProfile} />
+      {/* Right column (stacks under the feed on narrow screens): SLT shoutouts. */}
+      <aside className="os-feed-side" aria-label="Senior Leadership Team Shout-outs">
+        <SltShoutouts onOpenProfile={onOpenProfile} onViewLeaderboard={onViewLeaderboard} />
       </aside>
       </div>
 

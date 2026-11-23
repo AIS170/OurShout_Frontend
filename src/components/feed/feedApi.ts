@@ -78,6 +78,10 @@ export function fetchFeed(filter: FeedFilter, cursor: string | null, signal?: Ab
   return apiRequest<Page<ShoutoutDto>>(`/api/shoutouts?${params.toString()}`, { signal });
 }
 
+export function fetchSltShoutouts(limit = 10, signal?: AbortSignal) {
+  return apiRequest<Page<ShoutoutDto>>(`/api/shoutouts?kind=SLT&limit=${limit}`, { signal });
+}
+
 export function fetchPrinciples(signal?: AbortSignal) {
   return apiRequest<PrincipleDto[]>('/api/principles', { signal });
 }
