@@ -146,13 +146,13 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({
               <button
                 type="button"
                 onClick={onViewProfile}
-                title="View my recognition profile"
+                title={currentUser.teamName ? `${currentUser.name} · ${currentUser.teamName} (View Profile)` : `View recognition profile for ${currentUser.name}`}
                 aria-label={`View recognition profile for ${currentUser.name}`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.75rem',
-                  padding: '0.4rem 0.9rem',
+                  gap: '0.65rem',
+                  padding: '0.35rem 0.85rem',
                   backgroundColor: 'var(--sandoz-soft-blue-bg)',
                   borderRadius: '3.125rem',
                   border: '1px solid var(--sandoz-pill-blue)',
@@ -160,7 +160,9 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({
                   transition: 'all 0.15s ease',
                   textAlign: 'left',
                   fontFamily: 'inherit',
-                  outline: 'none'
+                  outline: 'none',
+                  minHeight: '38px',
+                  boxSizing: 'border-box'
                 }}
                 onMouseEnter={(e) => {
                   if (onViewProfile) {
@@ -178,8 +180,8 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({
                 }}
               >
                 <div style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '30px',
+                  height: '30px',
                   borderRadius: '50%',
                   backgroundColor: 'var(--sandoz-blue)',
                   color: '#FFFFFF',
@@ -187,7 +189,7 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontWeight: 700,
-                  fontSize: '0.85rem',
+                  fontSize: '0.82rem',
                   flexShrink: 0,
                   overflow: 'hidden',
                 }}>
@@ -201,14 +203,14 @@ export const SandozHeader: React.FC<SandozHeaderProps> = ({
                     currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2)
                   )}
                 </div>
-                <div style={{ textAlign: 'left', lineHeight: 1.25 }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--sandoz-navy)' }}>
-                    {currentUser.name}
-                  </div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--sandoz-text-muted)' }}>
-                    {currentUser.teamName} · {currentUser.role}
-                  </div>
-                </div>
+                <span style={{
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  color: 'var(--sandoz-navy)',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {currentUser.name}
+                </span>
 
                 <div style={{
                   display: 'flex',
