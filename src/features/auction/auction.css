@@ -463,3 +463,1302 @@
     flex-direction: column;
   }
 }
+
+/* ==========================================================================
+   FORZA AUCTION HOUSE STYLES
+   Motorsport telemetry, spotlight showcase, mystery '?' cover, and carousel reel
+   ========================================================================== */
+
+.os-forza-theme {
+  max-width: 1220px;
+  gap: 2.25rem;
+}
+
+/* ---------- Forza Header & Points HUD ---------- */
+
+.os-forza-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.os-forza-title-group {
+  flex: 1 1 360px;
+}
+
+.os-forza-top-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 3.125rem;
+  background-color: var(--sandoz-soft-blue-bg);
+  border: 1px solid var(--sandoz-pill-blue);
+  color: var(--sandoz-blue);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.6rem;
+}
+
+.os-forza-main-title {
+  font-family: var(--font-headline);
+  font-size: 2.35rem;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.os-forza-main-intro {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--sandoz-text-muted);
+  max-width: 62ch;
+  line-height: 1.5;
+}
+
+.os-forza-balance-hud {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.1rem 1.6rem;
+  background: linear-gradient(135deg, #001c4a 0%, #0a2f74 100%);
+  border-radius: 14px;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 28, 74, 0.15);
+  min-width: 250px;
+  position: relative;
+  overflow: hidden;
+}
+
+.os-forza-balance-hud::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.os-forza-hud-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #93c5fd;
+}
+
+.os-forza-hud-points {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.os-forza-hud-points strong {
+  font-family: var(--font-headline);
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.os-forza-hud-points span {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #60a5fa;
+  letter-spacing: 0.05em;
+}
+
+.os-forza-hud-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.os-forza-hud-tag {
+  color: #cbd5e1;
+}
+
+.os-forza-hud-tag.held {
+  color: #fde68a;
+}
+
+.os-forza-hud-tag.spent {
+  color: #94a3b8;
+}
+
+/* ---------- Spotlight Controls Header ---------- */
+
+.os-forza-spotlight-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.os-forza-spotlight-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0.25rem;
+}
+
+.os-forza-nav-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-spotlight-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 3.125rem;
+  background-color: #fef3c7;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.os-forza-key-hint {
+  font-size: 0.82rem;
+  color: var(--sandoz-text-muted);
+}
+
+.os-forza-key-hint kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.os-forza-nav-arrows {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.os-forza-arrow-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sandoz-border-grey);
+  background-color: #ffffff;
+  color: var(--sandoz-navy);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 28, 74, 0.06);
+}
+
+.os-forza-arrow-btn:hover {
+  background-color: var(--sandoz-blue);
+  border-color: var(--sandoz-blue);
+  color: #ffffff;
+  transform: scale(1.06);
+  box-shadow: 0 4px 12px rgba(28, 89, 181, 0.25);
+}
+
+.os-forza-arrow-btn.mini {
+  width: 32px;
+  height: 32px;
+}
+
+.os-forza-nav-counter {
+  font-family: var(--font-headline);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+  padding: 0 0.35rem;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* ---------- The Hero Spotlight Component ---------- */
+
+.os-forza-spotlight {
+  background-color: #ffffff;
+  border: 1px solid var(--sandoz-border-grey);
+  border-radius: 18px;
+  padding: 1.75rem;
+  box-shadow: 0 10px 32px rgba(0, 28, 74, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.os-forza-spotlight-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--sandoz-border-grey);
+  padding-bottom: 0.9rem;
+}
+
+.os-forza-lot-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-family: var(--font-headline);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.os-forza-lot-num {
+  font-size: 1.15rem;
+  color: var(--sandoz-blue);
+}
+
+.os-forza-lot-sep {
+  color: var(--sandoz-border-input);
+  font-size: 0.9rem;
+}
+
+.os-forza-lot-total {
+  font-size: 0.95rem;
+  color: var(--sandoz-text-muted);
+}
+
+.os-forza-status-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.os-forza-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 3.125rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.os-forza-status-pill.is-live {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.os-forza-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: os-forza-pulse 1.8s infinite;
+}
+
+.os-forza-status-pill.is-upcoming {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.os-forza-status-pill.is-ended {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+/* Spotlight 2-column Grid */
+
+.os-forza-spotlight-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 1.75rem;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .os-forza-spotlight-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Stage Frame (Left Side of Spotlight) */
+
+.os-forza-stage {
+  display: flex;
+  flex-direction: column;
+}
+
+.os-forza-stage-frame {
+  position: relative;
+  width: 100%;
+  min-height: 380px;
+  border-radius: 14px;
+  overflow: hidden;
+  background-color: #0f172a;
+  border: 1px solid rgba(0, 28, 74, 0.12);
+  display: flex;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.os-forza-stage-hud-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.9) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  z-index: 10;
+}
+
+.os-forza-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.4rem 0.85rem;
+  border-radius: 3.125rem;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.os-forza-timer-badge strong {
+  font-family: var(--font-headline);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #93c5fd;
+  font-variant-numeric: tabular-nums;
+}
+
+.os-forza-timer-badge strong.is-urgent {
+  color: #f87171;
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.os-forza-bids-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: rgba(245, 158, 11, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 0.4rem 0.85rem;
+  border-radius: 3.125rem;
+  color: #fef3c7;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   MYSTERY QUESTION MARK COVER ('?')
+   Displayed when an item is UPCOMING / not available yet on the auction table.
+   ========================================================================== */
+
+.os-forza-mystery-cover {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #1e293b 0%, #0b132b 100%);
+  overflow: hidden;
+}
+
+.os-forza-carbon-bg {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.02) 0px,
+    rgba(255, 255, 255, 0.02) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+  opacity: 0.8;
+}
+
+/* Crosshair telemetry corners */
+.os-forza-crosshair {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: rgba(96, 165, 250, 0.4);
+  pointer-events: none;
+}
+
+.os-forza-crosshair.top-left {
+  top: 14px;
+  left: 14px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+.os-forza-crosshair.top-right {
+  top: 14px;
+  right: 14px;
+  border-top: 2px solid;
+  border-right: 2px solid;
+}
+
+.os-forza-crosshair.bottom-left {
+  bottom: 14px;
+  left: 14px;
+  border-bottom: 2px solid;
+  border-left: 2px solid;
+}
+
+.os-forza-crosshair.bottom-right {
+  bottom: 14px;
+  right: 14px;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+}
+
+.os-forza-mystery-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+}
+
+.os-forza-qm-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.os-forza-qm-text {
+  font-family: var(--font-headline), 'Futura Now', system-ui, sans-serif;
+  font-size: 6.5rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #ffffff 0%, #93c5fd 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.75));
+  animation: os-forza-pulse 2.5s ease-in-out infinite;
+  user-select: none;
+}
+
+.os-forza-qm-glow {
+  position: absolute;
+  font-family: var(--font-headline), 'Futura Now', system-ui, sans-serif;
+  font-size: 6.5rem;
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(96, 165, 250, 0.35);
+  filter: blur(20px);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Thumbnail size for Question mark */
+.os-forza-mystery-cover.is-thumb {
+  min-height: 145px;
+}
+
+.os-forza-mystery-cover.is-thumb .os-forza-qm-text,
+.os-forza-mystery-cover.is-thumb .os-forza-qm-glow {
+  font-size: 2.8rem;
+}
+
+.os-forza-mystery-meta {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.os-forza-mystery-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.95rem;
+  border-radius: 3.125rem;
+  background: rgba(30, 58, 138, 0.7);
+  border: 1px solid rgba(147, 197, 253, 0.4);
+  color: #bfdbfe;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.os-forza-mystery-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ==========================================================================
+   REVEALED ADMIN IMAGE COVER
+   Replaces the '?' question mark once the auction item is out (LIVE or ENDED).
+   ========================================================================== */
+
+.os-forza-image-cover {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+}
+
+.os-forza-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.os-forza-spotlight:hover .os-forza-cover-img {
+  transform: scale(1.03);
+}
+
+.os-forza-cover-overlay {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.os-forza-image-cover.is-ended .os-forza-cover-img {
+  filter: grayscale(0.5);
+  opacity: 0.85;
+}
+
+/* Fallback cover when out but no image uploaded */
+.os-forza-fallback-cover {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #001c4a 0%, #1c59b5 100%);
+  color: #ffffff;
+  padding: 1.5rem;
+}
+
+.os-forza-fallback-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.os-forza-fallback-cover.is-thumb .os-forza-fallback-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.os-forza-fallback-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #93c5fd;
+}
+
+/* ---------- Console (Right Side of Spotlight) ---------- */
+
+.os-forza-console {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  justify-content: space-between;
+}
+
+.os-forza-spotlight-title {
+  font-family: var(--font-headline);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.os-forza-spotlight-desc {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--sandoz-text-body);
+}
+
+/* Telemetry Grid */
+
+.os-forza-telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+@media (max-width: 550px) {
+  .os-forza-telemetry-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.os-forza-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  background-color: var(--sandoz-soft-blue-bg);
+  border: 1px solid var(--sandoz-pill-blue);
+}
+
+.os-forza-stat-card.is-primary {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: #93c5fd;
+}
+
+.os-forza-stat-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sandoz-text-muted);
+}
+
+.os-forza-stat-val {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.os-forza-pts-num {
+  font-family: var(--font-headline);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--sandoz-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.os-forza-pts-unit {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--sandoz-blue);
+  letter-spacing: 0.04em;
+}
+
+.os-forza-stat-sub {
+  font-size: 0.75rem;
+  color: var(--sandoz-text-muted);
+}
+
+/* Bidder profile display in stat card */
+
+.os-forza-bidder-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.15rem;
+}
+
+.os-forza-bidder-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--sandoz-blue);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.os-forza-bidder-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.os-forza-bidder-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.os-forza-bidder-name-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--sandoz-navy);
+  cursor: pointer;
+  text-align: left;
+}
+
+.os-forza-bidder-name-btn:hover {
+  color: var(--sandoz-blue);
+  text-decoration: underline;
+}
+
+.os-forza-bidder-name {
+  font-size: 0.95rem;
+  color: var(--sandoz-navy);
+}
+
+.os-forza-bidder-team {
+  font-size: 0.72rem;
+  color: var(--sandoz-text-muted);
+}
+
+.os-forza-no-bids {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--sandoz-text-muted);
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+}
+
+.os-forza-leading-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background-color: #ecfdf5;
+  color: #065f46;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid #a7f3d0;
+}
+
+/* Action Area & Form */
+
+.os-forza-action-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: auto;
+}
+
+.os-forza-bid-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.os-forza-quick-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-quick-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--sandoz-text-muted);
+  margin-right: 0.2rem;
+}
+
+.os-forza-chip {
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--sandoz-border-grey);
+  background-color: #ffffff;
+  color: var(--sandoz-navy);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.os-forza-chip:hover:not(:disabled) {
+  border-color: var(--sandoz-blue);
+  background-color: var(--sandoz-soft-blue-bg);
+  color: var(--sandoz-blue);
+}
+
+.os-forza-input-row {
+  display: flex;
+  gap: 0.65rem;
+  align-items: stretch;
+}
+
+.os-forza-input-wrapper {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.os-forza-input {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 0.9rem;
+  border: 2px solid var(--sandoz-border-input);
+  border-radius: 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+  background-color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.os-forza-input:focus {
+  border-color: var(--sandoz-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(28, 89, 181, 0.15);
+}
+
+.os-forza-input-suffix {
+  position: absolute;
+  right: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sandoz-text-muted);
+  pointer-events: none;
+}
+
+.os-forza-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, var(--sandoz-blue) 0%, #001c4a 100%);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(28, 89, 181, 0.25);
+}
+
+.os-forza-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(28, 89, 181, 0.35);
+}
+
+.os-forza-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.os-forza-balance-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--sandoz-text-muted);
+}
+
+.os-forza-alert {
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.os-forza-alert.is-success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.os-forza-alert.is-error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.os-forza-upcoming-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 10px;
+  background-color: var(--sandoz-soft-blue-bg);
+  border: 1px solid var(--sandoz-pill-blue);
+  color: var(--sandoz-navy);
+}
+
+.os-forza-upcoming-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.os-forza-upcoming-box p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--sandoz-text-muted);
+}
+
+.os-forza-ended-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: var(--sandoz-navy);
+}
+
+.os-forza-ended-box p {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.85rem;
+  color: var(--sandoz-text-muted);
+}
+
+/* ==========================================================================
+   CAROUSEL REEL TRACK (Bottom Section)
+   Scrollable horizontal track of auction lots
+   ========================================================================== */
+
+.os-forza-reel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.os-forza-reel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-filter-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.os-forza-tab {
+  padding: 0.45rem 1rem;
+  border-radius: 3.125rem;
+  border: 1.5px solid var(--sandoz-border-grey);
+  background-color: #ffffff;
+  color: var(--sandoz-text-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.os-forza-tab:hover {
+  border-color: var(--sandoz-blue);
+  color: var(--sandoz-blue);
+}
+
+.os-forza-tab.is-active {
+  background-color: var(--sandoz-blue);
+  border-color: var(--sandoz-blue);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(28, 89, 181, 0.25);
+}
+
+/* Track container */
+
+.os-forza-track-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.os-forza-carousel-track {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem 0.25rem 1.25rem;
+  display: flex;
+  gap: 1.2rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.os-forza-carousel-track::-webkit-scrollbar {
+  height: 8px;
+}
+
+.os-forza-carousel-track::-webkit-scrollbar-track {
+  background: var(--sandoz-sand-bg);
+  border-radius: 4px;
+}
+
+.os-forza-carousel-track::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.os-forza-carousel-track::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.os-forza-track-item {
+  flex: 0 0 250px;
+  scroll-snap-align: center;
+}
+
+/* ---------- Forza Card Thumbnail ---------- */
+
+.os-forza-card {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1.5px solid var(--sandoz-border-grey);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 28, 74, 0.05);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  user-select: none;
+}
+
+.os-forza-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--sandoz-blue);
+  box-shadow: 0 8px 24px rgba(28, 89, 181, 0.18);
+}
+
+.os-forza-card.is-spotlight-active {
+  border-color: var(--sandoz-blue);
+  border-width: 2.5px;
+  box-shadow: 0 10px 28px rgba(28, 89, 181, 0.28);
+  transform: translateY(-6px) scale(1.02);
+  outline: 2px solid rgba(28, 89, 181, 0.3);
+}
+
+.os-forza-card-media-wrapper {
+  position: relative;
+  width: 100%;
+  height: 145px;
+  overflow: hidden;
+  background-color: #0f172a;
+}
+
+.os-forza-card-badge-pos {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 5;
+}
+
+.os-forza-card-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.os-forza-card-pill.is-live {
+  background-color: rgba(16, 185, 129, 0.9);
+  color: #ffffff;
+}
+
+.os-forza-card-pill.is-upcoming {
+  background-color: rgba(37, 99, 235, 0.9);
+  color: #ffffff;
+}
+
+.os-forza-card-pill.is-ended {
+  background-color: rgba(71, 85, 105, 0.9);
+  color: #ffffff;
+}
+
+.os-forza-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ffffff;
+}
+
+.os-forza-card-active-tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  background-color: var(--sandoz-blue);
+  color: #ffffff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.os-forza-card-content {
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.os-forza-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--sandoz-navy);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.os-forza-card-bid-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.os-forza-card-bid-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.os-forza-card-bid-label {
+  font-size: 0.68rem;
+  color: var(--sandoz-text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.os-forza-card-bid-val {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+}
+
+.os-forza-card-bid-val strong {
+  font-family: var(--font-headline);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--sandoz-navy);
+}
+
+.os-forza-card-pts {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--sandoz-blue);
+}
+
+.os-forza-card-bids-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #d97706;
+  font-weight: 700;
+}
+
+.os-forza-card-leading-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: #ecfdf5;
+  color: #065f46;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid #a7f3d0;
+  align-self: flex-start;
+}
+
+.os-forza-loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 5rem 2rem;
+  color: var(--sandoz-text-muted);
+}
+
+/* Animations */
+
+@keyframes os-forza-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(0.97);
+  }
+}
+

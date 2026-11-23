@@ -1,17 +1,28 @@
 // src/features/auction/AuctionPage.tsx
-// The "Auction Table" page: every listed item, grouped into open for bids, coming soon and closed,
-// with the viewer's points available to bid. The app switches pages with a `view` state in
-// src/App.tsx, so it is one view entry there:
-//   view === 'auction' ? <AuctionPage onOpenProfile={openProfile} onPointsChanged={refreshCurrentUser} /> : ...
-import { useEffect, useRef } from 'react';
-import { Award } from 'lucide-react';
+// Forza Auction House Experience:
+// - Spotlight showcase for the currently selected auction lot
+// - Left & Right arrow buttons and keyboard navigation (ArrowLeft / ArrowRight)
+// - Horizontal lot carousel reel with smooth auto-scroll to the spotlight item
+// - Unrevealed items (UPCOMING) display a mystery '?' question mark cover
+// - Once out (LIVE or ENDED), the admin's uploaded photo replaces the '?'
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Award,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Flame,
+  Gavel,
+  RefreshCw,
+  Sparkles,
+  Trophy,
+} from 'lucide-react';
 import { AuctionCard } from './AuctionCard';
-import type { AuctionStatus } from './auctionTypes';
+import { AuctionSpotlight } from './AuctionSpotlight';
+import type { AuctionItemDto, AuctionStatus } from './auctionTypes';
 import { t } from './i18n';
 import { useAuctions } from './useAuctions';
 import './auction.css';
-
-const SECTIONS: AuctionStatus[] = ['LIVE', 'UPCOMING', 'ENDED'];
 
 export interface AuctionPageProps {
   /** When given, bidders' names link to their profiles. */
@@ -20,10 +31,17 @@ export interface AuctionPageProps {
   onPointsChanged?: () => void;
 }
 
+type FilterTab = 'ALL' | 'LIVE' | 'UPCOMING' | 'ENDED';
+
 export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps) {
   const { data, isLoading, error, reload, placeBid } = useAuctions();
+  const [filter, setFilter] = useState<FilterTab>('ALL');
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
-  // Winning an item spends points, which the header shows: tell the app when that total moves.
+  const carouselRef = useRef<HTMLUListElement>(null);
+  const cardRefs = useRef<(HTMLLIElement | null)[]>([]);
+
+  // Track points change to notify parent
   const spent = data?.balance.spent;
   const lastSpent = useRef<number | undefined>(undefined);
   useEffect(() => {
@@ -32,75 +50,299 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
     lastSpent.current = spent;
   }, [spent, onPointsChanged]);
 
-  function body() {
-    if (isLoading && !data) {
-      return (
-        <p className="os-auc-status" role="status">
-          {t('loading')}
-        </p>
-      );
+  // Filter items
+  const allItems = data?.items || [];
+  const filteredItems = React.useMemo(() => {
+    if (filter === 'ALL') return allItems;
+    return allItems.filter((item) => item.status === filter);
+  }, [allItems, filter]);
+
+  // Keep selected index in bounds when items or filter changes
+  useEffect(() => {
+    if (selectedIndex >= filteredItems.length) {
+      setSelectedIndex(Math.max(0, filteredItems.length - 1));
     }
-    if (error || !data) {
-      return (
+  }, [filteredItems.length, selectedIndex]);
+
+  // Smooth scroll active card into view
+  useEffect(() => {
+    if (filteredItems.length === 0) return;
+    const cardEl = cardRefs.current[selectedIndex];
+    if (cardEl && carouselRef.current) {
+      cardEl.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    }
+  }, [selectedIndex, filteredItems]);
+
+  // Arrow navigation handlers
+  const handlePrev = () => {
+    if (filteredItems.length === 0) return;
+    setSelectedIndex((prev) => (prev > 0 ? prev - 1 : filteredItems.length - 1));
+  };
+
+  const handleNext = () => {
+    if (filteredItems.length === 0) return;
+    setSelectedIndex((prev) => (prev < filteredItems.length - 1 ? prev + 1 : 0));
+  };
+
+  // Keyboard navigation (ArrowLeft / ArrowRight)
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        handleNext();
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [filteredItems.length]);
+
+  if (isLoading && !data) {
+    return (
+      <main className="os-auc-page" id="main-content">
+        <div className="os-forza-loading-box">
+          <RefreshCw size={36} className="os-spinner" />
+          <p>{t('loading')}</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <main className="os-auc-page" id="main-content">
         <div className="os-auc-empty" role="alert">
           <p>{t('loadError')}</p>
           <button type="button" className="os-auc-btn os-auc-btn-quiet" onClick={reload}>
             {t('retry')}
           </button>
         </div>
-      );
-    }
-    if (data.items.length === 0) {
-      return (
+      </main>
+    );
+  }
+
+  if (allItems.length === 0) {
+    return (
+      <main className="os-auc-page" id="main-content">
         <div className="os-auc-empty">
+          <Gavel size={44} strokeWidth={1.5} />
           <h2>{t('empty.title')}</h2>
           <p>{t('empty.body')}</p>
         </div>
-      );
-    }
+      </main>
+    );
+  }
 
-    return SECTIONS.map((status) => {
-      const items = data.items.filter((item) => item.status === status);
-      if (items.length === 0) return null;
-      const headingId = `auction-${status.toLowerCase()}`;
-      return (
-        <section key={status} className="os-auc-section" aria-labelledby={headingId}>
-          <h2 id={headingId} className="os-auc-section-title">
-            {t(`sections.${status}`)}
-          </h2>
-          <ul className="os-auc-grid">
-            {items.map((item) => (
-              <li key={item.id}>
-                <AuctionCard item={item} balance={data.balance} onBid={placeBid} onOpenProfile={onOpenProfile} />
+  const spotlightItem = filteredItems[selectedIndex] || filteredItems[0];
+  const liveCount = allItems.filter((i) => i.status === 'LIVE').length;
+  const upcomingCount = allItems.filter((i) => i.status === 'UPCOMING').length;
+  const endedCount = allItems.filter((i) => i.status === 'ENDED').length;
+
+  return (
+    <main className="os-auc-page os-forza-theme" id="main-content">
+      {/* Forza Header & Points HUD */}
+      <div className="os-forza-header">
+        <div className="os-forza-title-group">
+          <div className="os-forza-badge-row">
+            <span className="os-forza-top-pill">
+              <Sparkles size={13} /> Sandoz Recognition Rewards
+            </span>
+          </div>
+          <h1 className="os-forza-main-title">{t('pageTitle')}</h1>
+          <p className="os-forza-main-intro">{t('pageIntro')}</p>
+        </div>
+
+        {/* Live Points Telemetry HUD */}
+        <div className="os-forza-balance-hud" aria-live="polite">
+          <div className="os-forza-hud-label">
+            <Award size={16} aria-hidden="true" />
+            <span>AVAILABLE TO BID</span>
+          </div>
+          <div className="os-forza-hud-points">
+            <strong>{data.balance.available}</strong>
+            <span>PTS</span>
+          </div>
+          <div className="os-forza-hud-sub">
+            {data.balance.held > 0 && (
+              <span className="os-forza-hud-tag held">
+                {data.balance.held} pts held in leading bids
+              </span>
+            )}
+            {data.balance.spent > 0 && (
+              <span className="os-forza-hud-tag spent">
+                {data.balance.spent} pts spent on won rewards
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Spotlight Section (The Featured Item) */}
+      {spotlightItem && (
+        <section aria-label="Spotlight Auction Item" className="os-forza-spotlight-wrapper">
+          <div className="os-forza-spotlight-nav-header">
+            <div className="os-forza-nav-hint">
+              <span className="os-forza-spotlight-tag">
+                <Flame size={14} /> ACTIVE SPOTLIGHT
+              </span>
+              <span className="os-forza-key-hint">
+                Scroll with <kbd>◀</kbd> <kbd>▶</kbd> or click lots below
+              </span>
+            </div>
+
+            {/* Carousel Arrow Controls */}
+            <div className="os-forza-nav-arrows">
+              <button
+                type="button"
+                onClick={handlePrev}
+                className="os-forza-arrow-btn"
+                aria-label="Previous auction lot"
+                title="Previous lot (Left arrow key)"
+              >
+                <ChevronLeft size={22} />
+              </button>
+              <span className="os-forza-nav-counter">
+                {selectedIndex + 1} / {filteredItems.length}
+              </span>
+              <button
+                type="button"
+                onClick={handleNext}
+                className="os-forza-arrow-btn"
+                aria-label="Next auction lot"
+                title="Next lot (Right arrow key)"
+              >
+                <ChevronRight size={22} />
+              </button>
+            </div>
+          </div>
+
+          <AuctionSpotlight
+            key={spotlightItem.id}
+            item={spotlightItem}
+            balance={data.balance}
+            lotIndex={selectedIndex}
+            totalLots={filteredItems.length}
+            onBid={placeBid}
+            onOpenProfile={onOpenProfile}
+            onPrev={handlePrev}
+            onNext={handleNext}
+          />
+        </section>
+      )}
+
+      {/* Carousel Track Section (Horizontal Reel of Auction Lots) */}
+      <section className="os-forza-reel-section" aria-label="Auction Lots Carousel">
+        <div className="os-forza-reel-header">
+          <div className="os-forza-filter-tabs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={filter === 'ALL'}
+              className={`os-forza-tab ${filter === 'ALL' ? 'is-active' : ''}`}
+              onClick={() => {
+                setFilter('ALL');
+                setSelectedIndex(0);
+              }}
+            >
+              All Lots ({allItems.length})
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={filter === 'LIVE'}
+              className={`os-forza-tab ${filter === 'LIVE' ? 'is-active' : ''}`}
+              onClick={() => {
+                setFilter('LIVE');
+                setSelectedIndex(0);
+              }}
+            >
+              Live Bidding ({liveCount})
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={filter === 'UPCOMING'}
+              className={`os-forza-tab ${filter === 'UPCOMING' ? 'is-active' : ''}`}
+              onClick={() => {
+                setFilter('UPCOMING');
+                setSelectedIndex(0);
+              }}
+            >
+              Coming Soon ({upcomingCount})
+            </button>
+            {endedCount > 0 && (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={filter === 'ENDED'}
+                className={`os-forza-tab ${filter === 'ENDED' ? 'is-active' : ''}`}
+                onClick={() => {
+                  setFilter('ENDED');
+                  setSelectedIndex(0);
+                }}
+              >
+                Closed ({endedCount})
+              </button>
+            )}
+          </div>
+
+          {/* Reel Nav Controls */}
+          <div className="os-forza-nav-arrows mini">
+            <button
+              type="button"
+              onClick={handlePrev}
+              className="os-forza-arrow-btn mini"
+              aria-label="Previous auction lot"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={handleNext}
+              className="os-forza-arrow-btn mini"
+              aria-label="Next auction lot"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Scrollable Track */}
+        <div className="os-forza-track-container">
+          <ul ref={carouselRef} className="os-forza-carousel-track">
+            {filteredItems.map((item, idx) => (
+              <li
+                key={item.id}
+                ref={(el) => (cardRefs.current[idx] = el)}
+                className="os-forza-track-item"
+              >
+                <AuctionCard
+                  item={item}
+                  balance={data.balance}
+                  isSpotlight={idx === selectedIndex}
+                  onSelect={() => setSelectedIndex(idx)}
+                  onOpenProfile={onOpenProfile}
+                  onBid={placeBid}
+                />
               </li>
             ))}
           </ul>
-        </section>
-      );
-    });
-  }
-
-  return (
-    <main className="os-auc-page" id="main-content">
-      <div className="os-auc-header">
-        <div>
-          <h1 className="os-auc-title">{t('pageTitle')}</h1>
-          <p className="os-auc-intro">{t('pageIntro')}</p>
         </div>
-        {data && (
-          <div className="os-auc-balance" aria-live="polite">
-            <span className="os-auc-balance-label">
-              <Award size={15} aria-hidden="true" />
-              {t('balance.label')}
-            </span>
-            <span className="os-auc-balance-value">{t('balance.points', { count: data.balance.available })}</span>
-            {data.balance.held > 0 && <span className="os-auc-muted">{t('balance.held', { count: data.balance.held })}</span>}
-            {data.balance.spent > 0 && <span className="os-auc-muted">{t('balance.spent', { count: data.balance.spent })}</span>}
-          </div>
-        )}
-      </div>
-
-      {body()}
+      </section>
     </main>
   );
 }

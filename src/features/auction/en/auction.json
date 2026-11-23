@@ -50,5 +50,27 @@
   },
   "loading": "Loading the auction table…",
   "loadError": "We couldn't load the auction table.",
-  "retry": "Try again"
+  "retry": "Try again",
+  "forza": {
+    "spotlightBadge": "Spotlight Lot",
+    "allLots": "All Lots",
+    "liveOnly": "Live Bidding",
+    "upcomingOnly": "Coming Soon",
+    "endedOnly": "Concluded",
+    "lotOf": "Lot {{current}} of {{total}}",
+    "mysteryLot": "Classified Reward",
+    "mysteryHint": "Item photo & details revealed when bidding opens",
+    "timeRemaining": "Time Remaining",
+    "opensIn": "Opens In",
+    "endsIn": "Ends In",
+    "concluded": "Auction Concluded",
+    "highestBidder": "Highest Bidder",
+    "noBidsYet": "No Bids Placed Yet",
+    "quickBid": "Quick Bid",
+    "minBid": "Min Bid",
+    "leadingNotice": "You currently hold the leading bid!",
+    "scrollHint": "Use Left / Right arrows or click cards to switch spotlight",
+    "selectToSpotlight": "Spotlight",
+    "activeSpotlight": "In Spotlight"
+  }
 }
