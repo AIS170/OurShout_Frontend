@@ -82,6 +82,13 @@ export function fetchSltShoutouts(limit = 10, signal?: AbortSignal) {
   return apiRequest<Page<ShoutoutDto>>(`/api/shoutouts?kind=SLT&limit=${limit}`, { signal });
 }
 
+export function fetchSltLeaderboard(period: 'month' | 'all' = 'month', signal?: AbortSignal) {
+  return apiRequest<{ period: 'month' | 'all'; month: string | null; honorees: import('./feedTypes').SltHonoree[] }>(
+    `/api/leaderboard/slt?period=${period}`,
+    { signal }
+  );
+}
+
 export function fetchPrinciples(signal?: AbortSignal) {
   return apiRequest<PrincipleDto[]>('/api/principles', { signal });
 }

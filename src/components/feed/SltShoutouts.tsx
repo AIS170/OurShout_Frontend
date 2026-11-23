@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Crown, Sparkles, ThumbsUp, MessageCircle, Trophy, RefreshCw, AlertCircle, Users } from 'lucide-react';
-import { ShoutoutDto } from './feedTypes';
-import { fetchSltShoutouts, setLike } from './feedApi';
-import { formatFullDate, formatRelativeTime } from './relativeTime';
+import { Crown, Sparkles, Trophy, ChevronLeft, ChevronRight, Award, AlertCircle } from 'lucide-react';
+import { SltHonoree } from './feedTypes';
+import { fetchSltLeaderboard } from './feedApi';
 
 export interface SltShoutoutsProps {
   onOpenProfile: (employeeId: string) => void;
@@ -23,66 +22,51 @@ export const SltShoutouts: React.FC<SltShoutoutsProps> = ({
   onOpenProfile,
   onViewLeaderboard,
 }) => {
-  const [items, setItems] = useState<ShoutoutDto[]>([]);
+  const [period, setPeriod] = useState<'month' | 'all'>('month');
+  const [honorees, setHonorees] = useState<SltHonoree[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-
-  const loadData = async (silent = false) => {
-    if (!silent) setIsLoading(true);
-    else setIsRefreshing(true);
-    setError(null);
-
-    try {
-      const res = await fetchSltShoutouts(10);
-      setItems(res.items);
-    } catch (err) {
-      console.error('Failed to load SLT shoutouts:', err);
-      setError('Unable to load SLT shout-outs.');
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    let cancelled = false;
+    setIsLoading(true);
+    setError(null);
 
-  const handleToggleLike = async (post: ShoutoutDto) => {
-    const nextLiked = !post.likedByMe;
-    const nextCount = nextLiked ? post.likeCount + 1 : Math.max(0, post.likeCount - 1);
+    fetchSltLeaderboard(period)
+      .then((res) => {
+        if (!cancelled) {
+          setHonorees(res.honorees || []);
+          setSelectedIndex(0);
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error('Failed to load SLT leaderboard:', err);
+          setError('Unable to load SLT honors.');
+          setIsLoading(false);
+        }
+      });
 
-    // Optimistic UI update
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === post.id
-          ? { ...item, likedByMe: nextLiked, likeCount: nextCount }
-          : item
-      )
-    );
+    return () => {
+      cancelled = true;
+    };
+  }, [period]);
 
-    try {
-      const result = await setLike(post.id, nextLiked);
-      setItems((prev) =>
-        prev.map((item) =>
-          item.id === post.id
-            ? { ...item, likedByMe: result.likedByMe, likeCount: result.likeCount }
-            : item
-        )
-      );
-    } catch (err) {
-      console.error('Failed to update like:', err);
-      // Revert on error
-      setItems((prev) =>
-        prev.map((item) => (item.id === post.id ? post : item))
-      );
-    }
+  const activeHonoree: SltHonoree | undefined = honorees[selectedIndex] || honorees[0];
+
+  const handlePrev = () => {
+    setSelectedIndex((prev) => (prev > 0 ? prev - 1 : honorees.length - 1));
+  };
+
+  const handleNext = () => {
+    setSelectedIndex((prev) => (prev < honorees.length - 1 ? prev + 1 : 0));
   };
 
   return (
     <section
-      aria-label="Senior Leadership Team Shout-outs"
+      aria-label="Senior Leadership Team Leaderboard"
       style={{
         backgroundColor: '#FFFFFF',
         borderRadius: '16px',
@@ -91,159 +75,156 @@ export const SltShoutouts: React.FC<SltShoutoutsProps> = ({
         padding: '1.25rem',
         display: 'flex',
         flexDirection: 'column',
-        gap: '1.1rem',
+        gap: '1rem',
         minWidth: 0,
       }}
     >
-      {/* Executive Header */}
+      {/* Header with Title and Period Toggle */}
       <div
         style={{
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.5rem',
-          paddingBottom: '0.75rem',
+          flexDirection: 'column',
+          gap: '0.75rem',
+          paddingBottom: '0.85rem',
           borderBottom: '1px solid #F1F5F9',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          <div
-            style={{
-              width: '34px',
-              height: '34px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #F6DC85 0%, #D4A72C 50%, #B8860B 100%)',
-              color: '#4A3500',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(212, 167, 44, 0.35)',
-              flexShrink: 0,
-            }}
-          >
-            <Crown size={18} aria-hidden="true" />
-          </div>
-          <div>
-            <h2
-              style={{
-                margin: 0,
-                fontSize: '1.1rem',
-                fontWeight: 800,
-                color: 'var(--sandoz-navy)',
-                fontFamily: 'var(--font-headline)',
-                lineHeight: 1.2,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-              }}
-            >
-              SLT Shout-outs
-            </h2>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
             <div
               style={{
-                fontSize: '0.73rem',
-                color: 'var(--sandoz-text-muted)',
-                fontWeight: 500,
-                marginTop: '1px',
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #F6DC85 0%, #D4A72C 50%, #996515 100%)',
+                color: '#4A3500',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 8px rgba(212, 167, 44, 0.35)',
+                flexShrink: 0,
               }}
             >
-              Senior Leadership Team
+              <Crown size={17} aria-hidden="true" />
+            </div>
+            <div>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: '1.05rem',
+                  fontWeight: 800,
+                  color: 'var(--sandoz-navy)',
+                  fontFamily: 'var(--font-headline)',
+                  lineHeight: 1.2,
+                }}
+              >
+                SLT Leaderboard
+              </h2>
+              <div style={{ fontSize: '0.72rem', color: 'var(--sandoz-text-muted)', fontWeight: 500 }}>
+                Senior Leadership Team Honors
+              </div>
             </div>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <span
             style={{
-              fontSize: '0.68rem',
+              fontSize: '0.67rem',
               fontWeight: 700,
               padding: '2px 8px',
               borderRadius: '999px',
               backgroundColor: '#FEF3C7',
               color: '#92400E',
               border: '1px solid #FCD34D',
-              letterSpacing: '0.02em',
               textTransform: 'uppercase',
+              letterSpacing: '0.03em',
             }}
           >
             Executive
           </span>
+        </div>
 
+        {/* This Month / All Time Switch */}
+        <div
+          role="group"
+          aria-label="Filter SLT Leaderboard by timeframe"
+          style={{
+            display: 'flex',
+            backgroundColor: 'var(--sandoz-soft-blue-bg)',
+            borderRadius: '999px',
+            padding: '3px',
+            border: '1px solid var(--sandoz-border-grey)',
+          }}
+        >
           <button
             type="button"
-            title="Refresh SLT shout-outs"
-            aria-label="Refresh SLT shout-outs"
-            onClick={() => loadData(true)}
-            disabled={isRefreshing || isLoading}
+            aria-pressed={period === 'month'}
+            onClick={() => setPeriod('month')}
             style={{
-              background: 'transparent',
+              flex: 1,
+              padding: '0.35rem 0.65rem',
+              borderRadius: '999px',
               border: 'none',
-              cursor: isRefreshing || isLoading ? 'default' : 'pointer',
-              color: 'var(--sandoz-text-muted)',
-              padding: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '4px',
-              transition: 'color 0.15s ease',
+              cursor: 'pointer',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              transition: 'all 0.15s ease',
+              backgroundColor: period === 'month' ? 'var(--sandoz-blue)' : 'transparent',
+              color: period === 'month' ? '#FFFFFF' : 'var(--sandoz-text-body)',
+              boxShadow: period === 'month' ? '0 2px 6px rgba(28, 89, 181, 0.25)' : 'none',
             }}
           >
-            <RefreshCw
-              size={14}
-              style={{
-                animation: isRefreshing ? 'spin 1s linear infinite' : 'none',
-              }}
-            />
+            This Month
+          </button>
+          <button
+            type="button"
+            aria-pressed={period === 'all'}
+            onClick={() => setPeriod('all')}
+            style={{
+              flex: 1,
+              padding: '0.35rem 0.65rem',
+              borderRadius: '999px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              transition: 'all 0.15s ease',
+              backgroundColor: period === 'all' ? 'var(--sandoz-blue)' : 'transparent',
+              color: period === 'all' ? '#FFFFFF' : 'var(--sandoz-text-body)',
+              boxShadow: period === 'all' ? '0 2px 6px rgba(28, 89, 181, 0.25)' : 'none',
+            }}
+          >
+            All Time
           </button>
         </div>
       </div>
 
-      {/* Loading Skeleton */}
+      {/* Loading State */}
       {isLoading && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-          {[1, 2].map((i) => (
-            <div
-              key={i}
-              style={{
-                padding: '1rem',
-                borderRadius: '12px',
-                border: '1px solid #E2E8F0',
-                backgroundColor: '#F8FAFC',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.65rem',
-              }}
-            >
-              <div
-                style={{
-                  height: '14px',
-                  width: '45%',
-                  backgroundColor: '#E2E8F0',
-                  borderRadius: '4px',
-                }}
-              />
-              <div
-                style={{
-                  height: '18px',
-                  width: '80%',
-                  backgroundColor: '#E2E8F0',
-                  borderRadius: '4px',
-                }}
-              />
-              <div
-                style={{
-                  height: '36px',
-                  width: '100%',
-                  backgroundColor: '#E2E8F0',
-                  borderRadius: '6px',
-                }}
-              />
-            </div>
-          ))}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '2.5rem 1rem',
+            gap: '0.75rem',
+          }}
+        >
+          <div
+            style={{
+              width: '96px',
+              height: '96px',
+              borderRadius: '50%',
+              backgroundColor: '#F1F5F9',
+              border: '4px solid #E2E8F0',
+            }}
+          />
+          <div style={{ height: '16px', width: '60%', backgroundColor: '#F1F5F9', borderRadius: '4px' }} />
+          <div style={{ height: '12px', width: '40%', backgroundColor: '#F1F5F9', borderRadius: '4px' }} />
         </div>
       )}
 
-      {/* Error state */}
+      {/* Error State */}
       {!isLoading && error && (
         <div
           role="alert"
@@ -253,26 +234,25 @@ export const SltShoutouts: React.FC<SltShoutoutsProps> = ({
             backgroundColor: '#FEF2F2',
             border: '1px solid #FCA5A5',
             color: '#991B1B',
-            fontSize: '0.82rem',
+            fontSize: '0.8rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '0.5rem',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <AlertCircle size={16} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <AlertCircle size={15} />
             <span>{error}</span>
           </div>
           <button
             type="button"
-            onClick={() => loadData()}
+            onClick={() => setPeriod((p) => p)}
             style={{
               background: '#FFFFFF',
               border: '1px solid #FCA5A5',
               borderRadius: '4px',
-              padding: '3px 8px',
-              fontSize: '0.75rem',
+              padding: '2px 6px',
+              fontSize: '0.72rem',
               fontWeight: 600,
               color: '#991B1B',
               cursor: 'pointer',
@@ -284,7 +264,7 @@ export const SltShoutouts: React.FC<SltShoutoutsProps> = ({
       )}
 
       {/* Empty State */}
-      {!isLoading && !error && items.length === 0 && (
+      {!isLoading && !error && honorees.length === 0 && (
         <div
           style={{
             padding: '2rem 1rem',
@@ -296,303 +276,459 @@ export const SltShoutouts: React.FC<SltShoutoutsProps> = ({
           }}
         >
           <Sparkles size={24} style={{ color: '#D4A72C', marginBottom: '0.5rem' }} />
-          <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem' }}>
-            No SLT Shout-outs yet
+          <p style={{ margin: 0, fontWeight: 700, fontSize: '0.88rem' }}>
+            No SLT Honors Recorded
           </p>
-          <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#92400E' }}>
-            Milestone achievements recognized by the Executive Team will appear here.
+          <p style={{ margin: '4px 0 0', fontSize: '0.75rem', color: '#92400E' }}>
+            {period === 'month' ? 'No leadership recognitions this month yet.' : 'No leadership recognitions posted yet.'}
           </p>
         </div>
       )}
 
-      {/* List of SLT Cards */}
-      {!isLoading && !error && items.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {items.map((post) => {
-            const hasTargetTeam = Boolean(post.targetTeam);
-            const mainRecipient = post.recipients[0];
-
-            return (
-              <article
-                key={post.id}
+      {/* Honoree in the Golden Frame */}
+      {!isLoading && !error && activeHonoree && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+          {/* Golden Frame Spotlight Card */}
+          <div
+            style={{
+              position: 'relative',
+              borderRadius: '16px',
+              background: 'linear-gradient(180deg, #FFFCF2 0%, #FFFFFF 100%)',
+              border: '1.5px solid #F3DF9A',
+              boxShadow: '0 4px 16px rgba(212, 167, 44, 0.12)',
+              padding: '1.35rem 1rem 1.1rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+            }}
+          >
+            {/* Carousel navigation controls if more than 1 honoree */}
+            {honorees.length > 1 && (
+              <div
                 style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '12px',
-                  border: '1px solid #E2E8F0',
-                  borderLeft: '4px solid #D4A72C',
-                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
-                  overflow: 'hidden',
+                  position: 'absolute',
+                  top: '10px',
+                  left: '12px',
+                  right: '12px',
                   display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  pointerEvents: 'none',
                 }}
               >
-                {/* Gold Leadership Ribbon */}
-                <div
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  aria-label="Previous SLT honoree"
+                  title="Previous honoree"
                   style={{
-                    padding: '0.35rem 0.75rem',
-                    background:
-                      'linear-gradient(90deg, #C9981A 0%, #F6DC85 35%, #FFF5D0 50%, #F6DC85 65%, #C9981A 100%)',
-                    color: '#4A3500',
-                    fontSize: '0.67rem',
-                    fontWeight: 800,
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
+                    pointerEvents: 'auto',
+                    background: '#FFFFFF',
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.06)',
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: 'var(--sandoz-navy)',
                   }}
                 >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                    <Sparkles size={11} aria-hidden="true" />
-                    Leadership Honor
-                  </span>
-                  <time
-                    dateTime={post.createdAt}
-                    title={formatFullDate(post.createdAt)}
-                    style={{ fontSize: '0.65rem', fontWeight: 600, opacity: 0.9 }}
-                  >
-                    {formatRelativeTime(post.createdAt)}
-                  </time>
-                </div>
+                  <ChevronLeft size={14} />
+                </button>
 
+                <span
+                  style={{
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    color: '#92400E',
+                    backgroundColor: '#FEF3C7',
+                    padding: '2px 7px',
+                    borderRadius: '999px',
+                    border: '1px solid #FCD34D',
+                  }}
+                >
+                  Honoree {selectedIndex + 1} of {honorees.length}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  aria-label="Next SLT honoree"
+                  title="Next honoree"
+                  style={{
+                    pointerEvents: 'auto',
+                    background: '#FFFFFF',
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.06)',
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: 'var(--sandoz-navy)',
+                  }}
+                >
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            )}
+
+            {/* THE GOLDEN FRAME */}
+            <div
+              style={{
+                marginTop: honorees.length > 1 ? '0.75rem' : '0.2rem',
+                position: 'relative',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {/* Outer Golden Aura Ring */}
+              <div
+                style={{
+                  width: '110px',
+                  height: '110px',
+                  borderRadius: '50%',
+                  padding: '7px',
+                  background:
+                    'linear-gradient(135deg, #FFE896 0%, #D4A72C 24%, #8C5F03 50%, #FBE795 76%, #C29117 100%)',
+                  boxShadow:
+                    '0 0 25px rgba(212, 167, 44, 0.48), 0 8px 24px rgba(0, 0, 0, 0.16), inset 0 2px 5px rgba(255, 255, 255, 0.7)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s ease',
+                }}
+                onClick={() => onOpenProfile(activeHonoree.employee.employeeId)}
+                title={`View ${activeHonoree.employee.name}'s profile`}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.04)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                {/* Inner Beveled Bezel */}
                 <div
                   style={{
-                    padding: '0.85rem',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    padding: '2.5px',
+                    background: 'linear-gradient(180deg, #7A5300 0%, #E8C15A 100%)',
                     display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.65rem',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
-                  {/* Recipient Profile Info */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                    {hasTargetTeam ? (
-                      <div
-                        style={{
-                          width: '34px',
-                          height: '34px',
-                          borderRadius: '50%',
-                          backgroundColor: 'var(--sandoz-soft-blue-bg)',
-                          border: '1.5px solid var(--sandoz-pill-blue)',
-                          color: 'var(--sandoz-blue)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Users size={17} aria-hidden="true" />
-                      </div>
-                    ) : (
-                      <div
-                        style={{
-                          width: '34px',
-                          height: '34px',
-                          borderRadius: '50%',
-                          backgroundColor: 'var(--sandoz-blue)',
-                          color: '#FFFFFF',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 700,
-                          fontSize: '0.8rem',
-                          flexShrink: 0,
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {mainRecipient?.avatarUrl ? (
-                          <img
-                            src={mainRecipient.avatarUrl}
-                            alt=""
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
-                        ) : (
-                          initials(mainRecipient?.name || 'SZ')
-                        )}
-                      </div>
-                    )}
-
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                      {hasTargetTeam ? (
-                        <div
-                          style={{
-                            fontWeight: 700,
-                            fontSize: '0.86rem',
-                            color: 'var(--sandoz-navy)',
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          Whole {post.targetTeam?.teamName} Team
-                        </div>
-                      ) : (
-                        <div>
-                          <button
-                            type="button"
-                            onClick={() => onOpenProfile(mainRecipient.employeeId)}
-                            title={`View profile for ${mainRecipient.name}`}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              padding: 0,
-                              fontWeight: 700,
-                              fontSize: '0.86rem',
-                              color: 'var(--sandoz-navy)',
-                              cursor: 'pointer',
-                              textAlign: 'left',
-                              textDecoration: 'none',
-                              lineHeight: 1.2,
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.color = 'var(--sandoz-blue)';
-                              e.currentTarget.style.textDecoration = 'underline';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.color = 'var(--sandoz-navy)';
-                              e.currentTarget.style.textDecoration = 'none';
-                            }}
-                          >
-                            {mainRecipient?.name}
-                          </button>
-                        </div>
-                      )}
-                      <div
-                        style={{
-                          fontSize: '0.72rem',
-                          color: 'var(--sandoz-text-muted)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          marginTop: '1px',
-                        }}
-                      >
-                        {hasTargetTeam
-                          ? `${post.recipients.length} team members`
-                          : [mainRecipient?.jobTitle, mainRecipient?.teamName]
-                              .filter(Boolean)
-                              .join(' · ')}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Principle Tag */}
-                  {post.principle && (
-                    <div>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
-                          padding: '2px 8px',
-                          borderRadius: '6px',
-                          backgroundColor: '#EFF6FF',
-                          color: '#1E40AF',
-                          border: '1px solid #BFDBFE',
-                        }}
-                      >
-                        {post.principle.name}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Reason Text */}
+                  {/* Portrait / Photo Inside */}
                   <div
                     style={{
-                      fontSize: '0.81rem',
-                      lineHeight: 1.45,
-                      color: 'var(--sandoz-text-body)',
-                      fontWeight: 500,
-                    }}
-                  >
-                    "{post.reason}"
-                  </div>
-
-                  {/* Impact Box */}
-                  {post.impact && (
-                    <div
-                      style={{
-                        padding: '0.5rem 0.65rem',
-                        borderRadius: '6px',
-                        backgroundColor: '#F8FAFC',
-                        borderLeft: '3px solid var(--sandoz-blue)',
-                        fontSize: '0.75rem',
-                        lineHeight: 1.4,
-                        color: '#334155',
-                      }}
-                    >
-                      <strong style={{ color: 'var(--sandoz-navy)', fontWeight: 700 }}>
-                        Impact:{' '}
-                      </strong>
-                      {post.impact}
-                    </div>
-                  )}
-
-                  {/* Social Footer Bar */}
-                  <div
-                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--sandoz-navy)',
+                      color: '#FFFFFF',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
-                      paddingTop: '0.45rem',
-                      borderTop: '1px solid #F1F5F9',
-                      marginTop: '0.2rem',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '1.4rem',
+                      overflow: 'hidden',
+                      boxShadow: 'inset 0 3px 8px rgba(0, 0, 0, 0.4)',
                     }}
                   >
-                    <button
-                      type="button"
-                      aria-pressed={post.likedByMe}
-                      aria-label={`Like this SLT shout-out. ${post.likeCount} likes`}
-                      onClick={() => handleToggleLike(post)}
+                    {activeHonoree.employee.avatarUrl ? (
+                      <img
+                        src={activeHonoree.employee.avatarUrl}
+                        alt={activeHonoree.employee.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      initials(activeHonoree.employee.name)
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Gold Crown Medal Pinned to Bottom of Frame */}
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '-4px',
+                  background: 'linear-gradient(135deg, #FDE68A 0%, #D4A72C 50%, #996515 100%)',
+                  border: '2.5px solid #FFFFFF',
+                  borderRadius: '50%',
+                  width: '30px',
+                  height: '30px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#4A3500',
+                  boxShadow: '0 3px 8px rgba(0,0,0,0.22)',
+                }}
+                title={`${activeHonoree.count} SLT Honor${activeHonoree.count > 1 ? 's' : ''}`}
+              >
+                <Crown size={15} aria-hidden="true" />
+              </div>
+            </div>
+
+            {/* Person's Identity */}
+            <div style={{ marginTop: '0.85rem', width: '100%' }}>
+              <button
+                type="button"
+                onClick={() => onOpenProfile(activeHonoree.employee.employeeId)}
+                title={`Open profile for ${activeHonoree.employee.name}`}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  fontSize: '1.05rem',
+                  fontWeight: 800,
+                  color: 'var(--sandoz-navy)',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-headline)',
+                  letterSpacing: '-0.01em',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = 'var(--sandoz-blue)';
+                  e.currentTarget.style.textDecoration = 'underline';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = 'var(--sandoz-navy)';
+                  e.currentTarget.style.textDecoration = 'none';
+                }}
+              >
+                {activeHonoree.employee.name}
+              </button>
+
+              <div
+                style={{
+                  fontSize: '0.74rem',
+                  color: 'var(--sandoz-text-muted)',
+                  marginTop: '2px',
+                  fontWeight: 500,
+                }}
+              >
+                {[activeHonoree.employee.jobTitle, activeHonoree.employee.teamName]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </div>
+            </div>
+
+            {/* Executive Honors Badge */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', justifyContent: 'center', marginTop: '0.65rem' }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  padding: '3px 9px',
+                  borderRadius: '999px',
+                  backgroundColor: '#FEF3C7',
+                  border: '1px solid #FCD34D',
+                  color: '#92400E',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                }}
+              >
+                <Award size={12} />
+                {activeHonoree.count} SLT Recognition{activeHonoree.count > 1 ? 's' : ''}
+              </span>
+
+              {activeHonoree.latestPrinciple && (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.25rem',
+                    padding: '3px 8px',
+                    borderRadius: '999px',
+                    backgroundColor: '#EFF6FF',
+                    border: '1px solid #BFDBFE',
+                    color: '#1E40AF',
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  <Sparkles size={11} />
+                  {activeHonoree.latestPrinciple}
+                </span>
+              )}
+            </div>
+
+            {/* Citation Teaser / Quote */}
+            {activeHonoree.latestReason && (
+              <div
+                style={{
+                  marginTop: '0.75rem',
+                  padding: '0.55rem 0.75rem',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                  border: '1px solid #F3DF9A',
+                  fontSize: '0.75rem',
+                  lineHeight: 1.45,
+                  color: '#475569',
+                  fontStyle: 'italic',
+                }}
+              >
+                "{activeHonoree.latestReason}"
+              </div>
+            )}
+          </div>
+
+          {/* All Honorees Gallery / Quick Selector */}
+          {honorees.length > 1 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  color: 'var(--sandoz-navy)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0 2px',
+                }}
+              >
+                <span>All {period === 'month' ? 'November' : 'Recognized'} Honorees</span>
+                <span style={{ color: 'var(--sandoz-text-muted)', fontWeight: 500 }}>
+                  {honorees.length} total
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                {honorees.map((h, idx) => {
+                  const isSelected = idx === selectedIndex;
+                  return (
+                    <div
+                      key={h.employee.employeeId}
+                      onClick={() => setSelectedIndex(idx)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') setSelectedIndex(idx);
+                      }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.35rem',
-                        background: post.likedByMe ? 'var(--sandoz-soft-blue-bg)' : 'transparent',
-                        border: post.likedByMe
-                          ? '1px solid var(--sandoz-pill-blue)'
-                          : '1px solid transparent',
-                        borderRadius: '6px',
-                        padding: '3px 8px',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        color: post.likedByMe ? 'var(--sandoz-blue)' : 'var(--sandoz-text-muted)',
+                        justifyContent: 'space-between',
+                        padding: '0.45rem 0.65rem',
+                        borderRadius: '10px',
+                        backgroundColor: isSelected ? '#FEF3C7' : '#F8FAFC',
+                        border: isSelected ? '1.5px solid #FCD34D' : '1px solid #E2E8F0',
                         cursor: 'pointer',
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <ThumbsUp
-                        size={13}
-                        fill={post.likedByMe ? 'currentColor' : 'none'}
-                        aria-hidden="true"
-                      />
-                      <span>{post.likeCount}</span>
-                    </button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', minWidth: 0 }}>
+                        {/* Mini Golden Ring for Avatar */}
+                        <div
+                          style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            padding: '1.5px',
+                            background: isSelected
+                              ? 'linear-gradient(135deg, #FDE68A, #D4A72C)'
+                              : '#CBD5E1',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              borderRadius: '50%',
+                              backgroundColor: 'var(--sandoz-blue)',
+                              color: '#FFFFFF',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              overflow: 'hidden',
+                            }}
+                          >
+                            {h.employee.avatarUrl ? (
+                              <img
+                                src={h.employee.avatarUrl}
+                                alt=""
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            ) : (
+                              initials(h.employee.name)
+                            )}
+                          </div>
+                        </div>
 
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.3rem',
-                        fontSize: '0.72rem',
-                        color: 'var(--sandoz-text-muted)',
-                        fontWeight: 500,
-                      }}
-                    >
-                      <MessageCircle size={13} aria-hidden="true" />
-                      <span>{post.commentCount ?? 0}</span>
+                        <div style={{ minWidth: 0 }}>
+                          <div
+                            style={{
+                              fontSize: '0.79rem',
+                              fontWeight: 700,
+                              color: isSelected ? '#78350F' : 'var(--sandoz-navy)',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              lineHeight: 1.2,
+                            }}
+                          >
+                            {h.employee.name}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: '0.68rem',
+                              color: isSelected ? '#92400E' : 'var(--sandoz-text-muted)',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}
+                          >
+                            {h.employee.teamName}
+                          </div>
+                        </div>
+                      </div>
+
+                      <span
+                        style={{
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          padding: '1px 6px',
+                          borderRadius: '999px',
+                          backgroundColor: isSelected ? '#FDE68A' : '#E2E8F0',
+                          color: isSelected ? '#78350F' : '#475569',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {h.count} {h.count === 1 ? 'honor' : 'honors'}
+                      </span>
                     </div>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Leaderboard Navigation Link Footer */}
+      {/* Leaderboard Link at bottom */}
       <div
         style={{
-          marginTop: '0.25rem',
-          padding: '0.75rem 0.9rem',
+          marginTop: '0.1rem',
+          padding: '0.65rem 0.85rem',
           borderRadius: '10px',
           backgroundColor: 'var(--sandoz-soft-blue-bg)',
           border: '1px solid var(--sandoz-pill-blue)',
@@ -603,15 +739,15 @@ export const SltShoutouts: React.FC<SltShoutoutsProps> = ({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-          <Trophy size={16} color="var(--sandoz-blue)" aria-hidden="true" />
+          <Trophy size={15} color="var(--sandoz-blue)" aria-hidden="true" />
           <span
             style={{
-              fontSize: '0.78rem',
+              fontSize: '0.76rem',
               fontWeight: 600,
               color: 'var(--sandoz-navy)',
             }}
           >
-            Company Leaderboard
+            All Givers & Receivers
           </span>
         </div>
 
@@ -624,7 +760,7 @@ export const SltShoutouts: React.FC<SltShoutoutsProps> = ({
               border: 'none',
               color: 'var(--sandoz-blue)',
               fontWeight: 700,
-              fontSize: '0.76rem',
+              fontSize: '0.74rem',
               cursor: 'pointer',
               padding: '2px 4px',
               display: 'flex',
@@ -633,7 +769,7 @@ export const SltShoutouts: React.FC<SltShoutoutsProps> = ({
               borderRadius: '4px',
             }}
           >
-            View Rankings →
+            Leaderboard →
           </button>
         )}
       </div>

@@ -18,6 +18,20 @@ export interface EmployeeSummary {
   avatarUrl?: string | null;
 }
 
+export interface SltHonoree {
+  employee: EmployeeSummary;
+  count: number;
+  latestPrinciple: string;
+  latestReason: string;
+  latestCreatedAt: string;
+}
+
+export interface SltLeaderboardDto {
+  period: 'month' | 'all';
+  month: string | null;
+  honorees: SltHonoree[];
+}
+
 export interface ShoutoutDto {
   id: number;
   sender: EmployeeSummary;
