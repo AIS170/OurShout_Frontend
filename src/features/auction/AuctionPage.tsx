@@ -273,24 +273,6 @@ export function AuctionPage({ onOpenProfile, onPointsChanged }: AuctionPageProps
               )}
             </div>
 
-            {/* Direct Lot Scrubber / Numbered Selector Pills (Fills empty space in nav bar!) */}
-            <div className="os-forza-lot-scrubber" role="tablist" aria-label="Quick Lot Navigation">
-              {filteredItems.map((item, idx) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={idx === selectedIndex}
-                  onClick={() => setSelectedIndex(idx)}
-                  className={`os-forza-scrubber-pill ${idx === selectedIndex ? 'is-active' : ''}`}
-                  title={`${item.name} (${item.currentBid ?? item.startingBid} pts)`}
-                >
-                  <span className="os-forza-scrubber-idx">{String(idx + 1).padStart(2, '0')}</span>
-                  <span className="os-forza-scrubber-dot" />
-                </button>
-              ))}
-            </div>
-
             {/* Carousel Arrow Controls */}
             <div className="os-forza-nav-arrows">
               <button
